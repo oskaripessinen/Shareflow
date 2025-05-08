@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Pressable, Modal, ScrollView } from 'react-native';
+import { View, Text, Pressable, Modal, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus } from 'lucide-react-native';
 import { useAppContext } from '@/../context/AppContext';
@@ -42,35 +42,47 @@ export default function InvestmentsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
-      <ScrollView className="flex-1 p-4">
-        <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-2xl font-bold text-slate-900">Portfolio</Text>
-          <Pressable
-            className="flex-row items-center bg-cyan-600 px-3 py-2 rounded-md"
-            onPress={() => setShowAddInvestment(true)}
-          >
-            <Plus size={20} color="#fff" />
-            <Text className="text-white font-medium ml-2">Add Investment</Text>
-          </Pressable>
-        </View>
+      <FlatList
+      showsVerticalScrollIndicator={false}
+        data={investments}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{ paddingHorizontal: 16, }}
+        ListHeaderComponent={() => (
+          <>
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-2xl font-bold text-slate-900">Portfolio</Text>
+              <Pressable
+                className="flex-row items-center bg-cyan-600 px-3 py-2 rounded-md"
+                onPress={() => setShowAddInvestment(true)}
+              >
+                <Plus size={20} color="#fff" />
+                <Text className="text-white font-medium ml-2">Add Investment</Text>
+              </Pressable>
+            </View>
 
-        <InvestmentSummary
-          portfolioValue={portfolioValue}
-          investedValue={investedValue}
-          totalGain={totalGain}
-          percentGain={percentGain}
-        />
+            <InvestmentSummary
+              portfolioValue={portfolioValue}
+              investedValue={investedValue}
+              totalGain={totalGain}
+              percentGain={percentGain}
+            />
 
-        <View className="bg-white rounded-xl p-4 mt-4 shadow">
-          <Text className="text-lg font-semibold text-slate-900 mb-4">Portfolio distribution</Text>
-          <InvestmentChart data={chartData} />
-        </View>
+            <View className="bg-white rounded-xl p-4 mt-4 shadow">
+              <Text className="text-lg font-semibold text-slate-900 mb-4">
+                Portfolio distribution
+              </Text>
+              <InvestmentChart data={chartData} />
+            </View>
 
-        <View className="mt-4">
-          <Text className="text-lg font-semibold text-slate-900 mb-2">Investments</Text>
-          <InvestmentList investments={investments} />
-        </View>
-      </ScrollView>
+            <Text className="text-lg font-semibold text-slate-900 mt-4 mb-2">
+              Investments
+            </Text>
+          </>
+        )}
+        renderItem={({ item }) => (
+          <InvestmentList investments={[item]} />
+        )}
+      />
 
       <Modal
         visible={showAddInvestment}

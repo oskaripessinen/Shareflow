@@ -58,12 +58,7 @@ export default function DashboardScreen() {
           />
         </View>
 
-        <View className="bg-white rounded-xl p-4 mt-4 mb-6 shadow flex-1">
-          <Text className="text-lg font-semibold text-slate-900 mb-4">Latest Transactions</Text>
-          <RecentTransactions 
-            transactions={expenses.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 5)} 
-          />
-        </View>
+        
       </View>
     </SafeAreaView>
   );

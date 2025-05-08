@@ -42,7 +42,7 @@ export default function TabLayout() {
         options={{
           title: 'Expenses',
           tabBarIcon: ({ color, size }) => <CreditCard size={size} color={color} />,
-          headerTitle: 'FiTrrack',
+          headerTitle: 'FiTrack',
         }}
       />
       <Tabs.Screen
@@ -50,7 +50,7 @@ export default function TabLayout() {
         options={{
           title: 'Investments',
           tabBarIcon: ({ color, size }) => <TrendingUp size={size} color={color} />,
-          headerTitle: 'FoTrack',
+          headerTitle: 'FiTrack',
         }}
       />
 

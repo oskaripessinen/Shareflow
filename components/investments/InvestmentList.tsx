@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { Investment } from '@/../context/AppContext';
 import { formatDate } from '@/../utils/dateUtils';
