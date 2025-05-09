@@ -99,7 +99,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Tyyppi</Text>
+              <Text style={styles.label}>Type</Text>
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={type}
@@ -129,7 +129,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Ostohinta (€)</Text>
+              <Text style={styles.label}>Purchase price (€)</Text>
               <TextInput
                 style={styles.input}
                 value={purchasePrice}
@@ -140,7 +140,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Nykyinen hinta (€)</Text>
+              <Text style={styles.label}>Current price (€)</Text>
               <TextInput
                 style={styles.input}
                 value={currentPrice}
@@ -151,7 +151,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
             </View>
 
             <Pressable style={styles.addButton} onPress={handleAddInvestment}>
-              <Text style={styles.addButtonText}>Lisää sijoitus</Text>
+              <Text style={styles.addButtonText}>Add investment</Text>
             </Pressable>
           </ScrollView>
         </View>

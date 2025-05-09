@@ -13,12 +13,12 @@ interface InvestmentChartProps {
 export default function InvestmentChart({ data }: InvestmentChartProps) {
   // Get type labels
   const typeLabels = {
-    stock: 'Osakkeet',
-    fund: 'Rahastot',
-    crypto: 'Kryptovaluutat',
-    etf: 'ETF:t',
-    bond: 'Joukkovelkakirjat',
-    other: 'Muut',
+    stock: 'Stocks',
+    fund: 'Funds',
+    crypto: 'Cryptocurrencies',
+    etf: 'ETFs',
+    bond: 'Bonds',
+    other: 'Other',
   };
 
   // Calculate total value
@@ -65,7 +65,7 @@ export default function InvestmentChart({ data }: InvestmentChartProps) {
         </>
       ) : (
         <View style={styles.emptyChart}>
-          <Text style={styles.emptyText}>Ei sijoituksia</Text>
+          <Text style={styles.emptyText}>No investments</Text>
         </View>
       )}
     </View>

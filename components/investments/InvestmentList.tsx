@@ -14,12 +14,12 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
 
   // Type information with colors and labels
   const typeInfo = {
-    stock: { color: '#0891b2', label: 'Osake' },  // Cyan-600
-    fund: { color: '#0ea5e9', label: 'Rahasto' }, // Sky-500
-    crypto: { color: '#06b6d4', label: 'Kryptovaluutta' }, // Cyan-500
+    stock: { color: '#0891b2', label: 'Stock' },  // Cyan-600
+    fund: { color: '#0ea5e9', label: 'Fund' }, // Sky-500
+    crypto: { color: '#06b6d4', label: 'Cryptocurrency' }, // Cyan-500
     etf: { color: '#0284c7', label: 'ETF' }, // Sky-600
-    bond: { color: '#38bdf8', label: 'Joukkovelkakirja' }, // Sky-400
-    other: { color: '#7dd3fc', label: 'Muu' }, // Sky-300
+    bond: { color: '#38bdf8', label: 'Bond' }, // Sky-400
+    other: { color: '#7dd3fc', label: 'Other' }, // Sky-300
   };
 
   const handleEdit = (investment: Investment) => {
@@ -94,7 +94,7 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
         />
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Ei sijoituksia</Text>
+          <Text style={styles.emptyText}>No investments</Text>
         </View>
       )}
     </View>

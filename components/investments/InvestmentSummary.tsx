@@ -19,18 +19,18 @@ export default function InvestmentSummary({
   return (
     <View style={styles.container}>
       <View style={styles.mainValue}>
-        <Text style={styles.labelMain}>Salkun arvo</Text>
+        <Text style={styles.labelMain}>Portfolio value</Text>
         <Text style={styles.valueMain}>{portfolioValue.toFixed(2)} €</Text>
       </View>
 
       <View style={styles.detailsContainer}>
         <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Sijoitettu</Text>
+          <Text style={styles.detailLabel}>Invested</Text>
           <Text style={styles.detailValue}>{investedValue.toFixed(2)} €</Text>
         </View>
         
         <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Tuotto</Text>
+          <Text style={styles.detailLabel}>Yield</Text>
           <View style={styles.gainContainer}>
             {isProfitable ? (
               <TrendingUp size={16} color="#10b981" style={styles.gainIcon} />
@@ -47,7 +47,7 @@ export default function InvestmentSummary({
         </View>
         
         <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Tuotto-%</Text>
+          <Text style={styles.detailLabel}>Yield-%</Text>
           <Text style={[
             styles.gainValue, 
             { color: isProfitable ? '#10b981' : '#ef4444' }
