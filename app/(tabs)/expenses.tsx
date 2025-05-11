@@ -39,11 +39,10 @@ export default function ExpensesScreen() {
   ];
 
   const renderHeader = () => (
-    <View className="p-4">
+    <View className="p-4 mt-3">
       {/* Header */}
       <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-2xl font-bold text-slate-900">Expenses</Text>
-        <View className="flex-row space-x-2">
+        <View className="flex-row gap-x-2">
           <Pressable
             onPress={() => setShowFilters(true)}
             className="flex-row items-center bg-cyan-100 px-3 py-2 rounded-md"

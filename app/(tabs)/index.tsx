@@ -29,10 +29,13 @@ export default function DashboardScreen() {
   const remaining = monthlySummary.income - monthlySummary.expenses - monthlySummary.savings;
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="flex-1 p-4">
-        <View className="mb-4">
-          <Text className="text-2xl font-bold text-slate-900 mb-2">Welcome!</Text>
+    <SafeAreaView
+      // jätetään top inset pois
+      edges={['left', 'right', 'bottom']}
+      className="flex-1 bg-slate-50"
+    >
+      <View className="flex-1 p-4 mt-3">
+        <View className="mb-1">
           <MonthSelector 
             selectedMonth={selectedMonth} 
             selectedYear={selectedYear}

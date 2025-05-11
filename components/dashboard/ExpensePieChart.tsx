@@ -21,14 +21,14 @@ export default function ExpensePieChart({ expenses }: ExpensePieChartProps) {
 
   // Get category colors and labels
   const categoryInfo = {
-    food: { color: '#0891b2', label: 'Ruoka' },  // Cyan-600
-    housing: { color: '#0284c7', label: 'Asuminen' }, // Sky-600
-    transportation: { color: '#14b8a6', label: 'Liikenne' }, // Teal-500
-    entertainment: { color: '#8b5cf6', label: 'Viihde' }, // Violet-500
-    utilities: { color: '#f59e0b', label: 'Laskut' }, // Amber-500
-    health: { color: '#10b981', label: 'Terveys' }, // Emerald-500
-    clothing: { color: '#ec4899', label: 'Vaatteet' }, // Pink-500
-    other: { color: '#6b7280', label: 'Muut' }, // Gray-500
+    food: { color: '#0891b2', label: 'Food' },  // Cyan-600
+    housing: { color: '#0284c7', label: 'Living' }, // Sky-600
+    transportation: { color: '#14b8a6', label: 'Transportation' }, // Teal-500
+    entertainment: { color: '#8b5cf6', label: 'Entertainment' }, // Violet-500
+    utilities: { color: '#f59e0b', label: 'Utulities' }, // Amber-500
+    health: { color: '#10b981', label: 'Health' }, // Emerald-500
+    clothing: { color: '#ec4899', label: 'Clothing' }, // Pink-500
+    other: { color: '#6b7280', label: 'Other' }, // Gray-500
   };
 
   // Create data for pie chart

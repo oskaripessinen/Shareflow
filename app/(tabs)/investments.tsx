@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Pressable, Modal, FlatList } from 'react-native';
+import { View, Text, Pressable, Modal, FlatList, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Plus } from 'lucide-react-native';
 import { useAppContext } from '@/../context/AppContext';
@@ -41,25 +41,22 @@ export default function InvestmentsScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
+    <SafeAreaView
+      className="flex-1 bg-slate-50"
+      edges={['left', 'right']}
+    >
       <FlatList
-      showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         data={investments}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ paddingHorizontal: 16, }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 0,
+          paddingBottom: 0,
+        }}
         ListHeaderComponent={() => (
           <>
-            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-2xl font-bold text-slate-900">Portfolio</Text>
-              <Pressable
-                className="flex-row items-center bg-cyan-600 px-3 py-2 rounded-md"
-                onPress={() => setShowAddInvestment(true)}
-              >
-                <Plus size={20} color="#fff" />
-                <Text className="text-white font-medium ml-2">Add Investment</Text>
-              </Pressable>
-            </View>
-
+            <View className='mt-5'/>
             <InvestmentSummary
               portfolioValue={portfolioValue}
               investedValue={investedValue}

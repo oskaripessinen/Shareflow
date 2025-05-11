@@ -49,7 +49,7 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
         />
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Ei viimeaikaisia tapahtumia</Text>
+          <Text style={styles.emptyText}>No recent transactions</Text>
         </View>
       )}
     </View>

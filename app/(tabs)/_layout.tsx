@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, CreditCard, TrendingUp, Target } from 'lucide-react-native';
+import { Home, CreditCard, TrendingUp, Target } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -13,7 +13,8 @@ export default function TabLayout() {
           borderTopColor: '#e2e8f0', // Slate-200
           paddingTop: 5,
           paddingBottom: 5,
-          height: 60,
+          height: 70,
+
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -34,7 +35,7 @@ export default function TabLayout() {
         options={{
           title: 'Overview',
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
-          headerTitle: 'FiTrack',
+          headerTitle: 'ShareFlow',
         }}
       />
       <Tabs.Screen
@@ -42,7 +43,7 @@ export default function TabLayout() {
         options={{
           title: 'Expenses',
           tabBarIcon: ({ color, size }) => <CreditCard size={size} color={color} />,
-          headerTitle: 'FiTrack',
+          headerTitle: 'ShareFlow',
         }}
       />
       <Tabs.Screen
@@ -50,7 +51,7 @@ export default function TabLayout() {
         options={{
           title: 'Investments',
           tabBarIcon: ({ color, size }) => <TrendingUp size={size} color={color} />,
-          headerTitle: 'FiTrack',
+          headerTitle: 'ShareFlow',
         }}
       />
 
