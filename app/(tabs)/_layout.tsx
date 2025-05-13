@@ -13,8 +13,8 @@ export default function TabLayout() {
           borderTopColor: '#e2e8f0', // Slate-200
           paddingTop: 5,
           paddingBottom: 5,
-          height: 70,
-
+          height: 60,
+          
         },
         tabBarLabelStyle: {
           fontSize: 12,
