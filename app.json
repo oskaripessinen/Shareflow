@@ -10,11 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.oskaripessinen.boltexponativewind"
+      "bundleIdentifier": "com.shareflowc.shareflowapp"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "package": "com.oskaripessinen.boltexponativewind"
+      "package": "com.shareflowc.shareflowapp"
     },
     "web": {
       "bundler": "metro",
