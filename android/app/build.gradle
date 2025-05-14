@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.oskaripessinen.boltexponativewind'
+    namespace 'com.shareflowc.shareflowapp'
     defaultConfig {
-        applicationId 'com.oskaripessinen.boltexponativewind'
+        applicationId 'com.shareflowc.shareflowapp'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

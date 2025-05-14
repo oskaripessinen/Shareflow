@@ -1,4 +1,4 @@
-package com.oskaripessinen.boltexponativewind
+package com.shareflowc.shareflowapp
 
 import android.app.Application
 import android.content.res.Configuration

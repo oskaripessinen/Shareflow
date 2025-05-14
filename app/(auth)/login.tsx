@@ -13,7 +13,7 @@ import {
   statusCodes,
   type SignInResponse,
 } from '@react-native-google-signin/google-signin'
-import GoogleLogo from '../assets/images/google-logo.png'
+import GoogleLogo from '../../assets/images/google-logo.png'
 
 export default function LoginScreen() {
   const router = useRouter()
@@ -25,22 +25,15 @@ export default function LoginScreen() {
     '906100274130-e0cduqt9ab0te4kq1iujofiabqtb43ar.apps.googleusercontent.com'
 
   useEffect(() => {
-    // Configure GoogleSignin
-    GoogleSignin.configure({
-      webClientId,
-      offlineAccess: false,
-    })
+    GoogleSignin.configure({ webClientId, offlineAccess: false })
     setInitializing(false)
   }, [])
 
   async function signInAsync() {
     setLoading(true)
     try {
-      // Check Play Services (Android)
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true })
-      // Start sign-in (SignInResponse sisältää tokenit)
       const userInfo: SignInResponse = await GoogleSignin.signIn()
-      // userInfo.idToken, userInfo.accessToken jne.
       router.replace('/')
     } catch (err: any) {
       if (err.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -61,13 +54,13 @@ export default function LoginScreen() {
     return (
       <SafeAreaView className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" />
-        <Text className="mt-2">Initializing Google Sign-In…</Text>
+        <Text>Initializing…</Text>
       </SafeAreaView>
     )
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 justify-center items-center p-4">
+    <SafeAreaView className="flex-1 p-4 justify-center items-center">
       <Text className="text-3xl font-bold mb-8">ShareFlow</Text>
 
       <TouchableOpacity

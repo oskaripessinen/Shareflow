@@ -1,4 +1,4 @@
-package com.oskaripessinen.boltexponativewind
+package com.shareflowc.shareflowapp
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
