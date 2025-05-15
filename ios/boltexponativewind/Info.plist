@@ -37,6 +37,12 @@
           <string>exp+bolt-expo-nativewind</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.906100274130-8obaj5vjs8cpsv23aeq4edk6v5hb826v</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>

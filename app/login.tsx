@@ -11,44 +11,41 @@ import {
 import {
   GoogleSignin,
   statusCodes,
-  type SignInResponse,
 } from '@react-native-google-signin/google-signin'
 
-import GoogleLogo from '../../assets/images/google-logo.png'
+import GoogleLogo from '../assets/images/google-logo.png'
+
+/** OAuth-web-client ID */
+export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
+/** OAuth-iOS-client ID */
+export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
 
 export default function LoginScreen() {
   const router = useRouter()
   const [initializing, setInitializing] = useState(true)
   const [loading, setLoading] = useState(false)
 
-  // Your Google OAuth web client ID
-  const webClientId =
-    '906100274130-e0cduqt9ab0te4kq1iujofiabqtb43ar.apps.googleusercontent.com'
-
   useEffect(() => {
-    GoogleSignin.configure({ webClientId, offlineAccess: false })
+    GoogleSignin.configure({
+      webClientId: WEB_CLIENT_ID,
+      offlineAccess: true,
+      forceCodeForRefreshToken: true,
+      profileImageSize: 120,
+      iosClientId: IOS_CLIENT_ID,
+    })
     setInitializing(false)
+    console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID)
   }, [])
 
   async function signInAsync() {
     setLoading(true)
-    try {
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true })
-      const userInfo: SignInResponse = await GoogleSignin.signIn()
-      router.replace('/')
-    } catch (err: any) {
-      if (err.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log('Google sign in cancelled')
-      } else if (err.code === statusCodes.IN_PROGRESS) {
-        console.log('Sign in already in progress')
-      } else if (err.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.error('Play services not available or outdated')
-      } else {
-        console.error('GoogleSignin error:', err)
-      }
-    } finally {
-      setLoading(false)
-    }
+    
+    await GoogleSignin.hasPlayServices();
+    console.log('Google Play Services are available')
+    const SignInResponse = await GoogleSignin.signIn();
+    console.log('User Info:', SignInResponse);
+    router.push('/(tabs)')
+    
   }
 
   if (initializing) {

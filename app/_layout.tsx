@@ -11,7 +11,7 @@ export default function RootLayout() {
     <AppProvider>
       <Stack
         screenOptions={{ headerShown: false }}
-        initialRouteName="(tabs)"
+        initialRouteName="login"
       />
       <StatusBar style="auto" />
     </AppProvider>
