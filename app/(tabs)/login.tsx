@@ -13,6 +13,7 @@ import {
   statusCodes,
   type SignInResponse,
 } from '@react-native-google-signin/google-signin'
+
 import GoogleLogo from '../../assets/images/google-logo.png'
 
 export default function LoginScreen() {

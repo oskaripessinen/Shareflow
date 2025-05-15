@@ -19,7 +19,6 @@
       "bundleIdentifier": "com.shareflowc.shareflowapp"
     },
     "android": {
-      "googleServicesFile": "./google-services.json",
       "package": "com.shareflowc.shareflowapp"
     },
     "web": {
