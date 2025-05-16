@@ -11,7 +11,7 @@ interface InvestmentChartProps {
 }
 
 export default function InvestmentChart({ data }: InvestmentChartProps) {
-  // Get type labels
+
   const typeLabels = {
     stock: 'Stocks',
     fund: 'Funds',

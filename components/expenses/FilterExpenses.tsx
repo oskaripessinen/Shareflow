@@ -16,30 +16,30 @@ interface FilterProps {
 }
 
 export default function FilterExpenses({ filters, onFiltersChange, onClose }: FilterProps) {
-  const monthOptions = [{ label: 'Kaikki kuukaudet', value: 'all' }, ...getMonthOptions()];
+  const monthOptions = [{ label: 'allt', value: 'all' }, ...getMonthOptions()];
 
-  const yearOptions = [{ label: 'Kaikki vuodet', value: 'all' }, ...getYearOptions()];
+  const yearOptions = [{ label: 'all', value: 'all' }, ...getYearOptions()];
 
   const categoryOptions = [
-    { label: 'Kaikki kategoriat', value: 'all' },
-    { label: 'Ruoka', value: 'food' },
-    { label: 'Asuminen', value: 'housing' },
-    { label: 'Liikenne', value: 'transportation' },
-    { label: 'Viihde', value: 'entertainment' },
-    { label: 'Laskut', value: 'utilities' },
-    { label: 'Terveys', value: 'health' },
-    { label: 'Vaatteet', value: 'clothing' },
-    { label: 'Muut', value: 'other' },
+    { label: 'All categories', value: 'all' },
+    { label: 'Food', value: 'food' },
+    { label: 'Housing', value: 'housing' },
+    { label: 'Transportation', value: 'transportation' },
+    { label: 'Entertainment', value: 'entertainment' },
+    { label: 'Utilities', value: 'utilities' },
+    { label: 'Health', value: 'health' },
+    { label: 'Clothing', value: 'clothing' },
+    { label: 'Other', value: 'other' },
   ];
 
   const sortByOptions = [
-    { label: 'Päivämäärä', value: 'date' },
-    { label: 'Summa', value: 'amount' },
+    { label: 'Date', value: 'date' },
+    { label: 'Amount', value: 'amount' },
   ];
 
   const sortOrderOptions = [
-    { label: 'Laskeva', value: 'desc' },
-    { label: 'Nouseva', value: 'asc' },
+    { label: 'desc', value: 'desc' },
+    { label: 'asc', value: 'asc' },
   ];
 
   const handleReset = () => {
@@ -68,7 +68,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
 
         <ScrollView style={styles.filtersContainer}>
           <View style={styles.filterGroup}>
-            <Text style={styles.filterLabel}>Kuukausi</Text>
+            <Text style={styles.filterLabel}>Month</Text>
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={filters.month}
@@ -87,7 +87,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
           </View>
 
           <View style={styles.filterGroup}>
-            <Text style={styles.filterLabel}>Vuosi</Text>
+            <Text style={styles.filterLabel}>Year</Text>
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={filters.year}
@@ -106,7 +106,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
           </View>
 
           <View style={styles.filterGroup}>
-            <Text style={styles.filterLabel}>Kategoria</Text>
+            <Text style={styles.filterLabel}>Category</Text>
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={filters.category}
@@ -121,7 +121,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
           </View>
 
           <View style={styles.filterGroup}>
-            <Text style={styles.filterLabel}>Järjestä</Text>
+            <Text style={styles.filterLabel}>Sort</Text>
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={filters.sortBy}
@@ -136,7 +136,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
           </View>
 
           <View style={styles.filterGroup}>
-            <Text style={styles.filterLabel}>Järjestyksen suunta</Text>
+            <Text style={styles.filterLabel}>Sorting order</Text>
             <View style={styles.pickerContainer}>
               <Picker
                 selectedValue={filters.sortOrder}
@@ -153,10 +153,10 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
 
         <View style={styles.actionButtons}>
           <Pressable style={styles.resetButton} onPress={handleReset}>
-            <Text style={styles.resetButtonText}>Nollaa</Text>
+            <Text style={styles.resetButtonText}>Reset</Text>
           </Pressable>
           <Pressable style={styles.applyButton} onPress={handleApply}>
-            <Text style={styles.applyButtonText}>Käytä suodattimia</Text>
+            <Text style={styles.applyButtonText}>Apply filtres</Text>
           </Pressable>
         </View>
       </View>

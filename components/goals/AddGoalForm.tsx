@@ -41,17 +41,17 @@ export default function AddGoalForm({ onClose }: { onClose: () => void }) {
     }
 
     if (!targetAmount || isNaN(parseFloat(targetAmount)) || parseFloat(targetAmount) <= 0) {
-      setError('Anna kelvollinen tavoitesumma');
+      setError('Give a valid target amount');
       return;
     }
 
     if (!currentAmount || isNaN(parseFloat(currentAmount)) || parseFloat(currentAmount) < 0) {
-      setError('Anna kelvollinen nykyinen summa');
+      setError('Give a valid amount');
       return;
     }
 
     if (parseFloat(currentAmount) > parseFloat(targetAmount)) {
-      setError('Nykyinen summa ei voi olla suurempi kuin tavoitesumma');
+      setError('Current amount cannot be greater than target amount');
       return;
     }
 
@@ -93,7 +93,7 @@ export default function AddGoalForm({ onClose }: { onClose: () => void }) {
             )}
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Tavoitteen nimi</Text>
+              <Text style={styles.label}>Goal name</Text>
               <TextInput
                 style={styles.input}
                 value={title}
@@ -103,7 +103,7 @@ export default function AddGoalForm({ onClose }: { onClose: () => void }) {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Tavoitesumma (€)</Text>
+              <Text style={styles.label}>Target (€)</Text>
               <TextInput
                 style={styles.input}
                 value={targetAmount}
@@ -114,7 +114,7 @@ export default function AddGoalForm({ onClose }: { onClose: () => void }) {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Nykyinen säästö (€)</Text>
+              <Text style={styles.label}>Currently saved (€)</Text>
               <TextInput
                 style={styles.input}
                 value={currentAmount}
@@ -125,7 +125,7 @@ export default function AddGoalForm({ onClose }: { onClose: () => void }) {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Tavoitekuukausi</Text>
+              <Text style={styles.label}>Target month</Text>
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={targetMonth}
@@ -144,7 +144,7 @@ export default function AddGoalForm({ onClose }: { onClose: () => void }) {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Tavoitevuosi</Text>
+              <Text style={styles.label}>Target year</Text>
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={targetYear}
@@ -178,7 +178,7 @@ export default function AddGoalForm({ onClose }: { onClose: () => void }) {
             </View>
 
             <Pressable style={styles.addButton} onPress={handleAddGoal}>
-              <Text style={styles.addButtonText}>Lisää tavoite</Text>
+              <Text style={styles.addButtonText}>Add goal</Text>
             </Pressable>
           </ScrollView>
         </View>

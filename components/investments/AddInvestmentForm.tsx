@@ -35,22 +35,22 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
   const handleAddInvestment = () => {
     // Validate form
     if (!name) {
-      setError('Anna sijoituksen nimi');
+      setError('Give investment name');
       return;
     }
 
     if (!quantity || isNaN(parseFloat(quantity)) || parseFloat(quantity) <= 0) {
-      setError('Anna kelvollinen määrä');
+      setError('Give a valid quantity');
       return;
     }
 
     if (!purchasePrice || isNaN(parseFloat(purchasePrice)) || parseFloat(purchasePrice) <= 0) {
-      setError('Anna kelvollinen ostohinta');
+      setError('Give valid purchase price');
       return;
     }
 
     if (!currentPrice || isNaN(parseFloat(currentPrice)) || parseFloat(currentPrice) <= 0) {
-      setError('Anna kelvollinen nykyinen hinta');
+      setError('Give valid current price');
       return;
     }
 
@@ -76,7 +76,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
       <View style={styles.container}>
         <View style={styles.modalContent}>
           <View style={styles.header}>
-            <Text style={styles.title}>Lisää sijoitus</Text>
+            <Text style={styles.title}>Add investment</Text>
             <Pressable onPress={onClose} style={styles.closeButton}>
               <X size={24} color="#64748b" />
             </Pressable>
@@ -90,7 +90,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
             )}
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Nimi</Text>
+              <Text style={styles.label}>Name</Text>
               <TextInput
                 style={styles.input}
                 value={name}
@@ -115,7 +115,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Määrä</Text>
+              <Text style={styles.label}>Quantity</Text>
               <TextInput
                 style={styles.input}
                 value={quantity}

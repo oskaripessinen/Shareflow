@@ -48,6 +48,7 @@ export interface Goal {
   color: string;
 }
 
+
 interface Income {
   amount: number;
   isGross: boolean;

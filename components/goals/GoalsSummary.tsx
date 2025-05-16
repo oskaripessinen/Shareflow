@@ -8,7 +8,7 @@ interface GoalsSummaryProps {
   expenseTarget: number;
   actualExpenses: number;
   expenseProgress: number;
-}
+};
 
 export default function GoalsSummary({
   savingsTarget,

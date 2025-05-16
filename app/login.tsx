@@ -30,9 +30,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await GoogleSignin.hasPlayServices();
-      // suorita Google-kirjautuminen
       await GoogleSignin.signIn();
-      // hae erikseen id- ja access-tokenit
       const { idToken } = await GoogleSignin.getTokens();
 
       const {

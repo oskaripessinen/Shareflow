@@ -43,7 +43,7 @@ export default function GoalsList({ goals }: GoalsListProps) {
           <Text style={styles.amountText}>
             {item.currentAmount.toFixed(2)} € / {item.targetAmount.toFixed(2)} €
           </Text>
-          <Text style={styles.dateText}>Tavoitepäivä: {formattedDate}</Text>
+          <Text style={styles.dateText}>Targer day: {formattedDate}</Text>
         </View>
 
         <View style={styles.progressContainer}>
@@ -70,7 +70,7 @@ export default function GoalsList({ goals }: GoalsListProps) {
         <FlatList data={goals} renderItem={renderGoalItem} keyExtractor={(item) => item.id} />
       ) : (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Ei tavoitteita</Text>
+          <Text style={styles.emptyText}>No goals</Text>
         </View>
       )}
     </View>
