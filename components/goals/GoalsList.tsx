@@ -23,9 +23,8 @@ export default function GoalsList({ goals }: GoalsListProps) {
 
   const renderGoalItem = ({ item }: { item: Goal }) => {
     const progress = (item.currentAmount / item.targetAmount) * 100;
-    const targetDate = new Date(item.targetDate);
     const formattedDate = formatDate(item.targetDate);
-    
+
     return (
       <View style={styles.goalItem}>
         <View style={styles.goalHeader}>
@@ -39,24 +38,24 @@ export default function GoalsList({ goals }: GoalsListProps) {
             </Pressable>
           </View>
         </View>
-        
+
         <View style={styles.goalInfo}>
           <Text style={styles.amountText}>
             {item.currentAmount.toFixed(2)} € / {item.targetAmount.toFixed(2)} €
           </Text>
           <Text style={styles.dateText}>Tavoitepäivä: {formattedDate}</Text>
         </View>
-        
+
         <View style={styles.progressContainer}>
           <View style={styles.progressBackground}>
-            <View 
+            <View
               style={[
-                styles.progressFill, 
-                { 
+                styles.progressFill,
+                {
                   width: `${Math.min(100, progress)}%`,
-                  backgroundColor: item.color || '#0891b2', 
-                }
-              ]} 
+                  backgroundColor: item.color || '#0891b2',
+                },
+              ]}
             />
           </View>
           <Text style={styles.progressText}>{progress.toFixed(1)}%</Text>
@@ -68,11 +67,7 @@ export default function GoalsList({ goals }: GoalsListProps) {
   return (
     <View style={styles.container}>
       {goals.length > 0 ? (
-        <FlatList
-          data={goals}
-          renderItem={renderGoalItem}
-          keyExtractor={(item) => item.id}
-        />
+        <FlatList data={goals} renderItem={renderGoalItem} keyExtractor={(item) => item.id} />
       ) : (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Ei tavoitteita</Text>

@@ -1,19 +1,16 @@
-import '../global.css'
-import { Stack } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
-import { useFrameworkReady } from '@/../hooks/useFrameworkReady'
-import { AppProvider } from '@/../context/AppContext'
+import '../global.css';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useFrameworkReady } from '@/../hooks/useFrameworkReady';
+import { AppProvider } from '@/../context/AppContext';
 
 export default function RootLayout() {
-  useFrameworkReady()
+  useFrameworkReady();
 
   return (
     <AppProvider>
-      <Stack
-        screenOptions={{ headerShown: false }}
-        initialRouteName="login"
-      />
+      <Stack screenOptions={{ headerShown: false }} initialRouteName="login" />
       <StatusBar style="auto" />
     </AppProvider>
-  )
+  );
 }

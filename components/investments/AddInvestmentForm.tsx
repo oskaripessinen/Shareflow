@@ -1,22 +1,23 @@
 import { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TextInput, 
-  Pressable, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
   Platform,
   ScrollView,
-  KeyboardAvoidingView, 
+  KeyboardAvoidingView,
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import { useAppContext } from '@/../context/AppContext';
+import type { InvestmentType } from '@/../context/AppContext';
 import { Picker } from '@react-native-picker/picker';
 
 export default function AddInvestmentForm({ onClose }: { onClose: () => void }) {
   const { addInvestment } = useAppContext();
   const [name, setName] = useState('');
-  const [type, setType] = useState('stock');
+  const [type, setType] = useState<InvestmentType>('stock');
   const [quantity, setQuantity] = useState('');
   const [purchasePrice, setPurchasePrice] = useState('');
   const [currentPrice, setCurrentPrice] = useState('');
@@ -56,7 +57,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
     const newInvestment = {
       id: Date.now().toString(),
       name,
-      type: type as any,
+      type: type,
       quantity: parseFloat(quantity),
       purchasePrice: parseFloat(purchasePrice),
       currentPrice: parseFloat(currentPrice),
@@ -107,11 +108,7 @@ export default function AddInvestmentForm({ onClose }: { onClose: () => void }) 
                   style={styles.picker}
                 >
                   {typeOptions.map((option) => (
-                    <Picker.Item
-                      key={option.value}
-                      label={option.label}
-                      value={option.value}
-                    />
+                    <Picker.Item key={option.value} label={option.label} value={option.value} />
                   ))}
                 </Picker>
               </View>

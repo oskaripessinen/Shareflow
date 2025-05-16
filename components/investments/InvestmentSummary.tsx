@@ -8,11 +8,11 @@ interface InvestmentSummaryProps {
   percentGain: number;
 }
 
-export default function InvestmentSummary({ 
-  portfolioValue, 
-  investedValue, 
-  totalGain, 
-  percentGain 
+export default function InvestmentSummary({
+  portfolioValue,
+  investedValue,
+  totalGain,
+  percentGain,
 }: InvestmentSummaryProps) {
   const isProfitable = totalGain >= 0;
 
@@ -28,7 +28,7 @@ export default function InvestmentSummary({
           <Text style={styles.detailLabel}>Invested</Text>
           <Text style={styles.detailValue}>{investedValue.toFixed(2)} €</Text>
         </View>
-        
+
         <View style={styles.detailItem}>
           <Text style={styles.detailLabel}>Yield</Text>
           <View style={styles.gainContainer}>
@@ -37,22 +37,18 @@ export default function InvestmentSummary({
             ) : (
               <TrendingDown size={16} color="#ef4444" style={styles.gainIcon} />
             )}
-            <Text style={[
-              styles.gainValue, 
-              { color: isProfitable ? '#10b981' : '#ef4444' }
-            ]}>
-              {isProfitable ? '+' : ''}{totalGain.toFixed(2)} €
+            <Text style={[styles.gainValue, { color: isProfitable ? '#10b981' : '#ef4444' }]}>
+              {isProfitable ? '+' : ''}
+              {totalGain.toFixed(2)} €
             </Text>
           </View>
         </View>
-        
+
         <View style={styles.detailItem}>
           <Text style={styles.detailLabel}>Yield-%</Text>
-          <Text style={[
-            styles.gainValue, 
-            { color: isProfitable ? '#10b981' : '#ef4444' }
-          ]}>
-            {isProfitable ? '+' : ''}{percentGain.toFixed(2)}%
+          <Text style={[styles.gainValue, { color: isProfitable ? '#10b981' : '#ef4444' }]}>
+            {isProfitable ? '+' : ''}
+            {percentGain.toFixed(2)}%
           </Text>
         </View>
       </View>

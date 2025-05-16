@@ -9,7 +9,7 @@ interface RecentTransactionsProps {
 export default function RecentTransactions({ transactions }: RecentTransactionsProps) {
   // Category icons or colors
   const categoryInfo = {
-    food: { color: '#0891b2', label: 'Ruoka' },  // Cyan-600
+    food: { color: '#0891b2', label: 'Ruoka' }, // Cyan-600
     housing: { color: '#0284c7', label: 'Asuminen' }, // Sky-600
     transportation: { color: '#14b8a6', label: 'Liikenne' }, // Teal-500
     entertainment: { color: '#8b5cf6', label: 'Viihde' }, // Violet-500
@@ -20,9 +20,10 @@ export default function RecentTransactions({ transactions }: RecentTransactionsP
   };
 
   const renderTransaction = ({ item }: { item: Expense }) => {
-    const categoryColor = categoryInfo[item.category as keyof typeof categoryInfo]?.color || '#6b7280';
+    const categoryColor =
+      categoryInfo[item.category as keyof typeof categoryInfo]?.color || '#6b7280';
     const categoryLabel = categoryInfo[item.category as keyof typeof categoryInfo]?.label || 'Muut';
-    
+
     return (
       <View style={styles.transactionItem}>
         <View style={[styles.categoryIndicator, { backgroundColor: categoryColor }]} />

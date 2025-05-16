@@ -1,9 +1,24 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Types
-type ExpenseCategory = 'food' | 'housing' | 'transportation' | 'entertainment' | 'utilities' | 'health' | 'clothing' | 'other';
-type InvestmentType = 'stock' | 'fund' | 'crypto' | 'etf' | 'bond' | 'other';
+export type ExpenseCategory =
+  | 'food'
+  | 'housing'
+  | 'transportation'
+  | 'entertainment'
+  | 'utilities'
+  | 'health'
+  | 'clothing'
+  | 'other';
+export type InvestmentType = 'stock' | 'fund' | 'crypto' | 'etf' | 'bond' | 'other';
+export type ExpenseFilters = {
+  month: number | 'all';
+  year: number | 'all';
+  category: ExpenseCategory | 'all';
+  sortBy: 'date' | 'amount';
+  sortOrder: 'asc' | 'desc';
+};
 
 export interface Expense {
   id: string;
@@ -184,44 +199,42 @@ const appReducer = (state: AppState, action: Action): AppState => {
     case 'ADD_EXPENSE':
       return { ...state, expenses: [...state.expenses, action.payload] };
     case 'UPDATE_EXPENSE':
-      return { 
-        ...state, 
-        expenses: state.expenses.map(exp => 
-          exp.id === action.payload.id ? action.payload : exp
-        ) 
+      return {
+        ...state,
+        expenses: state.expenses.map((exp) =>
+          exp.id === action.payload.id ? action.payload : exp,
+        ),
       };
     case 'DELETE_EXPENSE':
-      return { 
-        ...state, 
-        expenses: state.expenses.filter(exp => exp.id !== action.payload) 
+      return {
+        ...state,
+        expenses: state.expenses.filter((exp) => exp.id !== action.payload),
       };
     case 'ADD_INVESTMENT':
       return { ...state, investments: [...state.investments, action.payload] };
     case 'UPDATE_INVESTMENT':
-      return { 
-        ...state, 
-        investments: state.investments.map(inv => 
-          inv.id === action.payload.id ? action.payload : inv
-        ) 
+      return {
+        ...state,
+        investments: state.investments.map((inv) =>
+          inv.id === action.payload.id ? action.payload : inv,
+        ),
       };
     case 'DELETE_INVESTMENT':
-      return { 
-        ...state, 
-        investments: state.investments.filter(inv => inv.id !== action.payload) 
+      return {
+        ...state,
+        investments: state.investments.filter((inv) => inv.id !== action.payload),
       };
     case 'ADD_GOAL':
       return { ...state, goals: [...state.goals, action.payload] };
     case 'UPDATE_GOAL':
-      return { 
-        ...state, 
-        goals: state.goals.map(goal => 
-          goal.id === action.payload.id ? action.payload : goal
-        ) 
+      return {
+        ...state,
+        goals: state.goals.map((goal) => (goal.id === action.payload.id ? action.payload : goal)),
       };
     case 'DELETE_GOAL':
-      return { 
-        ...state, 
-        goals: state.goals.filter(goal => goal.id !== action.payload) 
+      return {
+        ...state,
+        goals: state.goals.filter((goal) => goal.id !== action.payload),
       };
     case 'LOAD_STATE':
       return action.payload;
@@ -248,10 +261,9 @@ interface AppContextType extends AppState {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 // Provider component
-export const AppProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
-  // Load data from storage on mount
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -259,20 +271,17 @@ export const AppProvider: React.FC<{children: React.ReactNode}> = ({ children })
         if (savedData) {
           dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedData) });
         } else {
-          // Use sample data if no saved data exists
           dispatch({ type: 'LOAD_STATE', payload: sampleData });
         }
       } catch (error) {
         console.error('Failed to load data:', error);
-        // Fallback to sample data
         dispatch({ type: 'LOAD_STATE', payload: sampleData });
       }
     };
-    
+
     loadData();
   }, []);
 
-  // Save state to storage when it changes
   useEffect(() => {
     const saveData = async () => {
       try {
@@ -281,14 +290,13 @@ export const AppProvider: React.FC<{children: React.ReactNode}> = ({ children })
         console.error('Failed to save data:', error);
       }
     };
-    
-    // Skip saving on first render with initial state
+
     if (state !== initialState) {
       saveData();
     }
   }, [state]);
 
-  // Context value
+  // Context
   const value: AppContextType = {
     ...state,
     setIncome: (income) => dispatch({ type: 'SET_INCOME', payload: income }),

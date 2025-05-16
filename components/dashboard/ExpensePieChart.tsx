@@ -7,21 +7,24 @@ interface ExpensePieChartProps {
 
 export default function ExpensePieChart({ expenses }: ExpensePieChartProps) {
   // Group expenses by category
-  const expensesByCategory = expenses.reduce((acc, expense) => {
-    const category = expense.category;
-    if (!acc[category]) {
-      acc[category] = 0;
-    }
-    acc[category] += expense.amount;
-    return acc;
-  }, {} as Record<string, number>);
+  const expensesByCategory = expenses.reduce(
+    (acc, expense) => {
+      const category = expense.category;
+      if (!acc[category]) {
+        acc[category] = 0;
+      }
+      acc[category] += expense.amount;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   // Calculate total
   const total = Object.values(expensesByCategory).reduce((sum, amount) => sum + amount, 0);
 
   // Get category colors and labels
   const categoryInfo = {
-    food: { color: '#0891b2', label: 'Food' },  // Cyan-600
+    food: { color: '#0891b2', label: 'Food' }, // Cyan-600
     housing: { color: '#0284c7', label: 'Living' }, // Sky-600
     transportation: { color: '#14b8a6', label: 'Transportation' }, // Teal-500
     entertainment: { color: '#8b5cf6', label: 'Entertainment' }, // Violet-500
@@ -32,13 +35,15 @@ export default function ExpensePieChart({ expenses }: ExpensePieChartProps) {
   };
 
   // Create data for pie chart
-  const chartData = Object.entries(expensesByCategory).map(([category, amount]) => ({
-    category,
-    amount,
-    percentage: total > 0 ? (amount / total) * 100 : 0,
-    color: categoryInfo[category as keyof typeof categoryInfo]?.color || '#6b7280',
-    label: categoryInfo[category as keyof typeof categoryInfo]?.label || 'Muut',
-  })).sort((a, b) => b.amount - a.amount);
+  const chartData = Object.entries(expensesByCategory)
+    .map(([category, amount]) => ({
+      category,
+      amount,
+      percentage: total > 0 ? (amount / total) * 100 : 0,
+      color: categoryInfo[category as keyof typeof categoryInfo]?.color || '#6b7280',
+      label: categoryInfo[category as keyof typeof categoryInfo]?.label || 'Muut',
+    }))
+    .sort((a, b) => b.amount - a.amount);
 
   // For a simple visual representation, we'll create a circular segments chart
   return (

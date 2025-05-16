@@ -1,24 +1,23 @@
 import { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TextInput, 
-  Pressable, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
   Platform,
   ScrollView,
-  KeyboardAvoidingView, 
+  KeyboardAvoidingView,
 } from 'react-native';
 import { X, Camera } from 'lucide-react-native';
-import { useAppContext } from '@/../context/AppContext';
+import { useAppContext, ExpenseCategory } from '@/../context/AppContext';
 import { Picker } from '@react-native-picker/picker';
 
 export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
   const { addExpense } = useAppContext();
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('food');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [category, setCategory] = useState<ExpenseCategory>('food');
   const [error, setError] = useState<string | null>(null);
 
   const categoryOptions = [
@@ -47,7 +46,7 @@ export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
       id: Date.now().toString(),
       amount: parseFloat(amount),
       description,
-      category: category as any,
+      category: category,
       date: new Date().toISOString(),
     };
 
@@ -106,11 +105,7 @@ export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
                   style={styles.picker}
                 >
                   {categoryOptions.map((option) => (
-                    <Picker.Item
-                      key={option.value}
-                      label={option.label}
-                      value={option.value}
-                    />
+                    <Picker.Item key={option.value} label={option.label} value={option.value} />
                   ))}
                 </Picker>
               </View>

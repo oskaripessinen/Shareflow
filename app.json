@@ -8,12 +8,14 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "plugins": [[
-      "@react-native-google-signin/google-signin",
-      {
-        "iosUrlScheme": "com.googleusercontent.apps.906100274130-8obaj5vjs8cpsv23aeq4edk6v5hb826v"
-      }],
-    
+    "plugins": [
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.906100274130-8obaj5vjs8cpsv23aeq4edk6v5hb826v"
+        }
+      ],
+
       "expo-router",
       "expo-font",
       "expo-web-browser"

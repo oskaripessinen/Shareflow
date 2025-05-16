@@ -4,19 +4,12 @@ import { Filter, Plus } from 'lucide-react-native';
 import AddExpenseForm from '@/../components/expenses/AddExpenseForm';
 import FilterExpenses from '@/../components/expenses/FilterExpenses';
 import { Expense } from '@/../context/AppContext';
-
-type Filters = {
-  month: number | 'all';
-  year: number | 'all';
-  category: string;
-  sortBy: 'date' | 'amount';
-  sortOrder: 'asc' | 'desc';
-};
+import { ExpenseFilters } from '@../../context/AppContext';
 
 export default function ExpensesScreen() {
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<Filters>({
+  const [filters, setFilters] = useState<ExpenseFilters>({
     month: 'all',
     year: 'all',
     category: 'all',
@@ -27,14 +20,56 @@ export default function ExpensesScreen() {
   const filteredExpenses: Expense[] = [
     { id: '1', description: 'Groceries', date: '2023-05-01', amount: 50.0, category: 'food' },
     { id: '2', description: 'Rent', date: '2023-05-01', amount: 500.0, category: 'housing' },
-    { id: '3', description: 'Gym Membership', date: '2023-05-01', amount: 30.0, category: 'health' },
-    { id: '4', description: 'Electricity Bill', date: '2023-05-02', amount: 100.0, category: 'utilities' },
-    { id: '5', description: 'Internet Bill', date: '2023-05-03', amount: 40.0, category: 'utilities' },
+    {
+      id: '3',
+      description: 'Gym Membership',
+      date: '2023-05-01',
+      amount: 30.0,
+      category: 'health',
+    },
+    {
+      id: '4',
+      description: 'Electricity Bill',
+      date: '2023-05-02',
+      amount: 100.0,
+      category: 'utilities',
+    },
+    {
+      id: '5',
+      description: 'Internet Bill',
+      date: '2023-05-03',
+      amount: 40.0,
+      category: 'utilities',
+    },
     { id: '6', description: 'Dining Out', date: '2023-05-04', amount: 60.0, category: 'food' },
-    { id: '7', description: 'Car Fuel', date: '2023-05-05', amount: 70.0, category: 'transportation' },
-    { id: '8', description: 'Movie Tickets', date: '2023-05-06', amount: 25.0, category: 'entertainment' },
-    { id: '9', description: 'Clothing', date: '2023-05-07', amount: 120.0, category: 'entertainment' },
-    { id: '11', description: 'Phone Bill', date: '2023-05-09', amount: 30.0, category: 'utilities' },
+    {
+      id: '7',
+      description: 'Car Fuel',
+      date: '2023-05-05',
+      amount: 70.0,
+      category: 'transportation',
+    },
+    {
+      id: '8',
+      description: 'Movie Tickets',
+      date: '2023-05-06',
+      amount: 25.0,
+      category: 'entertainment',
+    },
+    {
+      id: '9',
+      description: 'Clothing',
+      date: '2023-05-07',
+      amount: 120.0,
+      category: 'entertainment',
+    },
+    {
+      id: '11',
+      description: 'Phone Bill',
+      date: '2023-05-09',
+      amount: 30.0,
+      category: 'utilities',
+    },
     { id: '12', description: 'Coffee', date: '2023-05-10', amount: 15.0, category: 'food' },
   ];
 
@@ -94,11 +129,25 @@ export default function ExpensesScreen() {
       />
 
       {/* Modals */}
-      <Modal visible={showAddExpense} animationType="slide" transparent onRequestClose={() => setShowAddExpense(false)}>
+      <Modal
+        visible={showAddExpense}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowAddExpense(false)}
+      >
         <AddExpenseForm onClose={() => setShowAddExpense(false)} />
       </Modal>
-      <Modal visible={showFilters} animationType="slide" transparent onRequestClose={() => setShowFilters(false)}>
-        <FilterExpenses filters={filters} onFiltersChange={setFilters} onClose={() => setShowFilters(false)} />
+      <Modal
+        visible={showFilters}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowFilters(false)}
+      >
+        <FilterExpenses
+          filters={filters}
+          onFiltersChange={setFilters}
+          onClose={() => setShowFilters(false)}
+        />
       </Modal>
     </SafeAreaView>
   );

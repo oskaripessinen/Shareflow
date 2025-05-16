@@ -10,13 +10,12 @@ interface MonthSelectorProps {
   onYearChange: (year: number) => void;
 }
 
-export default function MonthSelector({ 
-  selectedMonth, 
-  selectedYear, 
-  onMonthChange, 
-  onYearChange 
+export default function MonthSelector({
+  selectedMonth,
+  selectedYear,
+  onMonthChange,
+  onYearChange,
 }: MonthSelectorProps) {
-  
   const handlePreviousMonth = () => {
     if (selectedMonth === 1) {
       onMonthChange(12);
@@ -40,11 +39,11 @@ export default function MonthSelector({
       <Pressable onPress={handlePreviousMonth} style={styles.button}>
         <ChevronLeft size={24} color="#64748b" />
       </Pressable>
-      
+
       <Text style={styles.dateText}>
         {getMonthName(selectedMonth)} {selectedYear}
       </Text>
-      
+
       <Pressable onPress={handleNextMonth} style={styles.button}>
         <ChevronRight size={24} color="#64748b" />
       </Pressable>

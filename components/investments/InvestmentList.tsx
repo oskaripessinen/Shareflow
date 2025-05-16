@@ -1,4 +1,3 @@
-
 import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { Investment } from '@/../context/AppContext';
 import { formatDate } from '@/../utils/dateUtils';
@@ -14,7 +13,7 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
 
   // Type information with colors and labels
   const typeInfo = {
-    stock: { color: '#0891b2', label: 'Stock' },  // Cyan-600
+    stock: { color: '#0891b2', label: 'Stock' }, // Cyan-600
     fund: { color: '#0ea5e9', label: 'Fund' }, // Sky-500
     crypto: { color: '#06b6d4', label: 'Cryptocurrency' }, // Cyan-500
     etf: { color: '#0284c7', label: 'ETF' }, // Sky-600
@@ -34,13 +33,13 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
   const renderInvestmentItem = ({ item }: { item: Investment }) => {
     const typeColor = typeInfo[item.type as keyof typeof typeInfo]?.color || '#7dd3fc';
     const typeLabel = typeInfo[item.type as keyof typeof typeInfo]?.label || 'Muu';
-    
+
     const currentValue = item.quantity * item.currentPrice;
     const purchaseValue = item.quantity * item.purchasePrice;
     const profit = currentValue - purchaseValue;
     const profitPercent = ((profit / purchaseValue) * 100).toFixed(2);
     const isProfitable = profit >= 0;
-    
+
     return (
       <View style={styles.investmentItem}>
         <View style={styles.investmentMain}>
@@ -54,7 +53,7 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
             </View>
           </View>
         </View>
-        
+
         <View style={styles.valueSection}>
           <Text style={styles.currentValue}>{currentValue.toFixed(2)} €</Text>
           <View style={styles.profitSection}>
@@ -63,15 +62,13 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
             ) : (
               <TrendingDown size={14} color="#ef4444" style={styles.profitIcon} />
             )}
-            <Text style={[
-              styles.profitText, 
-              {color: isProfitable ? '#10b981' : '#ef4444'}
-            ]}>
-              {isProfitable ? '+' : ''}{profit.toFixed(2)} € ({profitPercent}%)
+            <Text style={[styles.profitText, { color: isProfitable ? '#10b981' : '#ef4444' }]}>
+              {isProfitable ? '+' : ''}
+              {profit.toFixed(2)} € ({profitPercent}%)
             </Text>
           </View>
         </View>
-        
+
         <View style={styles.actionButtons}>
           <Pressable style={styles.editButton} onPress={() => handleEdit(item)}>
             <Edit size={16} color="#0891b2" />

@@ -1,36 +1,24 @@
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Pressable, 
-  ScrollView 
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { X } from 'lucide-react-native';
 import { Picker } from '@react-native-picker/picker';
-import { getMonthOptions, getYearOptions, getCurrentMonth, getCurrentYear } from '@/../utils/dateUtils';
+import {
+  getMonthOptions,
+  getYearOptions,
+  getCurrentMonth,
+  getCurrentYear,
+} from '@/../utils/dateUtils';
+import { ExpenseFilters } from '@../../context/AppContext';
 
 interface FilterProps {
-  filters: {
-    month: number | 'all';
-    year: number | 'all';
-    category: string;
-    sortBy: string;
-    sortOrder: string;
-  };
-  onFiltersChange: (filters: any) => void;
+  filters: ExpenseFilters;
+  onFiltersChange: (filters: ExpenseFilters) => void;
   onClose: () => void;
 }
 
 export default function FilterExpenses({ filters, onFiltersChange, onClose }: FilterProps) {
-  const monthOptions = [
-    { label: 'Kaikki kuukaudet', value: 'all' },
-    ...getMonthOptions(),
-  ];
+  const monthOptions = [{ label: 'Kaikki kuukaudet', value: 'all' }, ...getMonthOptions()];
 
-  const yearOptions = [
-    { label: 'Kaikki vuodet', value: 'all' },
-    ...getYearOptions(),
-  ];
+  const yearOptions = [{ label: 'Kaikki vuodet', value: 'all' }, ...getYearOptions()];
 
   const categoryOptions = [
     { label: 'Kaikki kategoriat', value: 'all' },
@@ -126,11 +114,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
                 style={styles.picker}
               >
                 {categoryOptions.map((option) => (
-                  <Picker.Item
-                    key={option.value}
-                    label={option.label}
-                    value={option.value}
-                  />
+                  <Picker.Item key={option.value} label={option.label} value={option.value} />
                 ))}
               </Picker>
             </View>
@@ -145,11 +129,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
                 style={styles.picker}
               >
                 {sortByOptions.map((option) => (
-                  <Picker.Item
-                    key={option.value}
-                    label={option.label}
-                    value={option.value}
-                  />
+                  <Picker.Item key={option.value} label={option.label} value={option.value} />
                 ))}
               </Picker>
             </View>
@@ -164,11 +144,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
                 style={styles.picker}
               >
                 {sortOrderOptions.map((option) => (
-                  <Picker.Item
-                    key={option.value}
-                    label={option.label}
-                    value={option.value}
-                  />
+                  <Picker.Item key={option.value} label={option.label} value={option.value} />
                 ))}
               </Picker>
             </View>

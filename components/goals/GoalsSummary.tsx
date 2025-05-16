@@ -10,13 +10,13 @@ interface GoalsSummaryProps {
   expenseProgress: number;
 }
 
-export default function GoalsSummary({ 
-  savingsTarget, 
-  actualSavings, 
+export default function GoalsSummary({
+  savingsTarget,
+  actualSavings,
   savingsProgress,
   expenseTarget,
   actualExpenses,
-  expenseProgress
+  expenseProgress,
 }: GoalsSummaryProps) {
   const savingsStatus = actualSavings >= savingsTarget ? 'success' : 'pending';
   const expenseStatus = actualExpenses <= expenseTarget ? 'success' : 'warning';
@@ -26,61 +26,65 @@ export default function GoalsSummary({
       <View style={styles.goalItem}>
         <View style={styles.goalHeader}>
           <Text style={styles.goalTitle}>Säästötavoite</Text>
-          <Text style={[
-            styles.goalStatus,
-            savingsStatus === 'success' ? styles.successText : styles.pendingText
-          ]}>
+          <Text
+            style={[
+              styles.goalStatus,
+              savingsStatus === 'success' ? styles.successText : styles.pendingText,
+            ]}
+          >
             {savingsStatus === 'success' ? 'Saavutettu' : 'Kesken'}
           </Text>
         </View>
-        
+
         <View style={styles.amountContainer}>
           <Text style={styles.actualAmount}>{actualSavings.toFixed(2)} €</Text>
           <Text style={styles.targetAmount}>/ {savingsTarget.toFixed(2)} €</Text>
         </View>
-        
+
         <View style={styles.progressContainer}>
           <View style={styles.progressBackground}>
-            <View 
+            <View
               style={[
-                styles.progressFill, 
-                { 
+                styles.progressFill,
+                {
                   width: `${Math.min(100, savingsProgress)}%`,
-                  backgroundColor: savingsStatus === 'success' ? '#10b981' : '#0891b2', 
-                }
-              ]} 
+                  backgroundColor: savingsStatus === 'success' ? '#10b981' : '#0891b2',
+                },
+              ]}
             />
           </View>
           <Text style={styles.progressText}>{savingsProgress.toFixed(1)}%</Text>
         </View>
       </View>
-      
+
       <View style={styles.goalItem}>
         <View style={styles.goalHeader}>
           <Text style={styles.goalTitle}>Menotavoite</Text>
-          <Text style={[
-            styles.goalStatus,
-            expenseStatus === 'success' ? styles.successText : styles.warningText
-          ]}>
+          <Text
+            style={[
+              styles.goalStatus,
+              expenseStatus === 'success' ? styles.successText : styles.warningText,
+            ]}
+          >
             {expenseStatus === 'success' ? 'Tavoitteessa' : 'Ylitetty'}
           </Text>
         </View>
-        
+
         <View style={styles.amountContainer}>
           <Text style={styles.actualAmount}>{actualExpenses.toFixed(2)} €</Text>
           <Text style={styles.targetAmount}>/ {expenseTarget.toFixed(2)} €</Text>
         </View>
-        
+
         <View style={styles.progressContainer}>
           <View style={styles.progressBackground}>
-            <View 
+            <View
               style={[
-                styles.progressFill, 
-                { 
+                styles.progressFill,
+                {
                   width: `${Math.min(100, expenseProgress)}%`,
-                  backgroundColor: expenseStatus === 'success' ? '#10b981' : '#f59e0b', 
-                }
-              ]} 
+                  backgroundColor: expenseStatus === 'success' ? '#10b981' : '#f59e0b',
+                },
+              ]}
             />
           </View>
           <Text style={styles.progressText}>{expenseProgress.toFixed(1)}%</Text>

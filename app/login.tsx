@@ -1,29 +1,18 @@
-import { useEffect, useState } from 'react'
-import { useRouter } from 'expo-router'
-import {
-  SafeAreaView,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  ActivityIndicator,
-} from 'react-native'
-import {
-  GoogleSignin,
-  statusCodes,
-} from '@react-native-google-signin/google-signin'
+import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { supabase } from '../utils/supabase';
 
-import GoogleLogo from '../assets/images/google-logo.png'
+import GoogleLogo from '../assets/images/google-logo.png';
 
-/** OAuth-web-client ID */
 export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
-/** OAuth-iOS-client ID */
 export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
 
 export default function LoginScreen() {
-  const router = useRouter()
-  const [initializing, setInitializing] = useState(true)
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const [initializing, setInitializing] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -32,20 +21,50 @@ export default function LoginScreen() {
       forceCodeForRefreshToken: true,
       profileImageSize: 120,
       iosClientId: IOS_CLIENT_ID,
-    })
-    setInitializing(false)
-    console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID)
-  }, [])
+    });
+    setInitializing(false);
+    console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
+  }, []);
 
   async function signInAsync() {
-    setLoading(true)
-    
-    await GoogleSignin.hasPlayServices();
-    console.log('Google Play Services are available')
-    const SignInResponse = await GoogleSignin.signIn();
-    console.log('User Info:', SignInResponse);
-    router.push('/(tabs)')
-    
+    setLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+      // suorita Google-kirjautuminen
+      await GoogleSignin.signIn();
+      // hae erikseen id- ja access-tokenit
+      const { idToken } = await GoogleSignin.getTokens();
+
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken,
+      });
+      if (authError) throw authError;
+
+      if (user) {
+        const { error: upsertError } = await supabase.from('users').upsert(
+          {
+            google_id: user.id,
+            email: user.email,
+            full_name: user.user_metadata.full_name,
+            avatar_url: user.user_metadata.avatar_url,
+          },
+          {
+            onConflict: 'google_id',
+          },
+        );
+        if (upsertError) console.warn('Could not upsert user:', upsertError);
+      }
+
+      router.push('/(tabs)');
+    } catch (e: unknown) {
+      console.error('Kirjautumisvirhe:', e);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (initializing) {
@@ -54,7 +73,7 @@ export default function LoginScreen() {
         <ActivityIndicator size="large" />
         <Text>Initializing…</Text>
       </SafeAreaView>
-    )
+    );
   }
 
   return (
@@ -66,10 +85,7 @@ export default function LoginScreen() {
         onPress={signInAsync}
         className="flex-row items-center bg-white px-6 py-3 rounded-full shadow"
       >
-        <Image
-          source={GoogleLogo}
-          style={{ width: 24, height: 24, marginRight: 12 }}
-        />
+        <Image source={GoogleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
         <Text className="text-base font-medium">
           {loading ? 'Signing in…' : 'Sign in with Google'}
         </Text>
@@ -82,5 +98,5 @@ export default function LoginScreen() {
         </View>
       )}
     </SafeAreaView>
-  )
+  );
 }

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, CreditCard, TrendingUp, Target } from 'lucide-react-native';
+import { Home, CreditCard, TrendingUp } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -7,14 +7,13 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: '#0891b2', // Cyan-600
         tabBarInactiveTintColor: '#64748b', // Slate-500
-        tabBarStyle: { 
+        tabBarStyle: {
           backgroundColor: 'white',
           borderTopWidth: 1,
           borderTopColor: '#e2e8f0', // Slate-200
           paddingTop: 5,
           paddingBottom: 5,
           height: 60,
-          
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -54,7 +53,6 @@ export default function TabLayout() {
           headerTitle: 'ShareFlow',
         }}
       />
-
     </Tabs>
   );
 }
