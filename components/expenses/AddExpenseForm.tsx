@@ -33,12 +33,12 @@ export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
 
   const handleAddExpense = () => {
     if (!amount || isNaN(parseFloat(amount))) {
-      setError('Anna kelvollinen summa');
+      setError('Give a valid amount');
       return;
     }
 
     if (!description) {
-      setError('Anna kuvaus');
+      setError('give a valid description');
       return;
     }
 
@@ -76,7 +76,7 @@ export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
             )}
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Summa (€)</Text>
+              <Text style={styles.label}>Amount (€)</Text>
               <TextInput
                 style={styles.input}
                 value={amount}
@@ -87,7 +87,7 @@ export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Kuvaus</Text>
+              <Text style={styles.label}>Description</Text>
               <TextInput
                 style={styles.input}
                 value={description}
@@ -97,7 +97,7 @@ export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Kategoria</Text>
+              <Text style={styles.label}>Category</Text>
               <View style={styles.pickerContainer}>
                 <Picker
                   selectedValue={category}
@@ -112,10 +112,10 @@ export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Kuitti</Text>
+              <Text style={styles.label}>Receipt</Text>
               <Pressable style={styles.cameraButton}>
                 <Camera size={24} color="#0891b2" />
-                <Text style={styles.cameraText}>Lisää kuitti</Text>
+                <Text style={styles.cameraText}>Add receipt</Text>
               </Pressable>
             </View>
 
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 16,
-    maxHeight: '90%',
+    height: '70%',
   },
   header: {
     flexDirection: 'row',
