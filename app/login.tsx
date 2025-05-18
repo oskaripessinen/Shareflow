@@ -9,6 +9,9 @@ import GoogleLogo from '../assets/images/google-logo.png';
 export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
 
+console.log(WEB_CLIENT_ID);
+console.log(IOS_CLIENT_ID);
+
 export default function LoginScreen() {
   const router = useRouter();
   const [initializing, setInitializing] = useState(true);
@@ -30,8 +33,11 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await GoogleSignin.hasPlayServices();
+      console.log("toimii");
       await GoogleSignin.signIn();
+      console.log("ei toimi xd");
       const { idToken } = await GoogleSignin.getTokens();
+       console.log("vähän toimii");
 
       const {
         data: { user },

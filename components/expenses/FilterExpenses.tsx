@@ -156,7 +156,7 @@ export default function FilterExpenses({ filters, onFiltersChange, onClose }: Fi
             <Text style={styles.resetButtonText}>Reset</Text>
           </Pressable>
           <Pressable style={styles.applyButton} onPress={handleApply}>
-            <Text style={styles.applyButtonText}>Apply filtres</Text>
+            <Text style={styles.applyButtonText}>Apply filters</Text>
           </Pressable>
         </View>
       </View>

@@ -28,7 +28,7 @@ export default function ExpensePieChart({ expenses }: ExpensePieChartProps) {
     housing: { color: '#0284c7', label: 'Living' }, // Sky-600
     transportation: { color: '#14b8a6', label: 'Transportation' }, // Teal-500
     entertainment: { color: '#8b5cf6', label: 'Entertainment' }, // Violet-500
-    utilities: { color: '#f59e0b', label: 'Utulities' }, // Amber-500
+    utilities: { color: '#f59e0b', label: 'Utilities' }, // Amber-500
     health: { color: '#10b981', label: 'Health' }, // Emerald-500
     clothing: { color: '#ec4899', label: 'Clothing' }, // Pink-500
     other: { color: '#6b7280', label: 'Other' }, // Gray-500
