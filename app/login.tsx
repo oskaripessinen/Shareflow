@@ -25,20 +25,47 @@ export default function LoginScreen() {
       profileImageSize: 120,
       iosClientId: IOS_CLIENT_ID,
     });
-    setInitializing(false);
     console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
-  }, []);
+
+
+    const checkSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) {
+        console.log('Found existing session, navigating to tabs.');
+        router.replace('/(tabs)');
+      } else {
+        console.log('No active session found.');
+        setInitializing(false);
+      }
+    };
+
+    checkSession();
+
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        console.log('Auth state changed, session active.');
+      } else {
+        console.log('Auth state changed, no session.');
+        setInitializing(false); 
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [router]);
 
   async function signInAsync() {
     setLoading(true);
     try {
       await GoogleSignin.hasPlayServices();
-      console.log("toimii");
       await GoogleSignin.signIn();
-      console.log("ei toimi xd");
       const { idToken } = await GoogleSignin.getTokens();
-       console.log("vähän toimii");
-
       const {
         data: { user },
         error: authError,
@@ -63,7 +90,8 @@ export default function LoginScreen() {
         if (upsertError) console.warn('Could not upsert user:', upsertError);
       }
 
-      router.push('/(tabs)');
+
+      router.replace('/(tabs)');
     } catch (e: unknown) {
       console.error('Kirjautumisvirhe:', e);
     } finally {

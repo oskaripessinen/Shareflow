@@ -48,7 +48,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="investments"
         options={{
-          title: 'Investments',
+          title: 'Savings',
           tabBarIcon: ({ color, size }) => <TrendingUp size={size} color={color} />,
           headerTitle: 'ShareFlow',
         }}
