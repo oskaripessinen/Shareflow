@@ -2,53 +2,34 @@
 
 **1. Shared Account / Group Finances**
     *   [ ] **Group Creation & Management:**
+        *   [ ] Functionality to create group ()
         *   [ ] Functionality to invite/add members to the group (email, username, link).
         *   [ ] Functionality to leave a group.
         *   [ ] Functionality to edit the group name.
+    *   [ ] **Button to select group**
+        *   [ ] UI/UX design for the group's overview.
+        *   [ ] View that shows the group's total balance in real-time.
+        *   [ ] Listing of the latest expenses and incomes.
+        *   [ ] Summary of spending.
+       
+
+**2. Expense Categories and Savings Goals**
     *   [ ] **Adding Expenses and Income within the Group:**
         *   [ ] UI/UX design for the expense/income addition form.
         *   [ ] Functionality to add expenses to the group's shared finances (amount, description, date, adder, category).
         *   [ ] Functionality to add income to the group's shared finances (amount, description, date, adder, source).
         *   [ ] Ensure each group member can make additions.
-    *   [ ] **Shared View (Dashboard):**
-        *   [ ] UI/UX design for the group's main view.
-        *   [ ] View that shows the group's total balance in real-time.
-        *   [ ] Listing of the latest expenses and incomes.
-        *   [ ] Summary of spending.
-
-**2. Expense Categories and Savings Goals**
-    *   [ ] **Expense Category Management:**
-        *   [ ] Functionality to add custom expense categories (name, icon/color).
-        *   [ ] Functionality to edit existing expense categories.
-        *   [ ] Functionality to delete expense categories.
-        *   [ ] Definition and pre-fill of default expense categories.
-        *   [ ] Linking expenses to categories during addition.
-    *   [ ] **Savings Goal Management:**
-        *   [ ] Functionality to create savings goals (name, target amount, description, target date).
-        *   [ ] Functionality to edit savings goals.
-        *   [ ] Functionality to delete savings goals.
-    *   [ ] **Savings Goal Tracking:**
-        *   [ ] View that shows a list of savings goals.
-        *   [ ] Visual indicator (e.g., progress bar) to show how much has been saved and how much is remaining per goal.
-        *   [ ] Ability to "add to savings" manually or link from income/expenses.
+    *   [ ] **Savings tab**
+        *   [ ] Saving goals.
+        *   [ ] Investments.
 
 **3. Synchronization and Notifications**
     *   [ ] **Real-time Synchronization:**
         *   [ ] Backend implementation for data synchronization between group members.
         *   [ ] Ensure changes update for all members without delay.
     *   [ ] **Push Notifications:**
-        *   [ ] Integration of a push notification service (e.g., Firebase Cloud Messaging).
-        *   [ ] Notification logic:
-            *   [ ] When a member adds an expense/income
-            *   [ ] When funds are added to a savings goal.
-            *   [ ] When a budget (item 4) is exceeded/approaching its limit.
-            *   [ ] When someone comments on an expense (item 3.3).
+        *   [ ] Integration of a push notification service.
         *   [ ] User settings for notifications (which notifications they want to receive).
-    *   [ ] **Social Dimension:**
-        *   [ ] UI/UX design for commenting and reactions.
-        *   [ ] Functionality to add comments to expenses/incomes.
-        *   [ ] Functionality to add emoji reactions to expenses/incomes.
-        *   [ ] Displaying comments and reactions with the expense/income.
 
 **4. Budgeting and Analytics**
     *   [ ] **Monthly Budgets:**
@@ -65,33 +46,19 @@
             *   [ ] Bar chart of income and expense trends over time (e.g., monthly).
         *   [ ] Displaying trends (e.g., how spending in a certain category has changed).
 
-**5. Roles and Privacy**
-    *   [ ] **User Roles:**
-        *   [ ] Design of a role system (e.g., "Adult/Admin", "Member", "Child/Restricted").
-        *   [ ] Functionality to assign roles to group members (group admin can do this).
-        *   [ ] Limiting permissions based on role (e.g., "Child" can see but not add/edit).
-    *   [ ] **Private and Shared Expenses:**
-        *   [ ] UI/UX design for marking an expense/income as private/shared.
-        *   [ ] Functionality to mark an expense/income as "private" (not visible to other group members, does not affect the shared balance).
-        *   [ ] By default, expenses/incomes are "shared".
-        *   [ ] Clear distinction in the UI between private and shared expenses.
-        *   [ ] Private expenses visible only to the user in their own summary.
 
 **General Tasks (Backend & Frontend)**
     *   [ ] **User Management:**
-        *   [ ] Registration (email, password).
-        *   [ ] Login.
-        *   [ ] Forgot/reset password.
+        *   [x] Registration (google).
+        *   [x] Login.
+        *   [ ] Logout
         *   [ ] Profile management.
     *   [ ] **Database Design and Implementation:**
         *   [ ] Schemas for users, groups, expenses, incomes, savings goals, budgets, etc.
-    *   [ ] **API Design and Implementation.**
-    *   [ ] **User Interface (UI) Implementation** (React Native / Expo, based on designs).
+    *   [ ] **API Design and Implementation.**   
     *   [ ] **Continuous User Experience (UX) Improvement.**
     *   [ ] **Testing:**
         *   [ ] Unit tests.
         *   [ ] Integration tests.
     *   [ ] **Ensuring Security.**
-    *   [ ] **Consideration/Implementation of Offline Functionality (basic level).**
-    *   [ ] **Documentation (if necessary).**
-    *   [ ] **Publishing to app stores (App Store, Google Play).**
+    *   [ ] **Implementation of Offline Functionality.**
