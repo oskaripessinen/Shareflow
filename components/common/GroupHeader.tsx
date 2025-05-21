@@ -1,0 +1,62 @@
+import React, { useState } from 'react';
+import { View, Text, Pressable, SafeAreaView, Platform, Modal } from 'react-native';
+import { Users, ChevronDown } from 'lucide-react-native';
+import SelectGroup, { Group } from '@/../components/common/SelectGroup';
+
+const DUMMY_GROUPS_DATA: Group[] = [
+  { id: '1', name: 'Personal' },
+  { id: '2', name: 'Work Project' },
+  { id: '3', name: 'Family Finances' },
+  { id: '4', name: 'Holiday Trip 2025' },
+];
+
+
+
+const GroupHeader = () => {
+  const [currentGroup, setCurrentGroup] = useState<Group | null>(DUMMY_GROUPS_DATA[0] || null);
+  const [availableGroups, setAvailableGroups] = useState<Group[]>(DUMMY_GROUPS_DATA);
+  const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
+
+  const handleSelectGroup = (group: Group) => {
+    setCurrentGroup(group);
+    setIsGroupSelectorModalVisible(false);
+    console.log('Selected group:', group);
+  };
+
+  return (
+    <>
+      <SafeAreaView className="bg-slate-50 shadow-sm z-20" style={{paddingTop: Platform.OS === 'android' ? 0 : 0}}>
+        <View className="h-20 flex-row items-center justify-between px-4 border-b border-slate-200">
+          <Pressable onPress={() => setIsGroupSelectorModalVisible(true)} className="justify-center flex-row items-center flex-1">
+            <Users size={20} color="#475569" className="mr-2" />
+            <Text className="text-lg font-semibold text-slate-700 mx-2" numberOfLines={1} ellipsizeMode="tail">
+              {currentGroup ? currentGroup.name : 'Select Group'}
+            </Text>
+            <ChevronDown size={20} color="#475569" />
+          </Pressable>
+        </View>
+      </SafeAreaView>
+
+      <Modal
+        visible={isGroupSelectorModalVisible}
+        animationType="fade"
+        transparent={true} 
+        onRequestClose={() => setIsGroupSelectorModalVisible(false)}
+      >
+        <Pressable
+          className="flex-1 justify-end bg-black/30"
+          onPress={() => setIsGroupSelectorModalVisible(false)}
+        >
+          <SelectGroup
+            groups={availableGroups}
+            currentGroupId={currentGroup?.id || null}
+            onSelectGroup={handleSelectGroup}
+            onClose={() => setIsGroupSelectorModalVisible(false)}
+          />
+        </Pressable>
+      </Modal>
+    </>
+  );
+};
+
+export default GroupHeader;

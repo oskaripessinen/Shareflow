@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, CreditCard, TrendingUp } from 'lucide-react-native';
+import { Home, CreditCard, TrendingUp, HandCoins } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -14,7 +14,7 @@ export default function TabLayout() {
           borderTopColor: '#e2e8f0', // Slate-200
           paddingTop: 5,
           paddingBottom: 5,
-          height: 60,
+          height: 90,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -35,6 +35,13 @@ export default function TabLayout() {
         options={{
           title: 'Overview',
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="income"
+        options={{
+          title: 'Income',
+          tabBarIcon: ({ color, size }) => <HandCoins size={size} color={color} />,
         }}
       />
       <Tabs.Screen

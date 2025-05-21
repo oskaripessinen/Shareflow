@@ -88,7 +88,6 @@ export default function ExpensesScreen() {
   const handleTimeWindowChange = (value: string) => {
     setSelectedTimeWindow(value);
     setShowTimeWindowPicker(false);
-    console.log('Selected Time Window:', value);
   };
 
   const handleCategorySelect = (category: ExpenseCategory) => {
@@ -99,8 +98,8 @@ export default function ExpensesScreen() {
     );
   };
 
-  const renderHeader = () => (
-    <View className="p-0 mt-10" style={{ zIndex: 10 }}>
+  const RenderHeader = () => (
+    <View className="p-0 mt-1" style={{ zIndex: 10 }}>
       <View className="flex-row items-center mb-6 justify-between px-4">
         <View className="relative" style={{ zIndex: 1 }}>
           <View className="flex-row items-center bg-white rounded-xl shadow">
@@ -133,7 +132,7 @@ export default function ExpensesScreen() {
         </Pressable>
       </View>
 
-      <View className="mt-4 mb-6 pl-4">
+      <View className="mt-0 mb-6 pl-4">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -176,11 +175,11 @@ export default function ExpensesScreen() {
 
   return (
     <View className="flex-1 bg-background pt-6">
+      <RenderHeader/>
       <FlatList
         showsVerticalScrollIndicator={false}
         data={filteredExpenses}
         keyExtractor={(item) => item.id}
-        ListHeaderComponent={renderHeader}
         renderItem={renderExpenseItem}
         contentContainerStyle={{ paddingBottom: 16 }}
         onScrollBeginDrag={() => {

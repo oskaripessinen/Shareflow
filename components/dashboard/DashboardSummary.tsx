@@ -17,7 +17,7 @@ export default function DashboardSummary({
     <View className="my-2">
       <View className="flex-row mb-2 gap-x-2">
         <View className="flex-1 bg-white rounded-xl p-4 shadow">
-          <Text className="text-sm font-medium text-slate-500 mb-1">Wage</Text>
+          <Text className="text-sm font-medium text-slate-500 mb-1">Income</Text>
           <Text className="text-xl font-bold text-slate-900">{income.toFixed(2)} €</Text>
         </View>
         <View className="flex-1 bg-white rounded-xl p-4 shadow">

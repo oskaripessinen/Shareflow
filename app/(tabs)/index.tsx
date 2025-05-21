@@ -12,7 +12,6 @@ export default function DashboardScreen() {
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
   const [selectedYear, setSelectedYear] = useState(getCurrentYear());
 
-  // Calculate monthly summary
   const monthlySummary = {
     income: income.amount || 0,
     expenses: expenses.reduce((total, exp) => {
