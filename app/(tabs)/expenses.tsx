@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import { SafeAreaView, View, Text, Pressable, Modal, FlatList, ScrollView } from 'react-native'; // Lisätty ScrollView
+import { View, Text, Pressable, Modal, FlatList, ScrollView } from 'react-native';
 import { Plus, ChevronDown } from 'lucide-react-native';
 import AddExpenseForm from '@/../components/expenses/AddExpenseForm';
-import { Expense, ExpenseCategory } from '@/../context/AppContext';
+import { Expense, ExpenseCategory, useAppContext } from '@/../context/AppContext'; // <<<--- LISÄÄ useAppContext
+import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
 
 const timeWindowOptions = [
+  { label : 'Today', value: 'today' },
   { label: '7 days', value: '7 days' },
-  { label: 'This Month', value: 'this_month' }, // Korjattu label
-  { label: 'Last Year', value: 'last_year' }, // Korjattu 'laberl' -> 'label'
-  { label: 'All Time', value: 'all_time' },
+  { label: 'Month', value: 'this_month' },
+  { label: 'Year', value: 'last_year' },
 ];
 
-// Määritellään kaikki mahdolliset kategoriat AppContextin ExpenseCategory-tyypin perusteella
 const allCategories: ExpenseCategory[] = [
   'food',
   'housing',
@@ -24,16 +24,13 @@ const allCategories: ExpenseCategory[] = [
 ];
 
 export default function ExpensesScreen() {
+  const { showTimeWindowPicker, setShowTimeWindowPicker } = useAppContext(); 
   const [showAddExpense, setShowAddExpense] = useState(false);
-
   const [selectedTimeWindow, setSelectedTimeWindow] = useState(timeWindowOptions[0].value);
-  const [showTimeWindowPicker, setShowTimeWindowPicker] = useState(false);
-
-
   const [selectedCategories, setSelectedCategories] = useState<ExpenseCategory[]>([]);
 
-
   const filteredExpenses: Expense[] = [
+    // ... placeholder data ...
     { id: '1', description: 'Groceries', date: '2023-05-01', amount: 50.0, category: 'food' },
     { id: '2', description: 'Rent', date: '2023-05-01', amount: 500.0, category: 'housing' },
     { id: '3', description: 'Gym Membership', date: '2023-05-01', amount: 30.0, category: 'health'},
@@ -49,39 +46,39 @@ export default function ExpensesScreen() {
 
   const handleTimeWindowChange = (value: string) => {
     setSelectedTimeWindow(value);
-    setShowTimeWindowPicker(false);
+    setShowTimeWindowPicker(false); 
     console.log('Selected Time Window:', value);
-
   };
 
   const handleCategorySelect = (category: ExpenseCategory) => {
     setSelectedCategories((prevSelected) =>
       prevSelected.includes(category)
-        ? prevSelected.filter((c) => c !== category) 
+        ? prevSelected.filter((c) => c !== category)
         : [...prevSelected, category]
     );
-
   };
-
-
 
   const renderHeader = () => (
     <View className="p-0 mt-10" style={{ zIndex: 10 }}>
-
       <View className="flex-row items-center mb-6 justify-between px-4">
         <View className="relative" style={{ zIndex: 1 }}>
-          <View className="flex-row items-center bg-white rounded-xl shadow">
+          <View className="flex-row items-center bg-white rounded-xl shadow" >
             <Pressable
-              onPress={() => setShowTimeWindowPicker(!showTimeWindowPicker)}
-              className="flex-row items-center p-3 pr-2 border-r border-slate-200"
+              onPress={() => {
+                setShowTimeWindowPicker(!showTimeWindowPicker);
+              }}
+              style={{ width: 100, paddingHorizontal: 20, justifyContent: 'space-between' }}
+              className="flex-row items-center pr-2 border-r border-slate-200 text-center"
             >
-              <Text className="font-medium text-slate-600 mr-1">
+              <Text className="font-medium text-slate-600 pr-2">
                 {timeWindowOptions.find(opt => opt.value === selectedTimeWindow)?.label}
               </Text>
-              <ChevronDown size={16} color="#64748b" />
+              <View className="mr-2">
+                <ChevronDown size={16} color="#64748b" />
+              </View>
             </Pressable>
             <View className="p-3 pl-2">
-              <Text className="font-bold text-DEFAULT">
+              <Text className="font-bold text-DEFAULT pl-2 pr-2">
                 {filteredExpenses.reduce((sum, e) => sum + e.amount, 0).toFixed(2)} €
               </Text>
             </View>
@@ -132,59 +129,26 @@ export default function ExpensesScreen() {
     </View>
   );
 
-  const SelectTimeFrame = () => (
-
-    <Pressable
-      className="flex-1 justify-end"
-      onPress={() => setShowTimeWindowPicker(false)} 
-    >
-      <Pressable
-        className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg"
-        onPress={(e) => e.stopPropagation()}
-      >
-
-        <View className="w-12 h-1.5 bg-slate-300 rounded-full self-center mb-3" />
-
-        <FlatList
-          data={timeWindowOptions}
-          keyExtractor={(item) => item.value}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => handleTimeWindowChange(item.value)}
-              className={`py-3 px-5 ${selectedTimeWindow === item.value ? 'bg-slate-100' : ''}`}
-            >
-              <Text className={`text-base ${selectedTimeWindow === item.value ? 'font-semibold text-cyan-600' : 'text-slate-700'}`}>
-                {item.label}
-              </Text>
-            </Pressable>
-          )}
-
-        />
-      </Pressable>
-    </Pressable>
-  );
-
   return (
-    <SafeAreaView className="flex-1 bg-background pt-6">
+    <View className="flex-1 bg-background pt-6">
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={filteredExpenses} 
+        data={filteredExpenses}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={renderHeader}
         renderItem={renderExpenseItem}
         contentContainerStyle={{ paddingBottom: 16 }}
         onScrollBeginDrag={() => {
-          if (showTimeWindowPicker) {
-            setShowTimeWindowPicker(false);
+          if (showTimeWindowPicker) { //
+            setShowTimeWindowPicker(false); //
           }
         }}
-
         extraData={selectedCategories}
       />
 
       <Modal
         visible={showAddExpense}
-        animationType="slide"
+        animationType="fade"
         transparent
         onRequestClose={() => setShowAddExpense(false)}
       >
@@ -192,12 +156,18 @@ export default function ExpensesScreen() {
       </Modal>
 
       <Modal
-        visible={showTimeWindowPicker}
-        animationType="slide"
+        visible={showTimeWindowPicker} 
+        animationType="fade"
         transparent
-        onRequestClose={() => setShowTimeWindowPicker(false)}>
-        <SelectTimeFrame/>
+        onRequestClose={() => setShowTimeWindowPicker(false)} 
+      >
+        <SelectTimeFrame
+          setShowTimeWindowPicker={setShowTimeWindowPicker}
+          selectedTimeWindow={selectedTimeWindow}
+          handleTimeWindowChange={handleTimeWindowChange}
+          timeWindowOptions={timeWindowOptions}
+        />
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }

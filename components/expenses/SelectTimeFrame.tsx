@@ -1,0 +1,57 @@
+import React from 'react';
+import { View, Text, FlatList, Pressable, Platform } from 'react-native';
+import { X } from 'lucide-react-native';
+
+interface TimeWindowOption {
+  label: string;
+  value: string;
+}
+
+interface SelectTimeFrameProps {
+  setShowTimeWindowPicker: (visible: boolean) => void;
+  selectedTimeWindow: string;
+  handleTimeWindowChange: (value: string) => void;
+  timeWindowOptions: TimeWindowOption[];
+}
+
+export default function SelectTimeFrame({
+  setShowTimeWindowPicker,
+  selectedTimeWindow,
+  handleTimeWindowChange,
+  timeWindowOptions,
+}: SelectTimeFrameProps) {
+  return (
+    <Pressable
+      className="flex-1 justify-end black bg-slate-900/30"
+      onPress={() => setShowTimeWindowPicker(false)}
+    >
+      <Pressable
+        className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg"
+        onPress={(e) => e.stopPropagation()}
+      >
+        <View className="flex-row items-center justify-between px-5 mt-1 mb-4">
+          <Text className="text-lg font-semibold text-DEFAULT">Select Time Frame</Text>
+          <Pressable onPress={() => setShowTimeWindowPicker(false)}>
+            <X size={24} color="#334155" /> 
+          </Pressable>
+        </View>
+        <FlatList
+          data={timeWindowOptions}
+          keyExtractor={(item) => item.value}
+          renderItem={({ item }) => (
+            <Pressable
+              onPress={() => handleTimeWindowChange(item.value)}
+              className={`py-4 px-5 border-t border-slate-200 ${selectedTimeWindow === item.value ? 'bg-slate-100' : ''}`}
+            >
+              <Text className={`text-base text-center ${selectedTimeWindow === item.value ? 'font-semibold text-cyan-600' : 'text-slate-700'}`}>
+                {item.label}
+              </Text>
+            </Pressable>
+          )}
+
+          contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 20 : 10 }}
+        />
+      </Pressable>
+    </Pressable>
+  );
+}

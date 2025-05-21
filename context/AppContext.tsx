@@ -1,7 +1,6 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode, Dispatch, SetStateAction } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Types
 export type ExpenseCategory =
   | 'food'
   | 'housing'
@@ -63,9 +62,9 @@ interface AppState {
   investments: Investment[];
   goals: Goal[];
   savings: Savings;
+  showTimeWindowPicker: boolean;
 }
 
-// Initial state
 const initialState: AppState = {
   income: {
     amount: 0,
@@ -77,104 +76,36 @@ const initialState: AppState = {
   savings: {
     target: 0,
   },
+  showTimeWindowPicker: false,
 };
 
-// Sample data for demonstration
 const sampleData: AppState = {
   income: {
     amount: 3200,
     isGross: false,
   },
   expenses: [
-    {
-      id: '1',
-      amount: 850,
-      description: 'Rent',
-      category: 'housing',
-      date: '2025-05-01T12:00:00Z',
-    },
-    {
-      id: '2',
-      amount: 350,
-      description: 'Groceries',
-      category: 'food',
-      date: '2025-05-05T14:30:00Z',
-    },
-    {
-      id: '3',
-      amount: 120,
-      description: 'Phone and Internet',
-      category: 'utilities',
-      date: '2025-05-10T09:15:00Z',
-    },
-    {
-      id: '4',
-      amount: 75,
-      description: 'Movie and Dinner',
-      category: 'entertainment',
-      date: '2025-05-15T18:45:00Z',
-    },
-    {
-      id: '5',
-      amount: 200,
-      description: 'Monthly Bus Pass',
-      category: 'transportation',
-      date: '2025-05-02T10:00:00Z',
-    },
+    { id: '1', amount: 850, description: 'Rent', category: 'housing', date: '2025-05-01T12:00:00Z' },
+    { id: '2', amount: 350, description: 'Groceries', category: 'food', date: '2025-05-05T14:30:00Z' },
+    { id: '3', amount: 120, description: 'Phone and Internet', category: 'utilities', date: '2025-05-10T09:15:00Z' },
+    { id: '4', amount: 75, description: 'Movie and Dinner', category: 'entertainment', date: '2025-05-15T18:45:00Z' },
+    { id: '5', amount: 200, description: 'Monthly Bus Pass', category: 'transportation', date: '2025-05-02T10:00:00Z' },
   ],
   investments: [
-    {
-      id: '1',
-      name: 'Global Index Fund',
-      type: 'fund',
-      quantity: 10,
-      purchasePrice: 100,
-      currentPrice: 108,
-      purchaseDate: '2025-01-15T12:00:00Z',
-    },
-    {
-      id: '2',
-      name: 'Apple Inc.',
-      type: 'stock',
-      quantity: 50,
-      purchasePrice: 150,
-      currentPrice: 165,
-      purchaseDate: '2025-02-20T12:00:00Z',
-    },
-    {
-      id: '3',
-      name: 'Bitcoin',
-      type: 'crypto',
-      quantity: 0.05,
-      purchasePrice: 30000,
-      currentPrice: 35000,
-      purchaseDate: '2025-03-10T12:00:00Z',
-    },
+    { id: '1', name: 'Global Index Fund', type: 'fund', quantity: 10, purchasePrice: 100, currentPrice: 108, purchaseDate: '2025-01-15T12:00:00Z' },
+    { id: '2', name: 'Apple Inc.', type: 'stock', quantity: 50, purchasePrice: 150, currentPrice: 165, purchaseDate: '2025-02-20T12:00:00Z' },
+    { id: '3', name: 'Bitcoin', type: 'crypto', quantity: 0.05, purchasePrice: 30000, currentPrice: 35000, purchaseDate: '2025-03-10T12:00:00Z' },
   ],
   goals: [
-    {
-      id: '1',
-      title: 'Vacation',
-      targetAmount: 1500,
-      currentAmount: 800,
-      targetDate: '2025-08-01T12:00:00Z',
-      color: '#0891b2',
-    },
-    {
-      id: '2',
-      title: 'New Computer',
-      targetAmount: 1200,
-      currentAmount: 450,
-      targetDate: '2025-11-15T12:00:00Z',
-      color: '#14b8a6',
-    },
+    { id: '1', title: 'Vacation', targetAmount: 1500, currentAmount: 800, targetDate: '2025-08-01T12:00:00Z', color: '#0891b2' },
+    { id: '2', title: 'New Computer', targetAmount: 1200, currentAmount: 450, targetDate: '2025-11-15T12:00:00Z', color: '#14b8a6' },
   ],
   savings: {
     target: 500,
   },
+  showTimeWindowPicker: false,
 };
 
-// Action types
 type Action =
   | { type: 'SET_INCOME'; payload: Income }
   | { type: 'SET_SAVINGS_TARGET'; payload: number }
@@ -187,9 +118,9 @@ type Action =
   | { type: 'ADD_GOAL'; payload: Goal }
   | { type: 'UPDATE_GOAL'; payload: Goal }
   | { type: 'DELETE_GOAL'; payload: string }
-  | { type: 'LOAD_STATE'; payload: AppState };
+  | { type: 'LOAD_STATE'; payload: AppState }
+  | { type: 'SET_SHOW_TIME_WINDOW_PICKER'; payload: boolean };
 
-// Reducer
 const appReducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
     case 'SET_INCOME':
@@ -237,13 +168,21 @@ const appReducer = (state: AppState, action: Action): AppState => {
         goals: state.goals.filter((goal) => goal.id !== action.payload),
       };
     case 'LOAD_STATE':
-      return action.payload;
+      const loadedState = action.payload;
+      return {
+        ...initialState,
+        ...loadedState,
+        showTimeWindowPicker: typeof loadedState.showTimeWindowPicker === 'boolean'
+          ? loadedState.showTimeWindowPicker
+          : initialState.showTimeWindowPicker,
+      };
+    case 'SET_SHOW_TIME_WINDOW_PICKER':
+      return { ...state, showTimeWindowPicker: action.payload };
     default:
       return state;
   }
 };
 
-// Context
 interface AppContextType extends AppState {
   setIncome: (income: Income) => void;
   setSavingsTarget: (target: number) => void;
@@ -256,47 +195,39 @@ interface AppContextType extends AppState {
   addGoal: (goal: Goal) => void;
   updateGoal: (goal: Goal) => void;
   deleteGoal: (id: string) => void;
+  setShowTimeWindowPicker: Dispatch<SetStateAction<boolean>>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Provider component
-export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   useEffect(() => {
     const loadData = async () => {
-      try {
+
         const savedData = await AsyncStorage.getItem('financialAppData');
         if (savedData) {
           dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedData) });
         } else {
           dispatch({ type: 'LOAD_STATE', payload: sampleData });
         }
-      } catch (error) {
-        console.error('Failed to load data:', error);
-        dispatch({ type: 'LOAD_STATE', payload: sampleData });
-      }
-    };
 
+    };
     loadData();
   }, []);
 
   useEffect(() => {
     const saveData = async () => {
-      try {
-        await AsyncStorage.setItem('financialAppData', JSON.stringify(state));
-      } catch (error) {
-        console.error('Failed to save data:', error);
-      }
-    };
 
+      await AsyncStorage.setItem('financialAppData', JSON.stringify(state));
+
+    };
     if (state !== initialState) {
       saveData();
     }
   }, [state]);
 
-  // Context
   const value: AppContextType = {
     ...state,
     setIncome: (income) => dispatch({ type: 'SET_INCOME', payload: income }),
@@ -310,12 +241,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addGoal: (goal) => dispatch({ type: 'ADD_GOAL', payload: goal }),
     updateGoal: (goal) => dispatch({ type: 'UPDATE_GOAL', payload: goal }),
     deleteGoal: (id) => dispatch({ type: 'DELETE_GOAL', payload: id }),
+    setShowTimeWindowPicker: (valueOrFn) => {
+      if (typeof valueOrFn === 'function') {
+        const newValue = valueOrFn(state.showTimeWindowPicker);
+        dispatch({ type: 'SET_SHOW_TIME_WINDOW_PICKER', payload: newValue });
+      } else {
+        dispatch({ type: 'SET_SHOW_TIME_WINDOW_PICKER', payload: valueOrFn });
+      }
+    },
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-// Hook to use the context
 export const useAppContext = () => {
   const context = useContext(AppContext);
   if (context === undefined) {
