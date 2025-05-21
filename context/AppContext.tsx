@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode, Dispatch, SetStateAction } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useReducer,
+  useEffect,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type ExpenseCategory =
@@ -85,20 +93,88 @@ const sampleData: AppState = {
     isGross: false,
   },
   expenses: [
-    { id: '1', amount: 850, description: 'Rent', category: 'housing', date: '2025-05-01T12:00:00Z' },
-    { id: '2', amount: 350, description: 'Groceries', category: 'food', date: '2025-05-05T14:30:00Z' },
-    { id: '3', amount: 120, description: 'Phone and Internet', category: 'utilities', date: '2025-05-10T09:15:00Z' },
-    { id: '4', amount: 75, description: 'Movie and Dinner', category: 'entertainment', date: '2025-05-15T18:45:00Z' },
-    { id: '5', amount: 200, description: 'Monthly Bus Pass', category: 'transportation', date: '2025-05-02T10:00:00Z' },
+    {
+      id: '1',
+      amount: 850,
+      description: 'Rent',
+      category: 'housing',
+      date: '2025-05-01T12:00:00Z',
+    },
+    {
+      id: '2',
+      amount: 350,
+      description: 'Groceries',
+      category: 'food',
+      date: '2025-05-05T14:30:00Z',
+    },
+    {
+      id: '3',
+      amount: 120,
+      description: 'Phone and Internet',
+      category: 'utilities',
+      date: '2025-05-10T09:15:00Z',
+    },
+    {
+      id: '4',
+      amount: 75,
+      description: 'Movie and Dinner',
+      category: 'entertainment',
+      date: '2025-05-15T18:45:00Z',
+    },
+    {
+      id: '5',
+      amount: 200,
+      description: 'Monthly Bus Pass',
+      category: 'transportation',
+      date: '2025-05-02T10:00:00Z',
+    },
   ],
   investments: [
-    { id: '1', name: 'Global Index Fund', type: 'fund', quantity: 10, purchasePrice: 100, currentPrice: 108, purchaseDate: '2025-01-15T12:00:00Z' },
-    { id: '2', name: 'Apple Inc.', type: 'stock', quantity: 50, purchasePrice: 150, currentPrice: 165, purchaseDate: '2025-02-20T12:00:00Z' },
-    { id: '3', name: 'Bitcoin', type: 'crypto', quantity: 0.05, purchasePrice: 30000, currentPrice: 35000, purchaseDate: '2025-03-10T12:00:00Z' },
+    {
+      id: '1',
+      name: 'Global Index Fund',
+      type: 'fund',
+      quantity: 10,
+      purchasePrice: 100,
+      currentPrice: 108,
+      purchaseDate: '2025-01-15T12:00:00Z',
+    },
+    {
+      id: '2',
+      name: 'Apple Inc.',
+      type: 'stock',
+      quantity: 50,
+      purchasePrice: 150,
+      currentPrice: 165,
+      purchaseDate: '2025-02-20T12:00:00Z',
+    },
+    {
+      id: '3',
+      name: 'Bitcoin',
+      type: 'crypto',
+      quantity: 0.05,
+      purchasePrice: 30000,
+      currentPrice: 35000,
+      purchaseDate: '2025-03-10T12:00:00Z',
+    },
   ],
   goals: [
-    { id: '1', title: 'Vacation', targetAmount: 1500, currentAmount: 800, targetDate: '2025-08-01T12:00:00Z', color: '#0891b2' },
-    { id: '2', title: 'New Computer', targetAmount: 1200, currentAmount: 450, targetDate: '2025-11-15T12:00:00Z', color: '#14b8a6' },
+    {
+      id: '1',
+      title: 'Vacation',
+      targetAmount: 1500,
+      currentAmount: 800,
+      targetDate: '2025-08-01T12:00:00Z',
+      color: '#0891b2',
+    },
+    {
+      id: '2',
+      title: 'New Computer',
+      targetAmount: 1200,
+      currentAmount: 450,
+      targetDate: '2025-11-15T12:00:00Z',
+      color: '#14b8a6',
+    },
   ],
   savings: {
     target: 500,
@@ -172,9 +248,10 @@ const appReducer = (state: AppState, action: Action): AppState => {
       return {
         ...initialState,
         ...loadedState,
-        showTimeWindowPicker: typeof loadedState.showTimeWindowPicker === 'boolean'
-          ? loadedState.showTimeWindowPicker
-          : initialState.showTimeWindowPicker,
+        showTimeWindowPicker:
+          typeof loadedState.showTimeWindowPicker === 'boolean'
+            ? loadedState.showTimeWindowPicker
+            : initialState.showTimeWindowPicker,
       };
     case 'SET_SHOW_TIME_WINDOW_PICKER':
       return { ...state, showTimeWindowPicker: action.payload };
@@ -205,23 +282,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   useEffect(() => {
     const loadData = async () => {
-
-        const savedData = await AsyncStorage.getItem('financialAppData');
-        if (savedData) {
-          dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedData) });
-        } else {
-          dispatch({ type: 'LOAD_STATE', payload: sampleData });
-        }
-
+      const savedData = await AsyncStorage.getItem('financialAppData');
+      if (savedData) {
+        dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedData) });
+      } else {
+        dispatch({ type: 'LOAD_STATE', payload: sampleData });
+      }
     };
     loadData();
   }, []);
 
   useEffect(() => {
     const saveData = async () => {
-
       await AsyncStorage.setItem('financialAppData', JSON.stringify(state));
-
     };
     if (state !== initialState) {
       saveData();

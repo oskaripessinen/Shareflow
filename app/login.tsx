@@ -27,7 +27,6 @@ export default function LoginScreen() {
     });
     console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
 
-
     const checkSession = async () => {
       const {
         data: { session },
@@ -43,7 +42,6 @@ export default function LoginScreen() {
 
     checkSession();
 
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -51,7 +49,7 @@ export default function LoginScreen() {
         console.log('Auth state changed, session active.');
       } else {
         console.log('Auth state changed, no session.');
-        setInitializing(false); 
+        setInitializing(false);
       }
     });
 
@@ -89,7 +87,6 @@ export default function LoginScreen() {
         );
         if (upsertError) console.warn('Could not upsert user:', upsertError);
       }
-
 
       router.replace('/create_group');
     } catch (e: unknown) {

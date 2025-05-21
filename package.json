@@ -13,7 +13,7 @@
     "ios": "expo run:ios",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "check": "npm run typecheck && npm run lint"
+    "check": "npm run typecheck && npm run lint && npm run format"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

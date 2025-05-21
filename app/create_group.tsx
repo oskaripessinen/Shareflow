@@ -8,18 +8,16 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  ScrollView, 
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Feather, Ionicons } from '@expo/vector-icons'; 
-
-
+import { Feather, Ionicons } from '@expo/vector-icons';
 
 export default function CreateGroupScreen() {
   const router = useRouter();
   const [groupName, setGroupName] = useState('');
-  const [inviteEmail, setInviteEmail] = useState(''); 
-  const [invitees, setInvitees] = useState<string[]>([]); 
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [invitees, setInvitees] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleAddInvitee = () => {
@@ -38,7 +36,7 @@ export default function CreateGroupScreen() {
   };
 
   const handleRemoveInvitee = (emailToRemove: string) => {
-    setInvitees(invitees.filter(email => email !== emailToRemove));
+    setInvitees(invitees.filter((email) => email !== emailToRemove));
   };
 
   const handleCreateGroup = async () => {
@@ -72,7 +70,6 @@ export default function CreateGroupScreen() {
       //   console.log('Invitations sent/saved for:', invitees);
       // }
 
-
       if (router.canGoBack()) {
         router.back();
       } else {
@@ -95,9 +92,7 @@ export default function CreateGroupScreen() {
           <TouchableOpacity onPress={() => router.back()} className="p-2">
             <Feather name="chevron-left" size={28} color="#0891b2" />
           </TouchableOpacity>
-          <Text className="text-xl font-semibold text-slate-800">
-            Create New Group
-          </Text>
+          <Text className="text-xl font-semibold text-slate-800">Create New Group</Text>
           <View className="w-10" />
         </View>
 
@@ -105,9 +100,7 @@ export default function CreateGroupScreen() {
           <View className="p-5">
             {/* Group Name Section */}
             <View className="mb-6">
-              <Text className="text-base font-medium mb-2 text-slate-700">
-                Group Name
-              </Text>
+              <Text className="text-base font-medium mb-2 text-slate-700">Group Name</Text>
               <TextInput
                 className="bg-white border border-slate-300 rounded-lg px-4 py-3 text-base text-slate-900 placeholder-slate-400"
                 placeholder="E.g., Family, Work Project, Kämppikset"
@@ -144,9 +137,7 @@ export default function CreateGroupScreen() {
             {/* Invited Members List */}
             {invitees.length > 0 && (
               <View className="mb-6">
-                <Text className="text-sm font-medium mb-2 text-slate-600">
-                  To be invited:
-                </Text>
+                <Text className="text-sm font-medium mb-2 text-slate-600">To be invited:</Text>
                 {invitees.map((email, index) => (
                   <View
                     key={index}
@@ -176,9 +167,7 @@ export default function CreateGroupScreen() {
               {loading ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text className="text-white text-base font-semibold">
-                  Create Group
-                </Text>
+                <Text className="text-white text-base font-semibold">Create Group</Text>
               )}
             </TouchableOpacity>
           </View>

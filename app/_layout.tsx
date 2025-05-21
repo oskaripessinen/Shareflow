@@ -4,13 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/../hooks/useFrameworkReady';
 import { AppProvider } from '@/../context/AppContext';
 
-
 function AppContent() {
-
   return (
     <>
       <Stack screenOptions={{ headerShown: false }} initialRouteName="login" />
-      <StatusBar style="dark" translucent={true} backgroundColor='transparent' />
+      <StatusBar style="dark" translucent={true} backgroundColor="transparent" />
     </>
   );
 }
