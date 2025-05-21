@@ -34,7 +34,7 @@ export default function LoginScreen() {
       } = await supabase.auth.getSession();
       if (session) {
         console.log('Found existing session, navigating to tabs.');
-        router.replace('/(tabs)');
+        router.replace('/create_group');
       } else {
         console.log('No active session found.');
         setInitializing(false);
@@ -91,7 +91,7 @@ export default function LoginScreen() {
       }
 
 
-      router.replace('/(tabs)');
+      router.replace('/create_group');
     } catch (e: unknown) {
       console.error('Kirjautumisvirhe:', e);
     } finally {

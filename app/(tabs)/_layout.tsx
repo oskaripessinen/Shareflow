@@ -5,6 +5,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerShown: false, 
         tabBarActiveTintColor: '#0891b2', // Cyan-600
         tabBarInactiveTintColor: '#64748b', // Slate-500
         tabBarStyle: {
@@ -20,7 +21,7 @@ export default function TabLayout() {
           fontWeight: '500',
         },
         headerStyle: {
-          backgroundColor: 'white',
+          backgroundColor: '#F8FAFC',
         },
         headerTitleStyle: {
           fontWeight: '600',
@@ -34,7 +35,6 @@ export default function TabLayout() {
         options={{
           title: 'Overview',
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
-          headerTitle: 'ShareFlow',
         }}
       />
       <Tabs.Screen
@@ -42,7 +42,6 @@ export default function TabLayout() {
         options={{
           title: 'Expenses',
           tabBarIcon: ({ color, size }) => <CreditCard size={size} color={color} />,
-          headerTitle: 'ShareFlow',
         }}
       />
       <Tabs.Screen
@@ -50,7 +49,6 @@ export default function TabLayout() {
         options={{
           title: 'Savings',
           tabBarIcon: ({ color, size }) => <TrendingUp size={size} color={color} />,
-          headerTitle: 'ShareFlow',
         }}
       />
     </Tabs>

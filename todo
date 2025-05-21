@@ -2,7 +2,7 @@
 
 **1. Shared Account / Group Finances**
     *   [ ] **Group Creation & Management:**
-        *   [ ] Functionality to create group ()
+        *   [ ] Functionality to create group
         *   [ ] Functionality to invite/add members to the group (email, username, link).
         *   [ ] Functionality to leave a group.
         *   [ ] Functionality to edit the group name.
@@ -56,9 +56,7 @@
     *   [ ] **Database Design and Implementation:**
         *   [ ] Schemas for users, groups, expenses, incomes, savings goals, budgets, etc.
     *   [ ] **API Design and Implementation.**   
-    *   [ ] **Continuous User Experience (UX) Improvement.**
     *   [ ] **Testing:**
         *   [ ] Unit tests.
         *   [ ] Integration tests.
-    *   [ ] **Ensuring Security.**
     *   [ ] **Implementation of Offline Functionality.**

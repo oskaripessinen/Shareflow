@@ -8,6 +8,7 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "backgroundColor": "#FFFFFF",
     "plugins": [
       [
         "@react-native-google-signin/google-signin",
