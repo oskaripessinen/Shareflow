@@ -25,7 +25,7 @@ const GroupHeader = () => {
 
   return (
     <>
-      <SafeAreaView className="bg-slate-50 shadow-sm z-20" style={{paddingTop: Platform.OS === 'android' ? 0 : 0}}>
+      <SafeAreaView className="bg-slate-50 shadow-sm z-20" style={{paddingTop: Platform.OS === 'android' ? 5 : 0}}>
         <View className="h-20 flex-row items-center justify-between px-4 border-b border-slate-200">
           <Pressable onPress={() => setIsGroupSelectorModalVisible(true)} className="justify-center flex-row items-center flex-1">
             <Users size={20} color="#475569" className="mr-2" />
@@ -40,11 +40,13 @@ const GroupHeader = () => {
       <Modal
         visible={isGroupSelectorModalVisible}
         animationType="fade"
-        transparent={true} 
         onRequestClose={() => setIsGroupSelectorModalVisible(false)}
+        presentationStyle='overFullScreen'
+        backdropColor="transparent"
+        statusBarTranslucent={true}
       >
         <Pressable
-          className="flex-1 justify-end bg-black/30"
+          className="flex-1 justify-end"
           onPress={() => setIsGroupSelectorModalVisible(false)}
         >
           <SelectGroup

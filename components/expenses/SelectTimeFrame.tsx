@@ -22,7 +22,7 @@ export default function SelectTimeFrame({
 }: SelectTimeFrameProps) {
   return (
     <Pressable
-      className="flex-1 justify-end black bg-slate-900/30"
+      className="flex-1 justify-end black"
       onPress={() => setShowTimeWindowPicker(false)}
     >
       <Pressable

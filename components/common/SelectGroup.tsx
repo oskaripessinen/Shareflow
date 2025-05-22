@@ -44,7 +44,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({
 
     <Pressable
       onPress={(e) => e.stopPropagation()} 
-      className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg w-full"
+      className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg w-full flex-end"
     >
 
       <View className="flex-row items-center justify-between px-5 mt-1 mb-4">

@@ -8,7 +8,7 @@ interface AddExpenseProps {
 
 const AddExpense: React.FC<AddExpenseProps> = ({ onClose }) => {
   return (
-    <Pressable className="flex-1 justify-end bg-slate-900/50" onPress={onClose}>
+    <Pressable className="flex-1 justify-end" onPress={onClose}>
       <Pressable
         className="bg-white rounded-t-2xl pt-5 pb-8 px-5 w-full shadow-lg"
         onPress={(e) => e.stopPropagation()}

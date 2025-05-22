@@ -126,8 +126,9 @@ export default function ExpensesScreen() {
         </View>
         <Pressable
           onPress={() => setShowAddExpenseModal(true)}
-          className="flex-row items-center bg-primary p-3 rounded-full"
+          className="flex-row items-center bg-primary px-3 py-2 rounded-xl"
         >
+          <Text className="text-white font-semibold text-base mr-2">Add Expense</Text>
           <Plus size={23} color="#fff" />
         </Pressable>
       </View>
@@ -191,15 +192,22 @@ export default function ExpensesScreen() {
         extraData={selectedCategories}
       />
 
-      <Modal transparent={true} visible={showAddExpenseModal} animationType="fade">
+      <Modal
+        visible={showAddExpenseModal} 
+        animationType="fade"
+        presentationStyle='overFullScreen'
+        backdropColor="transparent"
+        statusBarTranslucent={true}>
         <AddExpense onClose={() => setShowAddExpenseModal(false)} />
       </Modal>
 
       <Modal
         visible={showTimeWindowPicker}
         animationType="fade"
-        transparent
         onRequestClose={() => setShowTimeWindowPicker(false)}
+        presentationStyle='overFullScreen'
+        backdropColor="transparent"
+        statusBarTranslucent={true}
       >
         <SelectTimeFrame
           setShowTimeWindowPicker={setShowTimeWindowPicker}
