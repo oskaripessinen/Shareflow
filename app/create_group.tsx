@@ -45,7 +45,7 @@ export default function CreateGroupScreen() {
     }
     setLoading(true);
     try {
-
+      console.log('Group created:', groupName, 'with invitees:', invitees);
 
       if (router.canGoBack()) {
         router.back();
@@ -65,33 +65,44 @@ export default function CreateGroupScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        <View className="flex-row items-center justify-center py-5 border-b border-slate-200 bg-white">
-          <Text className="text-xl font-semibold text-slate-800">Create New Group</Text>
-        </View>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="px-5 items-center">
+            <Text className="text-3xl font-bold text-slate-800 text-center mb-2">
+              Create a New Group
+            </Text>
+            <Text className="text-sm text-slate-600 text-center mb-14">
+              Enter the group name and optionally invite members.
+            </Text>
 
-        <ScrollView className="flex-1 h-[100%]" contentContainerStyle={{ marginTop: '50%' }}>
-          <View className="p-5">
-            <View className="mb-6">
+            <View className="mb-6 w-full max-w-md">
               <TextInput
-                className="bg-white border border-slate-300 rounded-lg px-4 py-3 text-base text-slate-900 placeholder-slate-400"
-                placeholder="group name"
+                className="bg-white border border-slate-300 rounded-xl px-4 py-3 text-base text-slate-900 placeholder-slate-400"
+                placeholder="Group Name"
                 value={groupName}
                 onChangeText={setGroupName}
                 autoCapitalize="sentences"
               />
             </View>
-            <View className="mb-6">
+
+            <View className="mb-6 w-full max-w-md">
               <View className="flex-row items-center">
                 <TextInput
-                  className="flex-1 bg-white border border-slate-300 rounded-l-lg px-4 py-3 text-base text-slate-900 placeholder-slate-400"
-                  placeholder="invite with email"
+                  className="flex-1 bg-white border border-slate-300 rounded-l-xl px-4 py-3 text-base text-slate-900 placeholder-slate-400"
+                  placeholder="Invite with email"
                   value={inviteEmail}
                   onChangeText={setInviteEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
                 />
                 <TouchableOpacity
-                  className="bg-cyan-500 px-4 py-3 rounded-r-lg items-center justify-center"
+                  className="bg-primary px-4 py-3 rounded-r-xl items-center justify-center"
                   onPress={handleAddInvitee}
                   disabled={loading}
                 >
@@ -101,11 +112,11 @@ export default function CreateGroupScreen() {
             </View>
 
             {invitees.length > 0 && (
-              <View className="mb-6">
+              <View className="mb-6 w-full max-w-md">
                 {invitees.map((email, index) => (
                   <View
                     key={index}
-                    className="flex-row items-center justify-between bg-white p-3 rounded-lg border border-slate-200 mb-2"
+                    className="flex-row items-center justify-between bg-white p-3 rounded-xl border border-slate-200 mb-2"
                   >
                     <Text className="text-slate-700">{email}</Text>
                     <TouchableOpacity
@@ -120,19 +131,21 @@ export default function CreateGroupScreen() {
               </View>
             )}
 
-            <TouchableOpacity
-              className={`py-4 rounded-lg items-center justify-center shadow-md ${
-                loading ? 'bg-primary' : 'bg-cyan-600'
-              }`}
-              onPress={handleCreateGroup}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-white text-base font-semibold">Create Group</Text>
-              )}
-            </TouchableOpacity>
+            <View className="w-full max-w-md">
+              <TouchableOpacity
+                className={`py-4 rounded-xl items-center justify-center shadow-md ${
+                  loading || !groupName.trim() ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'
+                }`}
+                onPress={handleCreateGroup}
+                disabled={loading || !groupName.trim()}
+              >
+                {loading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text className="text-white text-base font-semibold">Create Group</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
