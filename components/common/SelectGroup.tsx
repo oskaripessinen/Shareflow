@@ -41,12 +41,10 @@ const SelectGroup: React.FC<SelectGroupProps> = ({
   );
 
   return (
-
     <Pressable
-      onPress={(e) => e.stopPropagation()} 
+      onPress={(e) => e.stopPropagation()}
       className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg w-full f"
     >
-
       <View className="flex-row items-center justify-between px-5 mt-1 mb-4">
         <Text className="text-xl font-semibold text-slate-800">Select Group</Text>
         <Pressable onPress={onClose} className="p-1">
@@ -58,7 +56,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({
         data={groups}
         renderItem={renderGroupItem}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 20 : 0 }} 
+        contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 20 : 0 }}
       />
     </Pressable>
   );

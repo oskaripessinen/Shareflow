@@ -110,7 +110,7 @@ export default function ExpensesScreen() {
               style={{ width: 100, paddingHorizontal: 20, justifyContent: 'space-between' }}
               className="flex-row items-center pr-2 border-r border-slate-200 text-center"
             >
-              <Text className="font-medium text-slate-600 pr-2">
+              <Text className="font-medium font-semibold text-muted pr-2">
                 {timeWindowOptions.find((opt) => opt.value === selectedTimeWindow)?.label}
               </Text>
               <View className="mr-2">
@@ -128,7 +128,7 @@ export default function ExpensesScreen() {
           onPress={() => setShowAddExpenseModal(true)}
           className="flex-row items-center bg-primary px-3 py-2 rounded-xl"
         >
-          <Text className="text-white font-semibold text-base mr-2">Add Expense</Text>
+          <Text className="text-white font-sans text-DEFAULT text-base mr-2 text-[11p]">Add Expense</Text>
           <Plus size={23} color="#fff" />
         </Pressable>
       </View>
@@ -149,8 +149,8 @@ export default function ExpensesScreen() {
                   ${isSelected ? 'bg-[#3B82F6] border-[#3B82F6]' : 'bg-white border-slate-300'}`}
               >
                 <Text
-                  className={`text-sm font-medium
-                    ${isSelected ? 'text-white' : 'text-slate-700'}`}
+                  className={`text-sm font-medium font-sans
+                    ${isSelected ? 'text-white' : 'text-muted'}`}
                 >
                   {category}
                 </Text>
@@ -166,8 +166,8 @@ export default function ExpensesScreen() {
     <View className="bg-surface rounded-lg p-4 my-2 mx-4 mt-0 shadow">
       <View className="flex-row justify-between items-center">
         <View>
-          <Text className="text-lg font-medium text-DEFAULT">{item.description}</Text>
-          <Text className="text-sm text-mute">{item.date}</Text>
+          <Text className="text-lg font-medium font-semibold text-DEFAULT">{item.description}</Text>
+          <Text className="text-sm font-sans text-muted">{item.date}</Text>
         </View>
         <Text className="text-lg font-bold text-danger">{item.amount.toFixed(2)} €</Text>
       </View>
@@ -176,7 +176,7 @@ export default function ExpensesScreen() {
 
   return (
     <View className="flex-1 bg-background pt-4">
-      <RenderHeader/>
+      <RenderHeader />
       <FlatList
         showsVerticalScrollIndicator={false}
         data={filteredExpenses}
@@ -193,11 +193,12 @@ export default function ExpensesScreen() {
       />
 
       <Modal
-        visible={showAddExpenseModal} 
+        visible={showAddExpenseModal}
         animationType="fade"
-        presentationStyle='overFullScreen'
+        presentationStyle="overFullScreen"
         backdropColor="transparent"
-        statusBarTranslucent={true}>
+        statusBarTranslucent={true}
+      >
         <AddExpense onClose={() => setShowAddExpenseModal(false)} />
       </Modal>
 
@@ -205,7 +206,7 @@ export default function ExpensesScreen() {
         visible={showTimeWindowPicker}
         animationType="fade"
         onRequestClose={() => setShowTimeWindowPicker(false)}
-        presentationStyle='overFullScreen'
+        presentationStyle="overFullScreen"
         backdropColor="transparent"
         statusBarTranslucent={true}
       >

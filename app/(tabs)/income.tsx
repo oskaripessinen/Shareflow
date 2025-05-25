@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
-import { Landmark } from 'lucide-react-native'; 
+import { Landmark } from 'lucide-react-native';
 
 export default function IncomeScreen() {
   return (

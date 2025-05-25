@@ -14,14 +14,14 @@ module.exports = {
         danger: '#EF4444',
         text: {
           DEFAULT: '#111827',
-          muted: '#6B7280',
+          muted: '#CBD5E1',
           danger: '#EF4444',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Merriweather', 'serif'],
-        mono: ['Fira Code', 'monospace'],
+        'sans': ['Poppins_400Regular'],
+        'semibold': ['Poppins_600SemiBold'],
+        'bold': ['Poppins_700Bold'],
       },
     },
   },

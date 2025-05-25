@@ -9,7 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
-} from 'react-native'
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { Users, X } from 'lucide-react-native';
 
@@ -19,8 +19,7 @@ export default function CreateGroupScreen() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [invitees, setInvitees] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isEmailInputFocused, setIsEmailInputFocused] = useState(false); 
-
+  const [isEmailInputFocused, setIsEmailInputFocused] = useState(false);
 
   const handleAddInvitee = () => {
     if (!inviteEmail.trim()) {
@@ -67,7 +66,6 @@ export default function CreateGroupScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
@@ -77,15 +75,15 @@ export default function CreateGroupScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View className="px-5 items-center">
-            <View className='mb-5 flex items-center justify-center'>
+            <View className="mb-5 flex items-center justify-center">
               <Users size={60} color="#3B82F6" />
             </View>
             <View className="flex-row items-center justify-center mb-2">
-              <Text className="text-3xl font-bold text-slate-800 text-center mr-4">
+              <Text className="text-3xl text-slate-800 text-center mr-4 font-semibold text-default">
                 Create a New Group
               </Text>
             </View>
-            <Text className="text-sm text-slate-600 text-center mb-14">
+            <Text className="text-sm text-slate-600 text-center mb-14 font-sans, text-muted">
               Enter the group name and optionally invite members.
             </Text>
 
@@ -111,18 +109,25 @@ export default function CreateGroupScreen() {
                   onFocus={() => setIsEmailInputFocused(true)}
                   onBlur={() => setIsEmailInputFocused(false)}
                 />
-                
+
                 <TouchableOpacity
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
                   onPress={handleAddInvitee}
                   disabled={loading || !inviteEmail.trim()}
                 >
                   {isEmailInputFocused && (
-                  <View className="p-1">
-                    <Text className={`p-1 ${
-                    loading || !inviteEmail.trim() ? 'text-slate-300' : 'text-[#3B82F6] font-semibold'
-                  }`}>Add</Text>
-                  </View>)}
+                    <View className="p-1">
+                      <Text
+                        className={`p-1 ${
+                          loading || !inviteEmail.trim()
+                            ? 'text-slate-300 font-sans'
+                            : 'text-primary font-semibold'
+                        }`}
+                      >
+                        Add
+                      </Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               </View>
             </View>
@@ -149,8 +154,7 @@ export default function CreateGroupScreen() {
           </View>
         </ScrollView>
 
-
-        <View className="px-5 my-10 border-slate-200 bg-background jutify-start">
+        <View className="px-5 my-8 border-slate-200 bg-background jutify-start">
           <View className="w-full max-w-md mx-auto justify-start">
             <TouchableOpacity
               className={`py-4 rounded-xl items-center justify-start shadow-md ${

@@ -21,10 +21,7 @@ export default function SelectTimeFrame({
   timeWindowOptions,
 }: SelectTimeFrameProps) {
   return (
-    <Pressable
-      className="flex-1 justify-end black"
-      onPress={() => setShowTimeWindowPicker(false)}
-    >
+    <Pressable className="flex-1 justify-end black" onPress={() => setShowTimeWindowPicker(false)}>
       <Pressable
         className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg"
         onPress={(e) => e.stopPropagation()}
@@ -45,7 +42,7 @@ export default function SelectTimeFrame({
               className={`py-4 flex-row justify-between px-5 border-t border-slate-100 active:bg-slate-50 ${selectedTimeWindow === item.value ? 'bg-slate-100' : ''}`}
             >
               <Text
-                className={`text-DEFAULT text-center ${selectedTimeWindow === item.value ? 'font-bold text-primary' : 'text-slate-700'}`}
+                className={`text-DEFAULT text-center font-sans ${selectedTimeWindow === item.value ? 'font-semibold text-primary' : 'text-slate-700'}`}
               >
                 {item.label}
               </Text>
