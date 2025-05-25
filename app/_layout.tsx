@@ -17,7 +17,7 @@ function AppContent() {
       <View className="flex-1">
         <Stack screenOptions={{ headerShown: false }} initialRouteName="login" />
       </View>
-      <StatusBar style="dark" translucent={true} backgroundColor="transparent" hidden={true} />
+      <StatusBar style="dark" translucent={true} backgroundColor="transparent" />
     </View>
   );
 }

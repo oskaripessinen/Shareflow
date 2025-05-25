@@ -6,15 +6,15 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#3B82F6', // Cyan-600
-        tabBarInactiveTintColor: '#6B7280', // Slate-500
+        tabBarActiveTintColor: '#3B82F6',
+        tabBarInactiveTintColor: '#6B7280',
         tabBarStyle: {
           backgroundColor: 'white',
           borderTopWidth: 1,
-          borderTopColor: '#e2e8f0', // Slate-200
+          borderTopColor: '#e2e8f0', 
           paddingTop: 5,
           paddingBottom: 5,
-          height: 90,
+          height: 60,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -26,7 +26,7 @@ export default function TabLayout() {
         headerTitleStyle: {
           fontWeight: '600',
           fontSize: 18,
-          color: '#0f172a', // Slate-900
+          color: '#0f172a',
         },
       }}
     >

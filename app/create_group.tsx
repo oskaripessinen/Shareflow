@@ -9,9 +9,9 @@ import {
   Platform,
   ActivityIndicator,
   ScrollView,
-} from 'react-native';
+} from 'react-native'
 import { useRouter } from 'expo-router';
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { Users, X } from 'lucide-react-native';
 
 export default function CreateGroupScreen() {
   const router = useRouter();
@@ -19,6 +19,8 @@ export default function CreateGroupScreen() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [invitees, setInvitees] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isEmailInputFocused, setIsEmailInputFocused] = useState(false); 
+
 
   const handleAddInvitee = () => {
     if (!inviteEmail.trim()) {
@@ -65,6 +67,7 @@ export default function CreateGroupScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
+
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
@@ -74,16 +77,21 @@ export default function CreateGroupScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View className="px-5 items-center">
-            <Text className="text-3xl font-bold text-slate-800 text-center mb-2">
-              Create a New Group
-            </Text>
+            <View className='mb-5 flex items-center justify-center'>
+              <Users size={60} color="#3B82F6" />
+            </View>
+            <View className="flex-row items-center justify-center mb-2">
+              <Text className="text-3xl font-bold text-slate-800 text-center mr-4">
+                Create a New Group
+              </Text>
+            </View>
             <Text className="text-sm text-slate-600 text-center mb-14">
               Enter the group name and optionally invite members.
             </Text>
 
             <View className="mb-6 w-full max-w-md">
               <TextInput
-                className="bg-white border border-slate-300 rounded-xl px-4 py-3 text-base text-slate-900 placeholder-slate-400"
+                className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-slate-500"
                 placeholder="Group Name"
                 value={groupName}
                 onChangeText={setGroupName}
@@ -92,21 +100,29 @@ export default function CreateGroupScreen() {
             </View>
 
             <View className="mb-6 w-full max-w-md">
-              <View className="flex-row items-center">
+              <View className="relative">
                 <TextInput
-                  className="flex-1 bg-white border border-slate-300 rounded-l-xl px-4 py-3 text-base text-slate-900 placeholder-slate-400"
-                  placeholder="Invite with email"
+                  className="bg-background border border-slate-300 rounded-xl px-4 py-3 pr-12 text-base text-slate-900 placeholder-slate-400 placeholder:text-slate-500"
+                  placeholder="Invite with email (optional)"
                   value={inviteEmail}
                   onChangeText={setInviteEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  onFocus={() => setIsEmailInputFocused(true)}
+                  onBlur={() => setIsEmailInputFocused(false)}
                 />
+                
                 <TouchableOpacity
-                  className="bg-primary px-4 py-3 rounded-r-xl items-center justify-center"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
                   onPress={handleAddInvitee}
-                  disabled={loading}
+                  disabled={loading || !inviteEmail.trim()}
                 >
-                  <Feather name="plus" size={24} color="white" />
+                  {isEmailInputFocused && (
+                  <View className="p-1">
+                    <Text className={`p-1 ${
+                    loading || !inviteEmail.trim() ? 'text-slate-300' : 'text-[#3B82F6] font-semibold'
+                  }`}>Add</Text>
+                  </View>)}
                 </TouchableOpacity>
               </View>
             </View>
@@ -124,30 +140,33 @@ export default function CreateGroupScreen() {
                       disabled={loading}
                       className="p-1"
                     >
-                      <Ionicons name="close-circle-outline" size={22} color="#ef4444" />
+                      <X size={15} color="#EF4444" />
                     </TouchableOpacity>
                   </View>
                 ))}
               </View>
             )}
-
-            <View className="w-full max-w-md">
-              <TouchableOpacity
-                className={`py-4 rounded-xl items-center justify-center shadow-md ${
-                  loading || !groupName.trim() ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'
-                }`}
-                onPress={handleCreateGroup}
-                disabled={loading || !groupName.trim()}
-              >
-                {loading ? (
-                  <ActivityIndicator color="white" />
-                ) : (
-                  <Text className="text-white text-base font-semibold">Create Group</Text>
-                )}
-              </TouchableOpacity>
-            </View>
           </View>
         </ScrollView>
+
+
+        <View className="px-5 my-10 border-slate-200 bg-background jutify-start">
+          <View className="w-full max-w-md mx-auto justify-start">
+            <TouchableOpacity
+              className={`py-4 rounded-xl items-center justify-start shadow-md ${
+                loading || !groupName.trim() ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'
+              }`}
+              onPress={handleCreateGroup}
+              disabled={loading || !groupName.trim()}
+            >
+              {loading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-white text-base font-semibold">Create Group</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

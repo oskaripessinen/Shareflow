@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, Pressable } from 'react-native';
-import { X } from 'lucide-react-native';
+import { X, Check } from 'lucide-react-native';
 
 interface TimeWindowOption {
   label: string;
@@ -29,7 +29,7 @@ export default function SelectTimeFrame({
         className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg"
         onPress={(e) => e.stopPropagation()}
       >
-        <View className="flex-row items-center justify-between px-5 mt-1 mb-4">
+        <View className="flex-row items-center justify-between px-5 mt-1 mb-0">
           <Text className="text-xl font-semibold text-DEFAULT">Select Time Frame</Text>
           <Pressable onPress={() => setShowTimeWindowPicker(false)}>
             <X size={24} color="#334155" />
@@ -42,13 +42,14 @@ export default function SelectTimeFrame({
           renderItem={({ item }) => (
             <Pressable
               onPress={() => handleTimeWindowChange(item.value)}
-              className={`py-4 px-5 border-t border-slate-200 active:bg-slate-50 ${selectedTimeWindow === item.value ? 'bg-slate-100' : ''}`}
+              className={`py-4 flex-row justify-between px-5 border-t border-slate-100 active:bg-slate-50 ${selectedTimeWindow === item.value ? 'bg-slate-100' : ''}`}
             >
               <Text
-                className={`text-DEFAULT font-semibold text-center ${selectedTimeWindow === item.value ? 'font-bold text-cyan-600' : 'text-slate-700'}`}
+                className={`text-DEFAULT text-center ${selectedTimeWindow === item.value ? 'font-bold text-primary' : 'text-slate-700'}`}
               >
                 {item.label}
               </Text>
+              {item.value === selectedTimeWindow && <Check size={20} color="#3B82F6" />}
             </Pressable>
           )}
         />

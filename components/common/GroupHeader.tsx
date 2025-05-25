@@ -25,11 +25,11 @@ const GroupHeader = () => {
 
   return (
     <>
-      <SafeAreaView className="bg-slate-50 shadow-sm z-20" style={{paddingTop: Platform.OS === 'android' ? 5 : 0}}>
-        <View className="h-20 flex-row items-center justify-between px-4 border-b border-slate-200">
+      <SafeAreaView className="bg-slate-50 shadow-sm z-20" style={{paddingTop: Platform.OS === 'android' ? 40 : 0}}>
+        <View className="flex-row items-center justify-between px-4 mb-3 pt-5 border-b-1 border-slate-600">
           <Pressable onPress={() => setIsGroupSelectorModalVisible(true)} className="justify-center flex-row items-center flex-1">
-            <Users size={20} color="#475569" className="mr-2" />
-            <Text className="text-lg font-semibold text-slate-700 mx-2" numberOfLines={1} ellipsizeMode="tail">
+            <Users size={22} color="#475569"/>
+            <Text className="text-lg font-semibold text-slate-700 ml-3 mr-1" numberOfLines={1} ellipsizeMode="tail">
               {currentGroup ? currentGroup.name : 'Select Group'}
             </Text>
             <ChevronDown size={20} color="#475569" />

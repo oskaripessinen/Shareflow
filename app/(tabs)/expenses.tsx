@@ -99,7 +99,7 @@ export default function ExpensesScreen() {
   };
 
   const RenderHeader = () => (
-    <View className="p-0 mt-1" style={{ zIndex: 10 }}>
+    <View className="p-0 mt-0" style={{ zIndex: 10 }}>
       <View className="flex-row items-center mb-6 justify-between px-4">
         <View className="relative" style={{ zIndex: 1 }}>
           <View className="flex-row items-center bg-white rounded-xl shadow">
@@ -175,7 +175,7 @@ export default function ExpensesScreen() {
   );
 
   return (
-    <View className="flex-1 bg-background pt-6">
+    <View className="flex-1 bg-background pt-4">
       <RenderHeader/>
       <FlatList
         showsVerticalScrollIndicator={false}
