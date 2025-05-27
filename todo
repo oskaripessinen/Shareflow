@@ -6,11 +6,8 @@
         *   [ ] Functionality to invite/add members to the group (email, username, link).
         *   [ ] Functionality to leave a group.
         *   [ ] Functionality to edit the group name.
-    *   [ ] **Button to select group**
-        *   [ ] UI/UX design for the group's overview.
-        *   [ ] View that shows the group's total balance in real-time.
-        *   [ ] Listing of the latest expenses and incomes.
-        *   [ ] Summary of spending.
+    *   [x] **Button to select group** 
+
        
 
 **2. Expense Categories and Savings Goals**

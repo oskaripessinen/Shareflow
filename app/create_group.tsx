@@ -84,7 +84,7 @@ export default function CreateGroupScreen() {
               </Text>
             </View>
             <Text className="text-sm text-slate-600 text-center mb-14 font-sans, text-muted">
-              Enter the group name and optionally invite members.
+              Enter the group name and optionally invite members. 
             </Text>
 
             <View className="mb-6 w-full max-w-md">

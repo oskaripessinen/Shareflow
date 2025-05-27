@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { supabase } from '../utils/supabase';
+import { useRouter } from 'expo-router';
+import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { validateToken } from '../api/validateToken';
 
 import GoogleLogo from '../assets/images/google-logo.png';
 
@@ -18,30 +19,32 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: WEB_CLIENT_ID,
-      offlineAccess: true,
-      forceCodeForRefreshToken: true,
-      profileImageSize: 120,
-      iosClientId: IOS_CLIENT_ID,
-    });
-    console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
-
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (session) {
-        console.log('Found existing session, navigating to tabs.');
-        router.replace('/create_group');
-      } else {
-        console.log('No active session found.');
-        setInitializing(false);
+    const initializeApp = async () => {
+      try {
+        console.log('🔄 Forcing logout for testing...');
+        await GoogleSignin.signOut();
+        await supabase.auth.signOut();
+        console.log('Testing logout completed');
+      } catch (error) {
+        console.log('Testing logout error (might be already logged out):', error);
       }
+
+      GoogleSignin.configure({
+        webClientId: WEB_CLIENT_ID,
+        offlineAccess: true,
+        forceCodeForRefreshToken: true,
+        profileImageSize: 120,
+        iosClientId: IOS_CLIENT_ID,
+      });
+      console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
+
+      // Poistettu session tarkistus, koska pakotamme aina logout
+      setInitializing(false);
     };
 
-    checkSession();
+    initializeApp();
 
+    // Auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -64,6 +67,12 @@ export default function LoginScreen() {
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signIn();
       const { idToken } = await GoogleSignin.getTokens();
+      console.log('Google sign-in successful, ID Token:', idToken);
+
+      console.log('Validating token with backend...');
+      const validationResult = await validateToken(idToken);
+      console.log('Validation result:', validationResult);
+
       const {
         data: { user },
         error: authError,
