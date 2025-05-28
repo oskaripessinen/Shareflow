@@ -10,8 +10,6 @@ import GoogleLogo from '../assets/images/google-logo.png';
 export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
 
-console.log(WEB_CLIENT_ID);
-console.log(IOS_CLIENT_ID);
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -21,12 +19,12 @@ export default function LoginScreen() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        console.log('🔄 Forcing logout for testing...');
+        console.log('logout for testing...');
         await GoogleSignin.signOut();
         await supabase.auth.signOut();
-        console.log('Testing logout completed');
+        console.log('logout completed');
       } catch (error) {
-        console.log('Testing logout error (might be already logged out):', error);
+        console.log('Testing logout error:', error);
       }
 
       GoogleSignin.configure({
@@ -38,13 +36,10 @@ export default function LoginScreen() {
       });
       console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
 
-      // Poistettu session tarkistus, koska pakotamme aina logout
       setInitializing(false);
     };
 
     initializeApp();
-
-    // Auth state listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -67,11 +62,9 @@ export default function LoginScreen() {
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signIn();
       const { idToken } = await GoogleSignin.getTokens();
-      console.log('Google sign-in successful, ID Token:', idToken);
 
-      console.log('Validating token with backend...');
-      const validationResult = await validateToken(idToken);
-      console.log('Validation result:', validationResult);
+      await validateToken(idToken);
+
 
       const {
         data: { user },
@@ -80,6 +73,7 @@ export default function LoginScreen() {
         provider: 'google',
         token: idToken,
       });
+
       if (authError) throw authError;
 
       if (user) {
@@ -115,8 +109,8 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 p-4 justify-center items-center">
-      <Text className="text-3xl font-bold mb-8">ShareFlow</Text>
+    <SafeAreaView className="flex-1 p-4 justify-center items-center mt-10">
+      <Text className="text-3xl font-semibold mb-8">ShareFlow</Text>
 
       <TouchableOpacity
         disabled={loading}
@@ -124,17 +118,18 @@ export default function LoginScreen() {
         className="flex-row items-center bg-white px-6 py-3 rounded-full shadow"
       >
         <Image source={GoogleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
-        <Text className="text-base font-medium">
+        <Text className="text-base font-sans">
           {loading ? 'Signing in…' : 'Sign in with Google'}
         </Text>
       </TouchableOpacity>
 
-      {loading && (
-        <View className="mt-4">
-          <ActivityIndicator size="small" color="#0891b2" />
-          <Text className="text-sm text-slate-500 mt-2">Loading…</Text>
-        </View>
-      )}
+      <View className="mt-4 h-16 justify-center items-center">
+        {loading && (
+          <>
+            <ActivityIndicator size='large' color="grey" />
+          </>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
