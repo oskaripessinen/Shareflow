@@ -18,14 +18,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     const initializeApp = async () => {
-      try {
-        console.log('logout for testing...');
-        await GoogleSignin.signOut();
-        await supabase.auth.signOut();
-        console.log('logout completed');
-      } catch (error) {
-        console.log('Testing logout error:', error);
-      }
+      
 
       GoogleSignin.configure({
         webClientId: WEB_CLIENT_ID,

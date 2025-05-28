@@ -1,4 +1,3 @@
-// utils/auth.ts tai suoraan komponentissa
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { supabase } from '../utils/supabase';
 

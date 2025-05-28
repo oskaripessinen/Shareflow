@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
   ActivityIndicator,
   ScrollView,
+
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Users, X } from 'lucide-react-native';
@@ -20,6 +19,13 @@ export default function CreateGroupScreen() {
   const [invitees, setInvitees] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isEmailInputFocused, setIsEmailInputFocused] = useState(false);
+
+  useEffect(() => {
+    if (inviteEmail.endsWith('.com')) {
+      setInvitees([...invitees, inviteEmail.trim().toLowerCase()]);
+      setInviteEmail('');
+    }
+  }, [inviteEmail]);
 
   const handleAddInvitee = () => {
     if (!inviteEmail.trim()) {
@@ -62,29 +68,26 @@ export default function CreateGroupScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-      >
         <ScrollView
           className="flex-1"
           contentContainerStyle={{
-            flexGrow: 1,
-            justifyContent: 'center',
+            paddingTop: 250,
+            paddingBottom: 20,
           }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={true}
         >
           <View className="px-5 items-center">
             <View className="mb-5 flex items-center justify-center">
               <Users size={60} color="#3B82F6" />
             </View>
             <View className="flex-row items-center justify-center mb-2">
-              <Text className="text-3xl text-slate-800 text-center mr-4 font-semibold text-default">
+              <Text className="text-3xl text-slate-800 text-center mr-4 font-semibold">
                 Create a New Group
               </Text>
             </View>
-            <Text className="text-sm text-slate-600 text-center mb-14 font-sans, text-muted">
-              Enter the group name and optionally invite members. 
+            <Text className="text-sm text-slate-600 text-center mb-14">
+              Enter the group name and optionally invite members.
             </Text>
 
             <View className="mb-6 w-full max-w-md">
@@ -100,12 +103,13 @@ export default function CreateGroupScreen() {
             <View className="mb-6 w-full max-w-md">
               <View className="relative">
                 <TextInput
-                  className="bg-background border border-slate-300 rounded-xl px-4 py-3 pr-12 text-base text-slate-900 placeholder-slate-400 placeholder:text-slate-500"
+                  className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-slate-500"
                   placeholder="Invite with email (optional)"
                   value={inviteEmail}
                   onChangeText={setInviteEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
+                  onSubmitEditing={handleAddInvitee}
                   onFocus={() => setIsEmailInputFocused(true)}
                   onBlur={() => setIsEmailInputFocused(false)}
                 />
@@ -120,7 +124,7 @@ export default function CreateGroupScreen() {
                       <Text
                         className={`p-1 ${
                           loading || !inviteEmail.trim()
-                            ? 'text-slate-300 font-sans'
+                            ? 'text-slate-300'
                             : 'text-primary font-semibold'
                         }`}
                       >
@@ -154,10 +158,10 @@ export default function CreateGroupScreen() {
           </View>
         </ScrollView>
 
-        <View className="px-5 my-8 border-slate-200 bg-background jutify-start">
-          <View className="w-full max-w-md mx-auto justify-start">
+        <View className="px-5 py-4 border-slate-200 bg-background static bottom-0 left-0 right-0">
+          <View className="w-full max-w-md mx-auto">
             <TouchableOpacity
-              className={`py-4 rounded-xl items-center justify-start shadow-md ${
+              className={`py-4 rounded-xl items-center justify-center shadow-md ${
                 loading || !groupName.trim() ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'
               }`}
               onPress={handleCreateGroup}
@@ -171,7 +175,6 @@ export default function CreateGroupScreen() {
             </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
