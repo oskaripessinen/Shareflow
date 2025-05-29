@@ -10,7 +10,6 @@ import GoogleLogo from '../assets/images/google-logo.png';
 export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
 
-
 export default function LoginScreen() {
   const router = useRouter();
   const [initializing, setInitializing] = useState(true);
@@ -18,7 +17,6 @@ export default function LoginScreen() {
 
   useEffect(() => {
     const initializeApp = async () => {
-      
 
       GoogleSignin.configure({
         webClientId: WEB_CLIENT_ID,
@@ -29,17 +27,38 @@ export default function LoginScreen() {
       });
       console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
 
-      setInitializing(false);
+      const checkSession = async () => {
+        try {
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+          
+          if (session && session.user) {
+            router.replace('/create_group');
+            return;
+          } else {
+            console.log('No active session found');
+          }
+        } catch (error) {
+          console.log('Session check error:', error);
+        }
+        
+        setInitializing(false);
+      };
+
+      await checkSession();
     };
 
     initializeApp();
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        console.log('Auth state changed, session active.');
-      } else {
-        console.log('Auth state changed, no session.');
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      
+      if (event === 'SIGNED_IN' && session) {
+        router.replace('/create_group');
+      } else if (event === 'SIGNED_OUT') {
         setInitializing(false);
       }
     });
@@ -57,8 +76,6 @@ export default function LoginScreen() {
       const { idToken } = await GoogleSignin.getTokens();
 
       await validateToken(idToken);
-
-
       const {
         data: { user },
         error: authError,
@@ -69,8 +86,8 @@ export default function LoginScreen() {
 
       if (authError) throw authError;
 
-      if (user) {
-        const { error: upsertError } = await supabase.from('users').upsert(
+      if (user) {        
+        await supabase.from('users').upsert(
           {
             google_id: user.id,
             email: user.email,
@@ -81,10 +98,8 @@ export default function LoginScreen() {
             onConflict: 'google_id',
           },
         );
-        if (upsertError) console.warn('Could not upsert user:', upsertError);
       }
 
-      router.replace('/create_group');
     } catch (e: unknown) {
       console.error('Kirjautumisvirhe:', e);
     } finally {
@@ -95,14 +110,14 @@ export default function LoginScreen() {
   if (initializing) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" />
-        <Text>Initializing…</Text>
+        <ActivityIndicator size="large" color="#3B82F6" />
+        <Text className="mt-4 text-slate-600">Checking authentication...</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 p-4 justify-center items-center mt-10">
+    <SafeAreaView className="flex-1 p-4 justify-center items-center">
       <Text className="text-3xl font-semibold mb-8">ShareFlow</Text>
 
       <TouchableOpacity
@@ -119,7 +134,8 @@ export default function LoginScreen() {
       <View className="mt-4 h-16 justify-center items-center">
         {loading && (
           <>
-            <ActivityIndicator size='large' color="grey" />
+            <ActivityIndicator size="small" color="#3B82F6" />
+            <Text className="text-sm text-slate-500 mt-2">Authenticating...</Text>
           </>
         )}
       </View>
