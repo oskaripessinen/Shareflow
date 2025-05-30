@@ -124,7 +124,7 @@ export default function CreateGroupScreen() {
                       <Text
                         className={`p-1 ${
                           loading || !inviteEmail.trim()
-                            ? 'text-slate-300'
+                            ? 'text-slate-300 font-sans'
                             : 'text-primary font-semibold'
                         }`}
                       >
