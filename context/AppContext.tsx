@@ -1,13 +1,7 @@
-import React, {
-  createContext,
-  useContext,
-  useReducer,
-  useEffect,
-  ReactNode,
-  Dispatch,
-  SetStateAction,
-} from 'react';
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../utils/supabase';
 
 export type ExpenseCategory =
   | 'food'
@@ -18,7 +12,9 @@ export type ExpenseCategory =
   | 'health'
   | 'clothing'
   | 'other';
+
 export type InvestmentType = 'stock' | 'fund' | 'crypto' | 'etf' | 'bond' | 'other';
+
 export type ExpenseFilters = {
   month: number | 'all';
   year: number | 'all';
@@ -64,6 +60,49 @@ interface Savings {
   target: number;
 }
 
+interface AuthState {
+  googleId: string | null;
+  authLoading: boolean;
+  setGoogleId: (id: string | null) => void;
+  setAuthLoading: (loading: boolean) => void;
+  signOut: () => Promise<void>;
+  initializeAuth: () => void;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  googleId: null,
+  authLoading: true,
+  
+  setGoogleId: (googleId) => set({ googleId }),
+  setAuthLoading: (authLoading) => set({ authLoading }),
+  
+  signOut: async () => {
+    try {
+      await supabase.auth.signOut();
+      set({googleId: null });
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  },
+  
+  initializeAuth: () => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      set({
+        googleId: session?.user?.id ?? null,
+        authLoading: false,
+      });
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      set({
+        googleId: session?.user?.id ?? null,
+        authLoading: false,
+      });
+    });
+  },
+}));
+
 interface AppState {
   income: Income;
   expenses: Expense[];
@@ -71,9 +110,24 @@ interface AppState {
   goals: Goal[];
   savings: Savings;
   showTimeWindowPicker: boolean;
+
+  setIncome: (income: Income) => void;
+  setSavingsTarget: (target: number) => void;
+  addExpense: (expense: Expense) => void;
+  updateExpense: (expense: Expense) => void;
+  deleteExpense: (id: string) => void;
+  addInvestment: (investment: Investment) => void;
+  updateInvestment: (investment: Investment) => void;
+  deleteInvestment: (id: string) => void;
+  addGoal: (goal: Goal) => void;
+  updateGoal: (goal: Goal) => void;
+  deleteGoal: (id: string) => void;
+  setShowTimeWindowPicker: (show: boolean) => void;
+  loadSampleData: () => void;
+  resetState: () => void;
 }
 
-const initialState: AppState = {
+const initialState = {
   income: {
     amount: 0,
     isGross: false,
@@ -87,7 +141,7 @@ const initialState: AppState = {
   showTimeWindowPicker: false,
 };
 
-const sampleData: AppState = {
+const sampleData = {
   income: {
     amount: 3200,
     isGross: false,
@@ -97,35 +151,35 @@ const sampleData: AppState = {
       id: '1',
       amount: 850,
       description: 'Rent',
-      category: 'housing',
+      category: 'housing' as ExpenseCategory,
       date: '2025-05-01T12:00:00Z',
     },
     {
       id: '2',
       amount: 350,
       description: 'Groceries',
-      category: 'food',
+      category: 'food' as ExpenseCategory,
       date: '2025-05-05T14:30:00Z',
     },
     {
       id: '3',
       amount: 120,
       description: 'Phone and Internet',
-      category: 'utilities',
+      category: 'utilities' as ExpenseCategory,
       date: '2025-05-10T09:15:00Z',
     },
     {
       id: '4',
       amount: 75,
       description: 'Movie and Dinner',
-      category: 'entertainment',
+      category: 'entertainment' as ExpenseCategory,
       date: '2025-05-15T18:45:00Z',
     },
     {
       id: '5',
       amount: 200,
       description: 'Monthly Bus Pass',
-      category: 'transportation',
+      category: 'transportation' as ExpenseCategory,
       date: '2025-05-02T10:00:00Z',
     },
   ],
@@ -133,7 +187,7 @@ const sampleData: AppState = {
     {
       id: '1',
       name: 'Global Index Fund',
-      type: 'fund',
+      type: 'fund' as InvestmentType,
       quantity: 10,
       purchasePrice: 100,
       currentPrice: 108,
@@ -142,7 +196,7 @@ const sampleData: AppState = {
     {
       id: '2',
       name: 'Apple Inc.',
-      type: 'stock',
+      type: 'stock' as InvestmentType,
       quantity: 50,
       purchasePrice: 150,
       currentPrice: 165,
@@ -151,7 +205,7 @@ const sampleData: AppState = {
     {
       id: '3',
       name: 'Bitcoin',
-      type: 'crypto',
+      type: 'crypto' as InvestmentType,
       quantity: 0.05,
       purchasePrice: 30000,
       currentPrice: 35000,
@@ -182,155 +236,80 @@ const sampleData: AppState = {
   showTimeWindowPicker: false,
 };
 
-type Action =
-  | { type: 'SET_INCOME'; payload: Income }
-  | { type: 'SET_SAVINGS_TARGET'; payload: number }
-  | { type: 'ADD_EXPENSE'; payload: Expense }
-  | { type: 'UPDATE_EXPENSE'; payload: Expense }
-  | { type: 'DELETE_EXPENSE'; payload: string }
-  | { type: 'ADD_INVESTMENT'; payload: Investment }
-  | { type: 'UPDATE_INVESTMENT'; payload: Investment }
-  | { type: 'DELETE_INVESTMENT'; payload: string }
-  | { type: 'ADD_GOAL'; payload: Goal }
-  | { type: 'UPDATE_GOAL'; payload: Goal }
-  | { type: 'DELETE_GOAL'; payload: string }
-  | { type: 'LOAD_STATE'; payload: AppState }
-  | { type: 'SET_SHOW_TIME_WINDOW_PICKER'; payload: boolean };
-
-const appReducer = (state: AppState, action: Action): AppState => {
-  switch (action.type) {
-    case 'SET_INCOME':
-      return { ...state, income: action.payload };
-    case 'SET_SAVINGS_TARGET':
-      return { ...state, savings: { ...state.savings, target: action.payload } };
-    case 'ADD_EXPENSE':
-      return { ...state, expenses: [...state.expenses, action.payload] };
-    case 'UPDATE_EXPENSE':
-      return {
-        ...state,
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      ...initialState,
+      
+      setIncome: (income) => set({ income }),
+      setSavingsTarget: (target) => set((state) => ({ 
+        savings: { ...state.savings, target } 
+      })),
+      
+      addExpense: (expense) => set((state) => ({ 
+        expenses: [...state.expenses, expense] 
+      })),
+      updateExpense: (expense) => set((state) => ({
         expenses: state.expenses.map((exp) =>
-          exp.id === action.payload.id ? action.payload : exp,
+          exp.id === expense.id ? expense : exp
         ),
-      };
-    case 'DELETE_EXPENSE':
-      return {
-        ...state,
-        expenses: state.expenses.filter((exp) => exp.id !== action.payload),
-      };
-    case 'ADD_INVESTMENT':
-      return { ...state, investments: [...state.investments, action.payload] };
-    case 'UPDATE_INVESTMENT':
-      return {
-        ...state,
+      })),
+      deleteExpense: (id) => set((state) => ({
+        expenses: state.expenses.filter((exp) => exp.id !== id),
+      })),
+      
+      addInvestment: (investment) => set((state) => ({ 
+        investments: [...state.investments, investment] 
+      })),
+      updateInvestment: (investment) => set((state) => ({
         investments: state.investments.map((inv) =>
-          inv.id === action.payload.id ? action.payload : inv,
+          inv.id === investment.id ? investment : inv
         ),
-      };
-    case 'DELETE_INVESTMENT':
-      return {
-        ...state,
-        investments: state.investments.filter((inv) => inv.id !== action.payload),
-      };
-    case 'ADD_GOAL':
-      return { ...state, goals: [...state.goals, action.payload] };
-    case 'UPDATE_GOAL':
-      return {
-        ...state,
-        goals: state.goals.map((goal) => (goal.id === action.payload.id ? action.payload : goal)),
-      };
-    case 'DELETE_GOAL':
-      return {
-        ...state,
-        goals: state.goals.filter((goal) => goal.id !== action.payload),
-      };
-    case 'LOAD_STATE':
-      const loadedState = action.payload;
-      return {
-        ...initialState,
-        ...loadedState,
-        showTimeWindowPicker:
-          typeof loadedState.showTimeWindowPicker === 'boolean'
-            ? loadedState.showTimeWindowPicker
-            : initialState.showTimeWindowPicker,
-      };
-    case 'SET_SHOW_TIME_WINDOW_PICKER':
-      return { ...state, showTimeWindowPicker: action.payload };
-    default:
-      return state;
-  }
-};
-
-interface AppContextType extends AppState {
-  setIncome: (income: Income) => void;
-  setSavingsTarget: (target: number) => void;
-  addExpense: (expense: Expense) => void;
-  updateExpense: (expense: Expense) => void;
-  deleteExpense: (id: string) => void;
-  addInvestment: (investment: Investment) => void;
-  updateInvestment: (investment: Investment) => void;
-  deleteInvestment: (id: string) => void;
-  addGoal: (goal: Goal) => void;
-  updateGoal: (goal: Goal) => void;
-  deleteGoal: (id: string) => void;
-  setShowTimeWindowPicker: Dispatch<SetStateAction<boolean>>;
-}
-
-const AppContext = createContext<AppContextType | undefined>(undefined);
-
-export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(appReducer, initialState);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const savedData = await AsyncStorage.getItem('financialAppData');
-      if (savedData) {
-        dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedData) });
-      } else {
-        dispatch({ type: 'LOAD_STATE', payload: sampleData });
-      }
-    };
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    const saveData = async () => {
-      await AsyncStorage.setItem('financialAppData', JSON.stringify(state));
-    };
-    if (state !== initialState) {
-      saveData();
+      })),
+      deleteInvestment: (id) => set((state) => ({
+        investments: state.investments.filter((inv) => inv.id !== id),
+      })),
+      
+      addGoal: (goal) => set((state) => ({ 
+        goals: [...state.goals, goal] 
+      })),
+      updateGoal: (goal) => set((state) => ({
+        goals: state.goals.map((g) =>
+          g.id === goal.id ? goal : g
+        ),
+      })),
+      deleteGoal: (id) => set((state) => ({
+        goals: state.goals.filter((goal) => goal.id !== id),
+      })),
+      
+      setShowTimeWindowPicker: (showTimeWindowPicker) => set({ showTimeWindowPicker }),
+      
+      loadSampleData: () => set(sampleData),
+      resetState: () => set(initialState),
+    }),
+    {
+      name: 'financial-app-storage',
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => {
+        const { ...persistedState } = state;
+        return persistedState;
+      },
     }
-  }, [state]);
+  )
+);
 
-  const value: AppContextType = {
-    ...state,
-    setIncome: (income) => dispatch({ type: 'SET_INCOME', payload: income }),
-    setSavingsTarget: (target) => dispatch({ type: 'SET_SAVINGS_TARGET', payload: target }),
-    addExpense: (expense) => dispatch({ type: 'ADD_EXPENSE', payload: expense }),
-    updateExpense: (expense) => dispatch({ type: 'UPDATE_EXPENSE', payload: expense }),
-    deleteExpense: (id) => dispatch({ type: 'DELETE_EXPENSE', payload: id }),
-    addInvestment: (investment) => dispatch({ type: 'ADD_INVESTMENT', payload: investment }),
-    updateInvestment: (investment) => dispatch({ type: 'UPDATE_INVESTMENT', payload: investment }),
-    deleteInvestment: (id) => dispatch({ type: 'DELETE_INVESTMENT', payload: id }),
-    addGoal: (goal) => dispatch({ type: 'ADD_GOAL', payload: goal }),
-    updateGoal: (goal) => dispatch({ type: 'UPDATE_GOAL', payload: goal }),
-    deleteGoal: (id) => dispatch({ type: 'DELETE_GOAL', payload: id }),
-    setShowTimeWindowPicker: (valueOrFn) => {
-      if (typeof valueOrFn === 'function') {
-        const newValue = valueOrFn(state.showTimeWindowPicker);
-        dispatch({ type: 'SET_SHOW_TIME_WINDOW_PICKER', payload: newValue });
-      } else {
-        dispatch({ type: 'SET_SHOW_TIME_WINDOW_PICKER', payload: valueOrFn });
-      }
-    },
+export const useAuth = () => {
+  const auth = useAuthStore();
+  return {
+    googleId: auth.googleId,
+    authLoading: auth.authLoading,
+    setGoogleId: auth.setGoogleId,
+    signOut: auth.signOut,
   };
-
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
-export const useAppContext = () => {
-  const context = useContext(AppContext);
-  if (context === undefined) {
-    throw new Error('useAppContext must be used within an AppProvider');
-  }
-  return context;
+export const useAppContext = useAppStore;
+
+export const initializeApp = () => {
+  useAuthStore.getState().initializeAuth();
 };

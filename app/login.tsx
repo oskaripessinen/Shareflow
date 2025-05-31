@@ -4,6 +4,7 @@ import { supabase } from '../utils/supabase';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { validateToken } from '../api/validateToken';
+import { useAuth } from '../context/AppContext';
 
 import GoogleLogo from '../assets/images/google-logo.png';
 
@@ -14,6 +15,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
+  const { setGoogleId } = useAuth();
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -86,7 +88,8 @@ export default function LoginScreen() {
 
       if (authError) throw authError;
 
-      if (user) {        
+      if (user) {   
+        setGoogleId(user.id);     
         await supabase.from('users').upsert(
           {
             google_id: user.id,
@@ -101,7 +104,7 @@ export default function LoginScreen() {
       }
 
     } catch (e: unknown) {
-      console.error('Kirjautumisvirhe:', e);
+      console.error('Login error:', e);
     } finally {
       setLoading(false);
     }

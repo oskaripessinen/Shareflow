@@ -9,8 +9,10 @@ import {
   ScrollView,
 
 } from 'react-native';
+import { useAuth } from '../context/AppContext';
 import { useRouter } from 'expo-router';
 import { Users, X } from 'lucide-react-native';
+import { groupApi } from 'api/groups';
 
 export default function CreateGroupScreen() {
   const router = useRouter();
@@ -19,6 +21,7 @@ export default function CreateGroupScreen() {
   const [invitees, setInvitees] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isEmailInputFocused, setIsEmailInputFocused] = useState(false);
+  const { googleId } = useAuth();
 
   useEffect(() => {
     if (inviteEmail.endsWith('.com')) {
@@ -52,7 +55,13 @@ export default function CreateGroupScreen() {
     }
     setLoading(true);
     try {
+      const groupData = {
+        name: groupName.trim(),
+        invitees: invitees.length > 0 ? invitees : undefined,
+      };
+      groupApi.createGroup(groupData, googleId);
       console.log('Group created:', groupName, 'with invitees:', invitees);
+
 
       if (router.canGoBack()) {
         router.back();
