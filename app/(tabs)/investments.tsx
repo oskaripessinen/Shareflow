@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { View, Text, Modal, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAppContext } from '@/../context/AppContext';
+import { useAppStore } from '@/../context/AppContext';
 import InvestmentList from '@/../components/investments/InvestmentList';
 import AddInvestmentForm from '@/../components/investments/AddInvestmentForm';
 import InvestmentSummary from '@/../components/investments/InvestmentSummary';
 import InvestmentChart from '@/../components/investments/InvestmentChart';
 
 export default function InvestmentsScreen() {
-  const { investments } = useAppContext();
+  const { investments } = useAppStore();
   const [showAddInvestment, setShowAddInvestment] = useState(false);
 
   const portfolioValue = investments.reduce((sum, inv) => sum + inv.quantity * inv.currentPrice, 0);

@@ -1,15 +1,11 @@
 import React from 'react';
 import { View, Text, Pressable, FlatList, Platform } from 'react-native';
 import { X, Check } from 'lucide-react-native';
-
-export interface Group {
-  id: string;
-  name: string;
-}
+import { Group } from '@/../types/groups';
 
 interface SelectGroupProps {
   groups: Group[];
-  currentGroupId: string | null;
+  currentGroupId: number | null;
   onSelectGroup: (group: Group) => void;
   onClose: () => void;
 }
@@ -55,7 +51,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({
       <FlatList
         data={groups}
         renderItem={renderGroupItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 20 : 0 }}
       />
     </Pressable>

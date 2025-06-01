@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, SafeAreaView, Platform, Modal } from 'react-native';
 import { Users, ChevronDown } from 'lucide-react-native';
-import SelectGroup, { Group } from '@/../components/common/SelectGroup';
-
-const DUMMY_GROUPS_DATA: Group[] = [
-  { id: '1', name: 'Personal' },
-  { id: '2', name: 'Work Project' },
-  { id: '3', name: 'Family Finances' },
-  { id: '4', name: 'Holiday Trip 2025' },
-];
+import SelectGroup from '@/../components/common/SelectGroup';
+import { useGroups } from '@/../context/AppContext';
+import { Group } from '@/../types/groups';
 
 const GroupHeader = () => {
-  const [currentGroup, setCurrentGroup] = useState<Group | null>(DUMMY_GROUPS_DATA[0] || null);
-  const [availableGroups] = useState<Group[]>(DUMMY_GROUPS_DATA);
+  const { groups } = useGroups();
+  const [currentGroup, setCurrentGroup] = useState<Group | null>(groups[0] || null);
+  const [availableGroups] = useState<Group[]>(groups);
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
+  console.log('Available groups:', groups);
 
   const handleSelectGroup = (group: Group) => {
     setCurrentGroup(group);

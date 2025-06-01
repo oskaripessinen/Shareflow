@@ -4,7 +4,8 @@ import { supabase } from '../utils/supabase';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { validateToken } from '../api/validateToken';
-import { useAuth } from '../context/AppContext';
+import { useAuth, useGroups } from '../context/AppContext';
+import { groupApi } from 'api/groups';
 
 import GoogleLogo from '../assets/images/google-logo.png';
 
@@ -16,6 +17,7 @@ export default function LoginScreen() {
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
   const { setGoogleId } = useAuth();
+  const { setGroups } = useGroups();
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -36,6 +38,11 @@ export default function LoginScreen() {
           } = await supabase.auth.getSession();
           
           if (session && session.user) {
+            groupApi.getUserGroups()
+              .then((userGroups) => {
+                console.log('User groups fetched:', userGroups);
+                setGroups(userGroups);
+              });
             router.replace('/create_group');
             return;
           } else {

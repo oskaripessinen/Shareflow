@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../utils/supabase';
+import { Group, GroupMember } from '../types/groups';
 
 export type ExpenseCategory =
   | 'food'
@@ -311,4 +312,108 @@ export const useAuth = () => {
 
 export const initializeApp = () => {
   useAuthStore.getState().initializeAuth();
+};
+
+
+interface GroupState {
+  groups: Group[];
+  userGroups: Group[];
+  groupMembers: { [groupId: number]: GroupMember[] };
+  currentGroup: Group | null;
+  groupsLoading: boolean;
+
+  setGroups: (groups: Group[]) => void;
+  setUserGroups: (groups: Group[]) => void;
+  setGroupMembers: (groupId: number, members: GroupMember[]) => void;
+  setCurrentGroup: (group: Group | null) => void;
+  setGroupsLoading: (loading: boolean) => void;
+  addGroup: (group: Group) => void;
+  updateGroup: (group: Group) => void;
+  deleteGroup: (groupId: number) => void;
+  joinGroup: (group: Group) => void;
+  leaveGroup: (groupId: number) => void;
+  addMemberToGroup: (groupId: number, member: GroupMember) => void;
+  removeMemberFromGroup: (groupId: number, userId: string) => void;
+}
+
+export const useGroupStore = create<GroupState>((set) => ({
+  groups: [],
+  userGroups: [],
+  groupMembers: {},
+  currentGroup: null,
+  groupsLoading: false,
+
+  setGroups: (groups) => set({ groups }),
+  setUserGroups: (userGroups) => set({ userGroups }),
+  setGroupMembers: (groupId, members) => set((state) => ({
+    groupMembers: { ...state.groupMembers, [groupId]: members }
+  })),
+  setCurrentGroup: (currentGroup) => set({ currentGroup }),
+  setGroupsLoading: (groupsLoading) => set({ groupsLoading }),
+
+  addGroup: (group) => set((state) => ({
+    groups: [...state.groups, group],
+    userGroups: [...state.userGroups, group]
+  })),
+
+  updateGroup: (group) => set((state) => ({
+    groups: state.groups.map((g) => g.id === group.id ? group : g),
+    userGroups: state.userGroups.map((g) => g.id === group.id ? group : g),
+    currentGroup: state.currentGroup?.id === group.id ? group : state.currentGroup
+  })),
+
+  deleteGroup: (groupId) => set((state) => ({
+    groups: state.groups.filter((g) => g.id !== groupId),
+    userGroups: state.userGroups.filter((g) => g.id !== groupId),
+    currentGroup: state.currentGroup?.id === groupId ? null : state.currentGroup,
+    groupMembers: Object.fromEntries(
+      Object.entries(state.groupMembers).filter(([id]) => Number(id) !== groupId)
+    )
+  })),
+
+  joinGroup: (group) => set((state) => ({
+    userGroups: [...state.userGroups, group]
+  })),
+
+  leaveGroup: (groupId) => set((state) => ({
+    userGroups: state.userGroups.filter((g) => g.id !== groupId),
+    currentGroup: state.currentGroup?.id === groupId ? null : state.currentGroup
+  })),
+
+  addMemberToGroup: (groupId, member) => set((state) => ({
+    groupMembers: {
+      ...state.groupMembers,
+      [groupId]: [...(state.groupMembers[groupId] || []), member]
+    }
+  })),
+
+  removeMemberFromGroup: (groupId, userId) => set((state) => ({
+    groupMembers: {
+      ...state.groupMembers,
+      [groupId]: (state.groupMembers[groupId] || []).filter((m) => m.user_id !== userId)
+    }
+  }))
+}));
+
+export const useGroups = () => {
+  const groupStore = useGroupStore();
+  return {
+    groups: groupStore.groups,
+    userGroups: groupStore.userGroups,
+    groupMembers: groupStore.groupMembers,
+    currentGroup: groupStore.currentGroup,
+    groupsLoading: groupStore.groupsLoading,
+    setGroups: groupStore.setGroups,
+    setUserGroups: groupStore.setUserGroups,
+    setGroupMembers: groupStore.setGroupMembers,
+    setCurrentGroup: groupStore.setCurrentGroup,
+    setGroupsLoading: groupStore.setGroupsLoading,
+    addGroup: groupStore.addGroup,
+    updateGroup: groupStore.updateGroup,
+    deleteGroup: groupStore.deleteGroup,
+    joinGroup: groupStore.joinGroup,
+    leaveGroup: groupStore.leaveGroup,
+    addMemberToGroup: groupStore.addMemberToGroup,
+    removeMemberFromGroup: groupStore.removeMemberFromGroup,
+  };
 };

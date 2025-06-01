@@ -10,7 +10,7 @@ export const groupApi = {
       console.log('User ID:', userId);
       const createRequest: CreateGroupRequest = {
         name: groupData.name,
-        description: 'dsa',
+        description: '',
         created_by: userId
         
       };
@@ -45,9 +45,9 @@ export const groupApi = {
     }
   },
 
-  getUserGroups: async (userId: string): Promise<Group[]> => {
+  getUserGroups: async (): Promise<Group[]> => {
     try {
-      const response = await apiClient.get<GroupsResponse>(`/api/groups/user/${userId}`);
+      const response = await apiClient.get<GroupsResponse>(`/api/groups/user/my-groups`);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch user groups:', error);
