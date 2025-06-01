@@ -1,10 +1,8 @@
 import '../global.css';
-import { Stack, useSegments } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
 import { useFrameworkReady } from '@/../hooks/useFrameworkReady';
-import { AppProvider } from '@/../context/AppContext';
-import GroupHeader from '@/../components/common/GroupHeader';
+import { initializeApp } from '@/../context/AppContext';
 import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -12,16 +10,20 @@ import { useEffect } from 'react';
 
 SplashScreen.preventAutoHideAsync();
 
-function AppContent() {
-  const segments = useSegments() as string[];
-  const showGroupHeader = segments.includes('(tabs)');
-
-
+export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
+
+  useEffect(() => {
+    try {
+      initializeApp();
+    } catch (error) {
+      console.error('App initialization error:', error);
+    }
+  }, []);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -30,27 +32,24 @@ function AppContent() {
   }, [fontsLoaded]);
 
 
+  try {
+    useFrameworkReady();
+  } catch (error) {
+    console.error('Framework initialization error:', error);
+  }
+
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <View className="flex-1 bg-background">
-      {showGroupHeader && <GroupHeader />}
-      <View className="flex-1">
-        <Stack screenOptions={{ headerShown: false }} initialRouteName="login" />
-      </View>
+    <>
+      <Stack screenOptions={{ headerShown: false }} initialRouteName="login">
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="create_group" options={{ headerShown: false }} />
+      </Stack>
       <StatusBar style="dark" translucent={true} backgroundColor="transparent" />
-    </View>
-  );
-}
-
-export default function RootLayout() {
-  useFrameworkReady();
-
-  return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    </>
   );
 }

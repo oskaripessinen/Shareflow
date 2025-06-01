@@ -63,6 +63,7 @@ interface Savings {
 interface AuthState {
   googleId: string | null;
   authLoading: boolean;
+  
   setGoogleId: (id: string | null) => void;
   setAuthLoading: (loading: boolean) => void;
   signOut: () => Promise<void>;
@@ -307,8 +308,6 @@ export const useAuth = () => {
     signOut: auth.signOut,
   };
 };
-
-export const useAppContext = useAppStore;
 
 export const initializeApp = () => {
   useAuthStore.getState().initializeAuth();

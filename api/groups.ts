@@ -7,15 +7,17 @@ export const groupApi = {
   createGroup: async (groupData: { name: string; invitees?: string[] }, userId: string): Promise<Group> => {
     try {
       console.log('Creating group:', groupData);
-      
+      console.log('User ID:', userId);
       const createRequest: CreateGroupRequest = {
         name: groupData.name,
+        description: 'dsa',
         created_by: userId
+        
       };
       
       const response = await apiClient.post<CreateGroupResponse>(
         '/api/groups', 
-        createRequest
+        createRequest,
       );
       
       if (!response.success) {
@@ -29,7 +31,7 @@ export const groupApi = {
         
         for (const email of groupData.invitees) {
           try {
-            console.log(`Would invite user with email: ${email}`);
+            console.log(`invite user with email: ${email}`);
           } catch (inviteError) {
             console.warn(`Failed to invite ${email}:`, inviteError);
           }

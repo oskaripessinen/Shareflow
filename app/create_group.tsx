@@ -59,6 +59,11 @@ export default function CreateGroupScreen() {
         name: groupName.trim(),
         invitees: invitees.length > 0 ? invitees : undefined,
       };
+      if (!googleId) {
+        console.error('Google ID is not available');
+        return;
+      };
+      
       groupApi.createGroup(groupData, googleId);
       console.log('Group created:', groupName, 'with invitees:', invitees);
 

@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAppContext } from '@/../context/AppContext';
+import { useAppStore } from '@/../context/AppContext';
 import DashboardSummary from '@/../components/dashboard/DashboardSummary';
 import MonthSelector from '@/../components/common/MonthSelector';
 import ExpensePieChart from '@/../components/dashboard/ExpensePieChart';
 import { getCurrentMonth, getCurrentYear } from '@/../utils/dateUtils';
 
 export default function DashboardScreen() {
-  const { income, expenses, savings } = useAppContext();
+  const { income, expenses, savings } = useAppStore();
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
   const [selectedYear, setSelectedYear] = useState(getCurrentYear());
 

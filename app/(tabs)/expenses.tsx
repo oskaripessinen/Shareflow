@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { View, Text, Pressable, Modal, FlatList, ScrollView } from 'react-native';
 import { Plus, ChevronDown } from 'lucide-react-native';
-import { Expense, ExpenseCategory, useAppContext } from '@/../context/AppContext';
+import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
 
@@ -24,66 +24,20 @@ const allCategories: ExpenseCategory[] = [
 ];
 
 export default function ExpensesScreen() {
-  const { showTimeWindowPicker, setShowTimeWindowPicker } = useAppContext();
+  const { showTimeWindowPicker, setShowTimeWindowPicker, expenses } = useAppStore();
   const [selectedTimeWindow, setSelectedTimeWindow] = useState(timeWindowOptions[0].value);
   const [selectedCategories, setSelectedCategories] = useState<ExpenseCategory[]>([]);
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
 
-  const filteredExpenses: Expense[] = [
-    { id: '1', description: 'Groceries', date: '2023-05-01', amount: 50.0, category: 'food' },
-    { id: '2', description: 'Rent', date: '2023-05-01', amount: 500.0, category: 'housing' },
-    {
-      id: '3',
-      description: 'Gym Membership',
-      date: '2023-05-01',
-      amount: 30.0,
-      category: 'health',
-    },
-    {
-      id: '4',
-      description: 'Electricity Bill',
-      date: '2023-05-02',
-      amount: 100.0,
-      category: 'utilities',
-    },
-    {
-      id: '5',
-      description: 'Internet Bill',
-      date: '2023-05-03',
-      amount: 40.0,
-      category: 'utilities',
-    },
-    { id: '6', description: 'Dining Out', date: '2023-05-04', amount: 60.0, category: 'food' },
-    {
-      id: '7',
-      description: 'Car Fuel',
-      date: '2023-05-05',
-      amount: 70.0,
-      category: 'transportation',
-    },
-    {
-      id: '8',
-      description: 'Movie Tickets',
-      date: '2023-05-06',
-      amount: 25.0,
-      category: 'entertainment',
-    },
-    {
-      id: '9',
-      description: 'Clothing',
-      date: '2023-05-07',
-      amount: 120.0,
-      category: 'entertainment',
-    },
-    {
-      id: '11',
-      description: 'Phone Bill',
-      date: '2023-05-09',
-      amount: 30.0,
-      category: 'utilities',
-    },
-    { id: '12', description: 'Coffee', date: '2023-05-10', amount: 15.0, category: 'food' },
-  ];
+  // Käytä oikeita expenses-tietoja storesta sen sijaan että kovakoodaat ne
+  const filteredExpenses: Expense[] = expenses.filter((expense) => {
+    // Lisää tänne aikaväli- ja kategoria-filtteröinti
+    if (selectedCategories.length > 0 && !selectedCategories.includes(expense.category)) {
+      return false;
+    }
+    // Lisää aikaväli-filtteri tarpeen mukaan
+    return true;
+  });
 
   const handleTimeWindowChange = (value: string) => {
     setSelectedTimeWindow(value);
