@@ -21,7 +21,6 @@ export default function LoginScreen() {
 
   useEffect(() => {
     const initializeApp = async () => {
-
       GoogleSignin.configure({
         webClientId: WEB_CLIENT_ID,
         offlineAccess: true,
@@ -36,13 +35,12 @@ export default function LoginScreen() {
           const {
             data: { session },
           } = await supabase.auth.getSession();
-          
+
           if (session && session.user) {
-            groupApi.getUserGroups()
-              .then((userGroups) => {
-                console.log('User groups fetched:', userGroups);
-                setGroups(userGroups);
-              });
+            groupApi.getUserGroups().then((userGroups) => {
+              console.log('User groups fetched:', userGroups);
+              setGroups(userGroups);
+            });
             router.replace('/create_group');
             return;
           } else {
@@ -51,7 +49,7 @@ export default function LoginScreen() {
         } catch (error) {
           console.log('Session check error:', error);
         }
-        
+
         setInitializing(false);
       };
 
@@ -64,7 +62,7 @@ export default function LoginScreen() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email);
-      
+
       if (event === 'SIGNED_IN' && session) {
         router.replace('/create_group');
       } else if (event === 'SIGNED_OUT') {
@@ -95,8 +93,8 @@ export default function LoginScreen() {
 
       if (authError) throw authError;
 
-      if (user) {   
-        setGoogleId(user.id);     
+      if (user) {
+        setGoogleId(user.id);
         await supabase.from('users').upsert(
           {
             google_id: user.id,
@@ -109,7 +107,6 @@ export default function LoginScreen() {
           },
         );
       }
-
     } catch (e: unknown) {
       console.error('Login error:', e);
     } finally {

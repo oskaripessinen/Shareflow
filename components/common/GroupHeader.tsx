@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, SafeAreaView, Platform, Modal } from 'react-native';
-import { Users, ChevronDown } from 'lucide-react-native';
-import SelectGroup from '@/../components/common/SelectGroup';
+import { Users, ChevronDown, EllipsisVertical } from 'lucide-react-native';
+import SelectGroup from './SelectGroup';
+import OptionsModal from './OptionsModal';
 import { useGroups } from '@/../context/AppContext';
 import { Group } from '@/../types/groups';
 
@@ -10,6 +11,7 @@ const GroupHeader = () => {
   const [currentGroup, setCurrentGroup] = useState<Group | null>(groups[0] || null);
   const [availableGroups] = useState<Group[]>(groups);
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
+  const [isOptionsModalVisible, setOptionsModal] = useState(false);
   console.log('Available groups:', groups);
 
   const handleSelectGroup = (group: Group) => {
@@ -24,7 +26,10 @@ const GroupHeader = () => {
         className="bg-slate-50 shadow-sm z-20"
         style={{ paddingTop: Platform.OS === 'android' ? 40 : 0 }}
       >
-        <View className="flex-row items-center justify-between px-4 mb-3 pt-5 border-b-1 border-slate-600">
+        <View className="flex-row items-center px-4 mb-3 pt-5 border-b-1 border-slate-600">
+          <Pressable className="opacity-0 py-1 px-3">
+            <EllipsisVertical size={22} color="#475569" />
+          </Pressable>
           <Pressable
             onPress={() => setIsGroupSelectorModalVisible(true)}
             className="justify-center flex-row items-center flex-1"
@@ -38,6 +43,9 @@ const GroupHeader = () => {
               {currentGroup ? currentGroup.name : 'Select Group'}
             </Text>
             <ChevronDown size={20} color="#475569" />
+          </Pressable>
+          <Pressable onPress={() => setOptionsModal(true)} className="py-1 px-3">
+            <EllipsisVertical size={22} color="#475569" />
           </Pressable>
         </View>
       </SafeAreaView>
@@ -60,6 +68,18 @@ const GroupHeader = () => {
             onSelectGroup={handleSelectGroup}
             onClose={() => setIsGroupSelectorModalVisible(false)}
           />
+        </Pressable>
+      </Modal>
+      <Modal
+        visible={isOptionsModalVisible}
+        animationType="fade"
+        onRequestClose={() => setOptionsModal(false)}
+        presentationStyle="overFullScreen"
+        backdropColor="transparent"
+        statusBarTranslucent={true}
+      >
+        <Pressable className="flex-1 justify-end" onPress={() => setOptionsModal(false)}>
+          <OptionsModal onClose={() => setOptionsModal(false)} />
         </Pressable>
       </Modal>
     </>

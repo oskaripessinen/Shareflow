@@ -10,12 +10,12 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { X } from 'lucide-react-native';
-import { useAppContext } from '@/../context/AppContext';
+import { useAppStore } from '@/../context/AppContext';
 import { Picker } from '@react-native-picker/picker';
 import { getMonthOptions, getYearOptions } from '@/../utils/dateUtils';
 
 export default function AddGoalForm({ onClose }: { onClose: () => void }) {
-  const { addGoal } = useAppContext();
+  const { addGoal } = useAppStore();
   const [title, setTitle] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [currentAmount, setCurrentAmount] = useState('');

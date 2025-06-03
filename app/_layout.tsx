@@ -3,10 +3,14 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/../hooks/useFrameworkReady';
 import { initializeApp } from '@/../context/AppContext';
-import { useFonts, Poppins_400Regular, Poppins_600SemiBold, Poppins_700Bold } from '@expo-google-fonts/poppins';
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from '@expo-google-fonts/poppins';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-
 
 SplashScreen.preventAutoHideAsync();
 
@@ -30,7 +34,6 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
-
 
   try {
     useFrameworkReady();

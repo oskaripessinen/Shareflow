@@ -2,16 +2,15 @@ import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { Investment } from '@/../context/AppContext';
 import { formatDate } from '@/../utils/dateUtils';
 import { TrendingUp, TrendingDown, Edit, Trash } from 'lucide-react-native';
-import { useAppContext } from '@/../context/AppContext';
+import { useAppStore } from '@/../context/AppContext';
 
 interface InvestmentListProps {
   investments: Investment[];
 }
 
 export default function InvestmentList({ investments }: InvestmentListProps) {
-  const { deleteInvestment } = useAppContext();
+  const { deleteInvestment } = useAppStore();
 
-  // Type information with colors and labels
   const typeInfo = {
     stock: { color: '#0891b2', label: 'Stock' }, // Cyan-600
     fund: { color: '#0ea5e9', label: 'Fund' }, // Sky-500
@@ -22,7 +21,6 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
   };
 
   const handleEdit = (investment: Investment) => {
-    // Implement edit functionality
     console.log('Edit investment:', investment);
   };
 

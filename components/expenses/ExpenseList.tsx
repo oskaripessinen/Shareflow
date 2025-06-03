@@ -2,14 +2,14 @@ import { View, Text, FlatList, Pressable } from 'react-native';
 import { Expense } from '@/../context/AppContext';
 import { formatDate } from '@/../utils/dateUtils';
 import { Edit, Trash } from 'lucide-react-native';
-import { useAppContext } from '@/../context/AppContext';
+import { useAppStore } from '@/../context/AppContext';
 
 interface ExpenseListProps {
   expenses: Expense[];
 }
 
 export default function ExpenseList({ expenses }: ExpenseListProps) {
-  const { deleteExpense } = useAppContext();
+  const { deleteExpense } = useAppStore();
 
   const renderExpenseItem = ({ item }: { item: Expense }) => {
     return (

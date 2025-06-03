@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, Pressable, View } from 'react-native';
-import { Image, Edit3, X } from 'lucide-react-native'; // Lisätty XIcon
+import { Image, Edit3, X } from 'lucide-react-native';
 
 interface AddExpenseProps {
   onClose: () => void;

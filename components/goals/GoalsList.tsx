@@ -3,17 +3,16 @@ import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
 import { Goal } from '@/../context/AppContext';
 import { formatDate } from '@/../utils/dateUtils';
 import { Edit, Trash } from 'lucide-react-native';
-import { useAppContext } from '@/../context/AppContext';
+import { useAppStore } from '@/../context/AppContext';
 
 interface GoalsListProps {
   goals: Goal[];
 }
 
 export default function GoalsList({ goals }: GoalsListProps) {
-  const { deleteGoal } = useAppContext();
+  const { deleteGoal } = useAppStore();
 
   const handleEdit = (goal: Goal) => {
-    // Implement edit functionality
     console.log('Edit goal:', goal);
   };
 

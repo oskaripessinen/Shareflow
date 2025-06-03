@@ -10,12 +10,12 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { X } from 'lucide-react-native';
-import { useAppContext } from '@/../context/AppContext';
+import { useAppStore } from '@/../context/AppContext';
 import type { InvestmentType } from '@/../context/AppContext';
 import { Picker } from '@react-native-picker/picker';
 
 export default function AddInvestmentForm({ onClose }: { onClose: () => void }) {
-  const { addInvestment } = useAppContext();
+  const { addInvestment } = useAppStore();
   const [name, setName] = useState('');
   const [type, setType] = useState<InvestmentType>('stock');
   const [quantity, setQuantity] = useState('');

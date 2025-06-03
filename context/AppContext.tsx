@@ -64,7 +64,7 @@ interface Savings {
 interface AuthState {
   googleId: string | null;
   authLoading: boolean;
-  
+
   setGoogleId: (id: string | null) => void;
   setAuthLoading: (loading: boolean) => void;
   signOut: () => Promise<void>;
@@ -75,19 +75,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   googleId: null,
   authLoading: true,
-  
+
   setGoogleId: (googleId) => set({ googleId }),
   setAuthLoading: (authLoading) => set({ authLoading }),
-  
+
   signOut: async () => {
     try {
       await supabase.auth.signOut();
-      set({googleId: null });
+      set({ googleId: null });
     } catch (error) {
       console.error('Sign out error:', error);
     }
   },
-  
+
   initializeAuth: () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       set({
@@ -242,50 +242,56 @@ export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
       ...initialState,
-      
+
       setIncome: (income) => set({ income }),
-      setSavingsTarget: (target) => set((state) => ({ 
-        savings: { ...state.savings, target } 
-      })),
-      
-      addExpense: (expense) => set((state) => ({ 
-        expenses: [...state.expenses, expense] 
-      })),
-      updateExpense: (expense) => set((state) => ({
-        expenses: state.expenses.map((exp) =>
-          exp.id === expense.id ? expense : exp
-        ),
-      })),
-      deleteExpense: (id) => set((state) => ({
-        expenses: state.expenses.filter((exp) => exp.id !== id),
-      })),
-      
-      addInvestment: (investment) => set((state) => ({ 
-        investments: [...state.investments, investment] 
-      })),
-      updateInvestment: (investment) => set((state) => ({
-        investments: state.investments.map((inv) =>
-          inv.id === investment.id ? investment : inv
-        ),
-      })),
-      deleteInvestment: (id) => set((state) => ({
-        investments: state.investments.filter((inv) => inv.id !== id),
-      })),
-      
-      addGoal: (goal) => set((state) => ({ 
-        goals: [...state.goals, goal] 
-      })),
-      updateGoal: (goal) => set((state) => ({
-        goals: state.goals.map((g) =>
-          g.id === goal.id ? goal : g
-        ),
-      })),
-      deleteGoal: (id) => set((state) => ({
-        goals: state.goals.filter((goal) => goal.id !== id),
-      })),
-      
+      setSavingsTarget: (target) =>
+        set((state) => ({
+          savings: { ...state.savings, target },
+        })),
+
+      addExpense: (expense) =>
+        set((state) => ({
+          expenses: [...state.expenses, expense],
+        })),
+      updateExpense: (expense) =>
+        set((state) => ({
+          expenses: state.expenses.map((exp) => (exp.id === expense.id ? expense : exp)),
+        })),
+      deleteExpense: (id) =>
+        set((state) => ({
+          expenses: state.expenses.filter((exp) => exp.id !== id),
+        })),
+
+      addInvestment: (investment) =>
+        set((state) => ({
+          investments: [...state.investments, investment],
+        })),
+      updateInvestment: (investment) =>
+        set((state) => ({
+          investments: state.investments.map((inv) =>
+            inv.id === investment.id ? investment : inv,
+          ),
+        })),
+      deleteInvestment: (id) =>
+        set((state) => ({
+          investments: state.investments.filter((inv) => inv.id !== id),
+        })),
+
+      addGoal: (goal) =>
+        set((state) => ({
+          goals: [...state.goals, goal],
+        })),
+      updateGoal: (goal) =>
+        set((state) => ({
+          goals: state.goals.map((g) => (g.id === goal.id ? goal : g)),
+        })),
+      deleteGoal: (id) =>
+        set((state) => ({
+          goals: state.goals.filter((goal) => goal.id !== id),
+        })),
+
       setShowTimeWindowPicker: (showTimeWindowPicker) => set({ showTimeWindowPicker }),
-      
+
       loadSampleData: () => set(sampleData),
       resetState: () => set(initialState),
     }),
@@ -296,8 +302,8 @@ export const useAppStore = create<AppState>()(
         const { ...persistedState } = state;
         return persistedState;
       },
-    }
-  )
+    },
+  ),
 );
 
 export const useAuth = () => {
@@ -313,7 +319,6 @@ export const useAuth = () => {
 export const initializeApp = () => {
   useAuthStore.getState().initializeAuth();
 };
-
 
 interface GroupState {
   groups: Group[];
@@ -345,54 +350,62 @@ export const useGroupStore = create<GroupState>((set) => ({
 
   setGroups: (groups) => set({ groups }),
   setUserGroups: (userGroups) => set({ userGroups }),
-  setGroupMembers: (groupId, members) => set((state) => ({
-    groupMembers: { ...state.groupMembers, [groupId]: members }
-  })),
+  setGroupMembers: (groupId, members) =>
+    set((state) => ({
+      groupMembers: { ...state.groupMembers, [groupId]: members },
+    })),
   setCurrentGroup: (currentGroup) => set({ currentGroup }),
   setGroupsLoading: (groupsLoading) => set({ groupsLoading }),
 
-  addGroup: (group) => set((state) => ({
-    groups: [...state.groups, group],
-    userGroups: [...state.userGroups, group]
-  })),
+  addGroup: (group) =>
+    set((state) => ({
+      groups: [...state.groups, group],
+      userGroups: [...state.userGroups, group],
+    })),
 
-  updateGroup: (group) => set((state) => ({
-    groups: state.groups.map((g) => g.id === group.id ? group : g),
-    userGroups: state.userGroups.map((g) => g.id === group.id ? group : g),
-    currentGroup: state.currentGroup?.id === group.id ? group : state.currentGroup
-  })),
+  updateGroup: (group) =>
+    set((state) => ({
+      groups: state.groups.map((g) => (g.id === group.id ? group : g)),
+      userGroups: state.userGroups.map((g) => (g.id === group.id ? group : g)),
+      currentGroup: state.currentGroup?.id === group.id ? group : state.currentGroup,
+    })),
 
-  deleteGroup: (groupId) => set((state) => ({
-    groups: state.groups.filter((g) => g.id !== groupId),
-    userGroups: state.userGroups.filter((g) => g.id !== groupId),
-    currentGroup: state.currentGroup?.id === groupId ? null : state.currentGroup,
-    groupMembers: Object.fromEntries(
-      Object.entries(state.groupMembers).filter(([id]) => Number(id) !== groupId)
-    )
-  })),
+  deleteGroup: (groupId) =>
+    set((state) => ({
+      groups: state.groups.filter((g) => g.id !== groupId),
+      userGroups: state.userGroups.filter((g) => g.id !== groupId),
+      currentGroup: state.currentGroup?.id === groupId ? null : state.currentGroup,
+      groupMembers: Object.fromEntries(
+        Object.entries(state.groupMembers).filter(([id]) => Number(id) !== groupId),
+      ),
+    })),
 
-  joinGroup: (group) => set((state) => ({
-    userGroups: [...state.userGroups, group]
-  })),
+  joinGroup: (group) =>
+    set((state) => ({
+      userGroups: [...state.userGroups, group],
+    })),
 
-  leaveGroup: (groupId) => set((state) => ({
-    userGroups: state.userGroups.filter((g) => g.id !== groupId),
-    currentGroup: state.currentGroup?.id === groupId ? null : state.currentGroup
-  })),
+  leaveGroup: (groupId) =>
+    set((state) => ({
+      userGroups: state.userGroups.filter((g) => g.id !== groupId),
+      currentGroup: state.currentGroup?.id === groupId ? null : state.currentGroup,
+    })),
 
-  addMemberToGroup: (groupId, member) => set((state) => ({
-    groupMembers: {
-      ...state.groupMembers,
-      [groupId]: [...(state.groupMembers[groupId] || []), member]
-    }
-  })),
+  addMemberToGroup: (groupId, member) =>
+    set((state) => ({
+      groupMembers: {
+        ...state.groupMembers,
+        [groupId]: [...(state.groupMembers[groupId] || []), member],
+      },
+    })),
 
-  removeMemberFromGroup: (groupId, userId) => set((state) => ({
-    groupMembers: {
-      ...state.groupMembers,
-      [groupId]: (state.groupMembers[groupId] || []).filter((m) => m.user_id !== userId)
-    }
-  }))
+  removeMemberFromGroup: (groupId, userId) =>
+    set((state) => ({
+      groupMembers: {
+        ...state.groupMembers,
+        [groupId]: (state.groupMembers[groupId] || []).filter((m) => m.user_id !== userId),
+      },
+    })),
 }));
 
 export const useGroups = () => {

@@ -12,22 +12,25 @@ export class ApiClient {
   private async getAuthHeaders(): Promise<Record<string, string>> {
     try {
       console.log('Getting auth headers...');
-      const { data: { session }, error } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+
       if (error) {
         console.error('Session error:', error);
         return {};
       }
-      
+
       if (session?.access_token) {
         console.log('Token found, length:', session.access_token.length);
         console.log('Token preview:', session.access_token.substring(0, 20) + '...');
-        
+
         return {
-          'Authorization': `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         };
       }
-      
+
       console.warn('No session or access token found');
       return {};
     } catch (error) {
@@ -36,14 +39,11 @@ export class ApiClient {
     }
   }
 
-  async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     const authHeaders = await this.getAuthHeaders();
-    
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -56,15 +56,15 @@ export class ApiClient {
     try {
       console.log(`Making ${config.method || 'GET'} request to:`, url);
       console.log('Request headers:', config.headers);
-      
+
       if (options.body) {
         console.log('Request body:', options.body);
       }
-      
+
       const response = await fetch(url, config);
-      
+
       console.log(`Response status: ${response.status} ${response.statusText}`);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`HTTP ${response.status} error:`, errorText);

@@ -1,34 +1,39 @@
 import { apiClient } from './client';
-import { Group, GroupMember, CreateGroupRequest, CreateGroupResponse, GroupsResponse, AddMemberRequest, JoinGroupResponse } from '../types/groups';
-
+import {
+  Group,
+  GroupMember,
+  CreateGroupRequest,
+  CreateGroupResponse,
+  GroupsResponse,
+  AddMemberRequest,
+  JoinGroupResponse,
+} from '../types/groups';
 
 export const groupApi = {
-
-  createGroup: async (groupData: { name: string; invitees?: string[] }, userId: string): Promise<Group> => {
+  createGroup: async (
+    groupData: { name: string; invitees?: string[] },
+    userId: string,
+  ): Promise<Group> => {
     try {
       console.log('Creating group:', groupData);
       console.log('User ID:', userId);
       const createRequest: CreateGroupRequest = {
         name: groupData.name,
         description: '',
-        created_by: userId
-        
+        created_by: userId,
       };
-      
-      const response = await apiClient.post<CreateGroupResponse>(
-        '/api/groups', 
-        createRequest,
-      );
-      
+
+      const response = await apiClient.post<CreateGroupResponse>('/api/groups', createRequest);
+
       if (!response.success) {
         throw new Error(response.message || 'Failed to create group');
       }
-      
+
       console.log('Group created successfully:', response.data);
-      
+
       if (groupData.invitees && groupData.invitees.length > 0) {
         console.log('Processing invitations for:', groupData.invitees);
-        
+
         for (const email of groupData.invitees) {
           try {
             console.log(`invite user with email: ${email}`);
@@ -37,7 +42,7 @@ export const groupApi = {
           }
         }
       }
-      
+
       return response.data;
     } catch (error) {
       console.error('Failed to create group:', error);
@@ -57,7 +62,9 @@ export const groupApi = {
 
   getGroupWithMembers: async (groupId: number, userId: string): Promise<Group> => {
     try {
-      const response = await apiClient.get<CreateGroupResponse>(`/api/groups/${groupId}/members?userId=${userId}`);
+      const response = await apiClient.get<CreateGroupResponse>(
+        `/api/groups/${groupId}/members?userId=${userId}`,
+      );
       return response.data;
     } catch (error) {
       console.error('Failed to fetch group with members:', error);
@@ -67,7 +74,9 @@ export const groupApi = {
 
   joinGroup: async (groupId: number, userId: string): Promise<GroupMember> => {
     try {
-      const response = await apiClient.post<JoinGroupResponse>(`/api/groups/${groupId}/join`, { userId });
+      const response = await apiClient.post<JoinGroupResponse>(`/api/groups/${groupId}/join`, {
+        userId,
+      });
       return response.data;
     } catch (error) {
       console.error('Failed to join group:', error);
@@ -84,11 +93,15 @@ export const groupApi = {
     }
   },
 
-  addMember: async (groupId: number, memberData: AddMemberRequest, requesterId: string): Promise<GroupMember> => {
+  addMember: async (
+    groupId: number,
+    memberData: AddMemberRequest,
+    requesterId: string,
+  ): Promise<GroupMember> => {
     try {
       const response = await apiClient.post<JoinGroupResponse>(`/api/groups/${groupId}/members`, {
         ...memberData,
-        requesterId
+        requesterId,
       });
       return response.data;
     } catch (error) {
@@ -99,7 +112,9 @@ export const groupApi = {
 
   removeMember: async (groupId: number, userId: string, requesterId: string): Promise<void> => {
     try {
-      await apiClient.delete<{ success: boolean }>(`/api/groups/${groupId}/members/${userId}?requesterId=${requesterId}`);
+      await apiClient.delete<{ success: boolean }>(
+        `/api/groups/${groupId}/members/${userId}?requesterId=${requesterId}`,
+      );
     } catch (error) {
       console.error('Failed to remove member:', error);
       throw error;

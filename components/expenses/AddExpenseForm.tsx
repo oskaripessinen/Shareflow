@@ -10,11 +10,11 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import { X, Camera } from 'lucide-react-native';
-import { useAppContext, ExpenseCategory } from '@/../context/AppContext';
+import { useAppStore, ExpenseCategory } from '@/../context/AppContext';
 import { Picker } from '@react-native-picker/picker';
 
 export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
-  const { addExpense } = useAppContext();
+  const { addExpense } = useAppStore();
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState<ExpenseCategory>('food');

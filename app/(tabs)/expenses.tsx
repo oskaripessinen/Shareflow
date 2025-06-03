@@ -46,16 +46,13 @@ export default function ExpensesScreen() {
 
   const scrollViewStyle = useMemo(() => ({ paddingHorizontal: 2 }), []);
 
-  const handleCategorySelect = useCallback(
-    (category: ExpenseCategory) => {
-      setSelectedCategories((prevSelected) =>
-        prevSelected.includes(category)
-          ? prevSelected.filter((c) => c !== category)
-          : [...prevSelected, category],
-      );
-    },
-    [],
-  );
+  const handleCategorySelect = useCallback((category: ExpenseCategory) => {
+    setSelectedCategories((prevSelected) =>
+      prevSelected.includes(category)
+        ? prevSelected.filter((c) => c !== category)
+        : [...prevSelected, category],
+    );
+  }, []);
 
   const RenderHeader = useMemo(
     () => (
@@ -88,7 +85,9 @@ export default function ExpensesScreen() {
             onPress={() => setShowAddExpenseModal(true)}
             className="flex-row items-center bg-primary px-3 py-2 rounded-xl"
           >
-            <Text className="text-white font-sans text-DEFAULT text-base mr-2 text-[11p]">Add Expense</Text>
+            <Text className="text-white font-sans text-DEFAULT text-base mr-2 text-[11p]">
+              Add Expense
+            </Text>
             <Plus size={23} color="#fff" />
           </Pressable>
         </View>
@@ -122,7 +121,14 @@ export default function ExpensesScreen() {
         </View>
       </View>
     ),
-    [selectedCategories, selectedTimeWindow, showTimeWindowPicker, filteredExpenses, handleCategorySelect, scrollViewStyle],
+    [
+      selectedCategories,
+      selectedTimeWindow,
+      showTimeWindowPicker,
+      filteredExpenses,
+      handleCategorySelect,
+      scrollViewStyle,
+    ],
   );
 
   const renderExpenseItem = useCallback(
@@ -130,7 +136,9 @@ export default function ExpensesScreen() {
       <View className="bg-surface rounded-lg p-4 my-2 mx-4 mt-0 shadow">
         <View className="flex-row justify-between items-center">
           <View>
-            <Text className="text-lg font-medium font-semibold text-DEFAULT">{item.description}</Text>
+            <Text className="text-lg font-medium font-semibold text-DEFAULT">
+              {item.description}
+            </Text>
             <Text className="text-sm font-sans text-muted">{item.date}</Text>
           </View>
           <Text className="text-lg font-bold text-danger">{item.amount.toFixed(2)} €</Text>
