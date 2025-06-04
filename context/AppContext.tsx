@@ -339,6 +339,7 @@ interface GroupState {
   leaveGroup: (groupId: number) => void;
   addMemberToGroup: (groupId: number, member: GroupMember) => void;
   removeMemberFromGroup: (groupId: number, userId: string) => void;
+  resetGroupState: () => void;
 }
 
 export const useGroupStore = create<GroupState>((set) => ({
@@ -406,6 +407,14 @@ export const useGroupStore = create<GroupState>((set) => ({
         [groupId]: (state.groupMembers[groupId] || []).filter((m) => m.user_id !== userId),
       },
     })),
+
+  resetGroupState: () => set({
+    groups: [],
+    userGroups: [],
+    groupMembers: {},
+    currentGroup: null,
+    groupsLoading: false,
+  }),
 }));
 
 export const useGroups = () => {

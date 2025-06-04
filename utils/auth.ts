@@ -1,6 +1,7 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { supabase } from '../utils/supabase';
 import { router } from 'expo-router';
+import { useAppStore, useGroupStore } from 'context/AppContext';
 
 export const signOut = async () => {
   try {
@@ -13,6 +14,8 @@ export const signOut = async () => {
     } else {
       console.log('Supabase sign out successful');
     }
+    useAppStore.getState().resetState();
+    useGroupStore.getState().resetGroupState();
     router.push('/login');
     return { success: true };
   } catch (error) {

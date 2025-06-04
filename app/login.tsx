@@ -37,11 +37,16 @@ export default function LoginScreen() {
           } = await supabase.auth.getSession();
 
           if (session && session.user) {
-            groupApi.getUserGroups().then((userGroups) => {
-              console.log('User groups fetched:', userGroups);
+              const userGroups = await groupApi.getUserGroups();
+              console.log('usergroups length:', userGroups.length); 
               setGroups(userGroups);
-            });
-            router.replace('/create_group');
+            if (userGroups.length > 0) {
+              router.replace('/(tabs)')
+            }
+            else {
+              router.replace('/create_group');
+            }
+            
             return;
           } else {
             console.log('No active session found');
@@ -64,7 +69,10 @@ export default function LoginScreen() {
       console.log('Auth state changed:', event, session?.user?.email);
 
       if (event === 'SIGNED_IN' && session) {
-        router.replace('/create_group');
+        const userGroups = await groupApi.getUserGroups();
+        console.log('usergroups length:', userGroups.length); 
+        setGroups(userGroups);
+        router.replace('/(tabs)');
       } else if (event === 'SIGNED_OUT') {
         setInitializing(false);
       }
