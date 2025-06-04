@@ -17,7 +17,7 @@ export default function LoginScreen() {
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
   const { setGoogleId } = useAuth();
-  const { setGroups } = useGroups();
+  const { setUserGroups } = useGroups();
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -39,7 +39,7 @@ export default function LoginScreen() {
           if (session && session.user) {
               const userGroups = await groupApi.getUserGroups();
               console.log('usergroups length:', userGroups.length); 
-              setGroups(userGroups);
+              setUserGroups(userGroups);
             if (userGroups.length > 0) {
               router.replace('/(tabs)')
             }
@@ -71,7 +71,7 @@ export default function LoginScreen() {
       if (event === 'SIGNED_IN' && session) {
         const userGroups = await groupApi.getUserGroups();
         console.log('usergroups length:', userGroups.length); 
-        setGroups(userGroups);
+        setUserGroups(userGroups);
         router.replace('/(tabs)');
       } else if (event === 'SIGNED_OUT') {
         setInitializing(false);

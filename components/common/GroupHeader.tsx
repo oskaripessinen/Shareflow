@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, SafeAreaView, Platform, Modal } from 'react-native';
 import { Users, ChevronDown, EllipsisVertical } from 'lucide-react-native';
 import SelectGroup from './SelectGroup';
@@ -7,12 +7,16 @@ import { useGroups } from '@/../context/AppContext';
 import { Group } from '@/../types/groups';
 
 const GroupHeader = () => {
-  const { groups } = useGroups();
-  const [currentGroup, setCurrentGroup] = useState<Group | null>(groups[0] || null);
-  const [availableGroups] = useState<Group[]>(groups);
+  const { userGroups, currentGroup, setCurrentGroup } = useGroups();
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
   const [isOptionsModalVisible, setOptionsModal] = useState(false);
-  console.log('Available groups:', groups);
+  console.log('Available groups:', userGroups);
+
+  useEffect(() => {
+    if (!currentGroup && userGroups.length > 0) {
+      setCurrentGroup(userGroups[0]);
+    }
+  }, [userGroups, currentGroup, setCurrentGroup]);
 
   const handleSelectGroup = (group: Group) => {
     setCurrentGroup(group);
@@ -63,13 +67,13 @@ const GroupHeader = () => {
           onPress={() => setIsGroupSelectorModalVisible(false)}
         >
           <SelectGroup
-            groups={availableGroups}
             currentGroupId={currentGroup?.id || null}
             onSelectGroup={handleSelectGroup}
             onClose={() => setIsGroupSelectorModalVisible(false)}
           />
         </Pressable>
       </Modal>
+      
       <Modal
         visible={isOptionsModalVisible}
         animationType="fade"

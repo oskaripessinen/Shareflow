@@ -73,6 +73,10 @@ export const groupApi = {
   },
 
   joinGroup: async (groupId: number, userId: string): Promise<GroupMember> => {
+    if (!userId) {
+      throw new Error('Group ID and User ID are required to join a group');
+    }
+
     try {
       const response = await apiClient.post<JoinGroupResponse>(`/api/groups/${groupId}/join`, {
         userId,

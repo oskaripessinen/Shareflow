@@ -321,13 +321,11 @@ export const initializeApp = () => {
 };
 
 interface GroupState {
-  groups: Group[];
   userGroups: Group[];
   groupMembers: { [groupId: number]: GroupMember[] };
   currentGroup: Group | null;
   groupsLoading: boolean;
 
-  setGroups: (groups: Group[]) => void;
   setUserGroups: (groups: Group[]) => void;
   setGroupMembers: (groupId: number, members: GroupMember[]) => void;
   setCurrentGroup: (group: Group | null) => void;
@@ -343,13 +341,11 @@ interface GroupState {
 }
 
 export const useGroupStore = create<GroupState>((set) => ({
-  groups: [],
   userGroups: [],
   groupMembers: {},
   currentGroup: null,
   groupsLoading: false,
 
-  setGroups: (groups) => set({ groups }),
   setUserGroups: (userGroups) => set({ userGroups }),
   setGroupMembers: (groupId, members) =>
     set((state) => ({
@@ -360,20 +356,17 @@ export const useGroupStore = create<GroupState>((set) => ({
 
   addGroup: (group) =>
     set((state) => ({
-      groups: [...state.groups, group],
       userGroups: [...state.userGroups, group],
     })),
 
   updateGroup: (group) =>
     set((state) => ({
-      groups: state.groups.map((g) => (g.id === group.id ? group : g)),
       userGroups: state.userGroups.map((g) => (g.id === group.id ? group : g)),
       currentGroup: state.currentGroup?.id === group.id ? group : state.currentGroup,
     })),
 
   deleteGroup: (groupId) =>
     set((state) => ({
-      groups: state.groups.filter((g) => g.id !== groupId),
       userGroups: state.userGroups.filter((g) => g.id !== groupId),
       currentGroup: state.currentGroup?.id === groupId ? null : state.currentGroup,
       groupMembers: Object.fromEntries(
@@ -409,7 +402,6 @@ export const useGroupStore = create<GroupState>((set) => ({
     })),
 
   resetGroupState: () => set({
-    groups: [],
     userGroups: [],
     groupMembers: {},
     currentGroup: null,
@@ -420,12 +412,10 @@ export const useGroupStore = create<GroupState>((set) => ({
 export const useGroups = () => {
   const groupStore = useGroupStore();
   return {
-    groups: groupStore.groups,
     userGroups: groupStore.userGroups,
     groupMembers: groupStore.groupMembers,
     currentGroup: groupStore.currentGroup,
     groupsLoading: groupStore.groupsLoading,
-    setGroups: groupStore.setGroups,
     setUserGroups: groupStore.setUserGroups,
     setGroupMembers: groupStore.setGroupMembers,
     setCurrentGroup: groupStore.setCurrentGroup,
@@ -437,5 +427,6 @@ export const useGroups = () => {
     leaveGroup: groupStore.leaveGroup,
     addMemberToGroup: groupStore.addMemberToGroup,
     removeMemberFromGroup: groupStore.removeMemberFromGroup,
+    resetGroupState: groupStore.resetGroupState,
   };
 };

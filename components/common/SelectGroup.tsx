@@ -1,21 +1,46 @@
 import React from 'react';
-import { View, Text, Pressable, FlatList, Platform } from 'react-native';
+import { View, Text, Pressable, Platform, TouchableOpacity } from 'react-native';
+import { SwipeListView } from 'react-native-swipe-list-view';
 import { X, Check } from 'lucide-react-native';
 import { Group } from '@/../types/groups';
+import { useGroups, useAuthStore } from 'context/AppContext';
+import { groupApi } from 'api/groups';
 
 interface SelectGroupProps {
-  groups: Group[];
   currentGroupId: number | null;
   onSelectGroup: (group: Group) => void;
   onClose: () => void;
 }
 
 const SelectGroup: React.FC<SelectGroupProps> = ({
-  groups,
   currentGroupId,
   onSelectGroup,
   onClose,
 }) => {
+  const { userGroups, leaveGroup } = useGroups();
+
+  const deleteItem = async (id: number) => {
+    console.log(`Leaving group with id: ${id}`);
+    const userId = useAuthStore.getState().googleId;
+
+    if (!userId) {
+      console.error('User ID is not available');
+      return;
+    }
+
+    try {
+      // Odota API kutsu valmistumista
+      await groupApi.leaveGroup(id, userId);
+      
+      // Päivitä global state vasta API kutsun jälkeen
+      leaveGroup(id);
+      
+      console.log("Successfully left group:", id);
+    } catch (error) {
+      console.error('Failed to leave group:', error);
+    }
+  };
+
   const renderGroupItem = ({ item }: { item: Group }) => (
     <Pressable
       onPress={() => {
@@ -39,7 +64,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({
   return (
     <Pressable
       onPress={(e) => e.stopPropagation()}
-      className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg w-full f"
+      className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg w-full"
     >
       <View className="flex-row items-center justify-between px-5 mt-1 mb-4">
         <Text className="text-xl font-semibold text-slate-800">Select Group</Text>
@@ -48,11 +73,31 @@ const SelectGroup: React.FC<SelectGroupProps> = ({
         </Pressable>
       </View>
 
-      <FlatList
-        data={groups}
+      <SwipeListView
+        data={userGroups} // Käytä suoraan userGroups hookista
         renderItem={renderGroupItem}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 20 : 0 }}
+        renderHiddenItem={({ item }) => (
+          <View className="flex-1 flex-row justify-end items-center bg-red-500 pr-4">
+            <TouchableOpacity 
+              onPress={() => deleteItem(item.id)}
+              className="bg-red-600 px-4 py-2 rounded justify-center items-center"
+            >
+              <Text className="text-white font-semibold">Leave</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        leftOpenValue={400} 
+        previewRowKey={'0'}
+        previewOpenValue={40}
+        previewOpenDelay={3000}
+        onRowOpen={(rowKey) => {
+          const item = userGroups.find((d) => d.id.toString() === rowKey);
+          if (item) {
+            deleteItem(item.id);
+          }
+        }}
       />
     </Pressable>
   );
