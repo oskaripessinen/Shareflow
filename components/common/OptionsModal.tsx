@@ -9,7 +9,6 @@ interface OptionsProps {
 }
 
 const OptionsModal: React.FC<OptionsProps> = ({ onClose }) => {
-
   const handleLogout = async () => {
     const result = await signOut();
     if (result.success) {
@@ -22,8 +21,7 @@ const OptionsModal: React.FC<OptionsProps> = ({ onClose }) => {
   const handleNewGroup = () => {
     onClose();
     router.push('/create_group');
-    
-  }
+  };
 
   return (
     <Pressable className="flex-1 justify-end" onPress={onClose}>
@@ -44,7 +42,10 @@ const OptionsModal: React.FC<OptionsProps> = ({ onClose }) => {
               <Text className="font-semibold text-slate-700 ml-4">Invite user</Text>
             </Pressable>
             <View className="h-px bg-slate-200 w-full my-2" />
-            <Pressable onPress={() => handleNewGroup()} className="flex-row items-center p-3.5 rounded-lg w-full active:bg-slate-50 justify-center">
+            <Pressable
+              onPress={() => handleNewGroup()}
+              className="flex-row items-center p-3.5 rounded-lg w-full active:bg-slate-50 justify-center"
+            >
               <Users size={22} color="black" className="mr-3" />
               <Text className="text-base font-semibold text-slate-700 ml-4">New group</Text>
             </Pressable>

@@ -401,12 +401,13 @@ export const useGroupStore = create<GroupState>((set) => ({
       },
     })),
 
-  resetGroupState: () => set({
-    userGroups: [],
-    groupMembers: {},
-    currentGroup: null,
-    groupsLoading: false,
-  }),
+  resetGroupState: () =>
+    set({
+      userGroups: [],
+      groupMembers: {},
+      currentGroup: null,
+      groupsLoading: false,
+    }),
 }));
 
 export const useGroups = () => {

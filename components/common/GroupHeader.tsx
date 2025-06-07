@@ -73,7 +73,7 @@ const GroupHeader = () => {
           />
         </Pressable>
       </Modal>
-      
+
       <Modal
         visible={isOptionsModalVisible}
         animationType="fade"
