@@ -5,6 +5,7 @@ import SelectGroup from './SelectGroup';
 import OptionsModal from './OptionsModal';
 import { useGroups } from '@/../context/AppContext';
 import { Group } from '@/../types/groups';
+import { router } from 'expo-router'; // Adjust import based on your routing setup
 
 const GroupHeader = () => {
   const { userGroups, currentGroup, setCurrentGroup } = useGroups();
@@ -24,6 +25,15 @@ const GroupHeader = () => {
     console.log('Selected group:', group);
   };
 
+  const handleOpenGroupSelector = () => {
+    if (userGroups.length === 0) {
+      console.warn('No groups available to select');
+      router.push('/create_group'); // Navigate to create group if no groups exist
+      return;
+    }
+    setIsGroupSelectorModalVisible(true);
+  };
+
   return (
     <>
       <SafeAreaView
@@ -35,7 +45,7 @@ const GroupHeader = () => {
             <EllipsisVertical size={22} color="#475569" />
           </Pressable>
           <Pressable
-            onPress={() => setIsGroupSelectorModalVisible(true)}
+            onPress={handleOpenGroupSelector}
             className="justify-center flex-row items-center flex-1"
           >
             <Users size={22} color="#475569" />

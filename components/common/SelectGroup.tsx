@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   FlatList,
   GestureResponderEvent,
-  Platform,
   Animated,
 } from 'react-native';
 import { X, Check } from 'lucide-react-native';
@@ -28,9 +27,11 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
     top: number;
     left: number;
   } | null>(null);
+  const [deletingItemId, setDeletingItemId] = useState<number | null>(null);
 
   const containerRef = useRef<View>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const deleteAnimations = useRef<{ [key: number]: Animated.Value }>({}).current;
 
   useEffect(() => {
     if (isDeleteModalVisible) {
@@ -48,6 +49,14 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
     }
   }, [isDeleteModalVisible, fadeAnim]);
 
+  useEffect(() => {
+    userGroups.forEach((group) => {
+      if (!deleteAnimations[group.id]) {
+        deleteAnimations[group.id] = new Animated.Value(1);
+      }
+    });
+  }, [userGroups, deleteAnimations]);
+
   const deleteItem = async (id: number) => {
     if (!itemToDelete) return;
     console.log(`Deleting group with id: ${id}`);
@@ -61,14 +70,40 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
     }
 
     try {
-      await groupApi.leaveGroup(id, userId);
-      leaveGroup(id);
-      console.log('Successfully left/deleted group:', id);
+      setDeletingItemId(id);
+      setIsDeleteModalVisible(false);
+      setItemToDelete(null);
+
+      if (deleteAnimations[id]) {
+        Animated.timing(deleteAnimations[id], {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start(async () => {
+          await groupApi.leaveGroup(id, userId);
+          leaveGroup(id);
+          setDeletingItemId(null);
+          console.log('Successfully left/deleted group:', id);
+        });
+      } else {
+        await groupApi.leaveGroup(id, userId);
+        leaveGroup(id);
+        setDeletingItemId(null);
+      }
     } catch (error) {
       console.error('Failed to leave/delete group:', error);
+      setDeletingItemId(null);
+      if (deleteAnimations[id]) {
+        Animated.timing(deleteAnimations[id], {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: false,
+        }).start();
+      }
     }
-    setIsDeleteModalVisible(false);
-    setItemToDelete(null);
+    if (userGroups.length === 1) {
+      onClose(); // Close the modal if this was the last group
+    }
   };
 
   const handleLongPress = (group: Group, event: GestureResponderEvent) => {
@@ -82,31 +117,54 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
     });
   };
 
-  const renderGroupItem = ({ item }: { item: Group }) => (
-    <Pressable
-      onPress={() => {
-        if (isDeleteModalVisible) {
-          setIsDeleteModalVisible(false);
-          setItemToDelete(null);
-          return;
-        }
-        onSelectGroup(item);
-      }}
-      onLongPress={(event) => handleLongPress(item, event)}
-      className={`py-4 px-5 border-t border-slate-100 flex-row justify-between items-center active:bg-slate-50 ${
-        item.id === currentGroupId ? 'bg-slate-100' : 'bg-white'
-      }`}
-    >
-      <Text
-        className={`text-base ${
-          item.id === currentGroupId ? 'font-bold text-primary' : 'text-slate-700'
-        }`}
-      >
-        {item.name}
-      </Text>
-      {item.id === currentGroupId && <Check size={20} color="#3B82F6" />}
-    </Pressable>
-  );
+  const renderGroupItem = ({ item }: { item: Group }) => {
+    const animValue = deleteAnimations[item.id] || new Animated.Value(1);
+
+    const animatedStyle = {
+      opacity: animValue,
+      height: animValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 50],
+      }),
+      transform: [
+        {
+          scaleY: animValue,
+        },
+      ],
+    };
+
+    return (
+      <Animated.View style={animatedStyle}>
+        <Pressable
+          onPress={() => {
+            if (isDeleteModalVisible) {
+              setIsDeleteModalVisible(false);
+              setItemToDelete(null);
+              return;
+            }
+            if (deletingItemId === item.id) return;
+            onSelectGroup(item);
+          }}
+          onLongPress={(event) => {
+            if (deletingItemId === item.id) return;
+            handleLongPress(item, event);
+          }}
+          className={`py-4 px-5 border-t border-slate-100 flex-row justify-between items-center active:bg-slate-50 ${
+            item.id === currentGroupId ? 'bg-slate-100' : 'bg-white'
+          } ${deletingItemId === item.id ? 'opacity-60' : ''}`}
+        >
+          <Text
+            className={`text-base ${
+              item.id === currentGroupId ? 'font-bold text-primary' : 'text-slate-700'
+            }`}
+          >
+            {item.name}
+          </Text>
+          {item.id === currentGroupId && <Check size={20} color="#3B82F6" />}
+        </Pressable>
+      </Animated.View>
+    );
+  };
 
   const renderDeleteConfirmationModal = () => {
     if (!itemToDelete || !deleteModalPosition) {
@@ -122,10 +180,14 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
           right: 20,
           zIndex: 1000,
           opacity: fadeAnim,
+          shadowColor: '#000',
+          shadowOpacity: 0.5,
+          shadowRadius: 5,
+          elevation: 5,
         }}
-        className="bg-white pt-0 rounded-2xl shadow-xl border border-gray-200"
+        className="bg-white p-0 rounded-2xl shadow-xl border border-gray-200"
       >
-        <Text className="text-lg font-semibold mt-3 mb-0 px-4 text-slate-800">Settings</Text>
+        <Text className="text-lg font-semibold mt-3 px-4 text-slate-800">Settings</Text>
         <Text className="text-sm text-slate-500 px-4 mb-3">
           {itemToDelete.name} groups settings.
         </Text>
@@ -153,7 +215,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
             e.stopPropagation();
           }
         }}
-        className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg w-full justify-end"
+        className="bg-white rounded-t-2xl pt-3 shadow-xl w-full justify-end"
       >
         <View className="flex-row items-center justify-between px-5 pt-1 bg-white">
           <Text className="text-xl font-semibold text-slate-800">Select Group</Text>
@@ -167,7 +229,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
           data={userGroups}
           renderItem={renderGroupItem}
           keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: Platform.OS === 'ios' ? 20 : 10 }}
+          contentContainerStyle={{ paddingBottom: 5 }}
           className="bg-white"
         />
 
@@ -175,8 +237,8 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
       </Pressable>
       {isDeleteModalVisible && (
         <Pressable
-          className="absolute w-full h-full bg-transparent"
-          style={{ zIndex: 0 }}
+          className="absolute w-full h-full"
+          style={{ zIndex: -1000 }}
           onPress={() => {
             setIsDeleteModalVisible(false);
             setItemToDelete(null);
