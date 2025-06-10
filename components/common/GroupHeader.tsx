@@ -5,14 +5,13 @@ import SelectGroup from './SelectGroup';
 import OptionsModal from './OptionsModal';
 import { useGroups } from '@/../context/AppContext';
 import { Group } from '@/../types/groups';
-import { router } from 'expo-router'; // Adjust import based on your routing setup
+import { router } from 'expo-router';
 
 const GroupHeader = () => {
   const { userGroups, currentGroup, setCurrentGroup } = useGroups();
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
   const [isOptionsModalVisible, setOptionsModal] = useState(false);
-  console.log('Available groups:', userGroups);
-
+  
   useEffect(() => {
     if (!currentGroup && userGroups.length > 0) {
       setCurrentGroup(userGroups[0]);
@@ -28,7 +27,7 @@ const GroupHeader = () => {
   const handleOpenGroupSelector = () => {
     if (userGroups.length === 0) {
       console.warn('No groups available to select');
-      router.push('/create_group'); // Navigate to create group if no groups exist
+      router.push('/create_group');
       return;
     }
     setIsGroupSelectorModalVisible(true);
@@ -46,19 +45,19 @@ const GroupHeader = () => {
           </Pressable>
           <Pressable
             onPress={handleOpenGroupSelector}
-            className="justify-center flex-row items-center flex-1"
+            className="justify-center flex-row items-center flex-1 py-2 rounded-lg active:bg-slate-100"
           >
             <Users size={22} color="#475569" />
             <Text
-              className="text-lg font-semibold text-slate-700 ml-3 mr-1"
+              className="text-lg font-semibold text-slate-700 ml-3 mr-1 active:text-slate-600"
               numberOfLines={1}
               ellipsizeMode="tail"
             >
               {currentGroup ? currentGroup.name : 'Select Group'}
             </Text>
-            <ChevronDown size={20} color="#475569" />
+            <ChevronDown size={20} className='active:color-slate-600' />
           </Pressable>
-          <Pressable onPress={() => setOptionsModal(true)} className="py-1 px-3">
+          <Pressable onPress={() => setOptionsModal(true)} className="py-2 px-1 mx-2 rounded-xl active:bg-slate-100">
             <EllipsisVertical size={22} color="#475569" />
           </Pressable>
         </View>

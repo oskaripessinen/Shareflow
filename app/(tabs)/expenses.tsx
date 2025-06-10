@@ -1,9 +1,12 @@
 import { useState, useMemo, useCallback } from 'react';
-import { View, Text, Pressable, Modal, FlatList, ScrollView } from 'react-native';
+import { View, Text, Pressable, Modal, FlatList, ScrollView, Animated } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Plus, ChevronDown } from 'lucide-react-native';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
+import { expenseApi } from '../../api/expenses';
+import { useGroupStore } from '@/../context/AppContext';
 
 const timeWindowOptions = [
   { label: 'Today', value: 'today' },
@@ -12,32 +15,39 @@ const timeWindowOptions = [
   { label: 'Year', value: 'last_year' },
 ];
 
-const allCategories: ExpenseCategory[] = [
-  'food',
-  'housing',
-  'transportation',
-  'entertainment',
-  'utilities',
-  'health',
-  'clothing',
-  'other',
-];
+
 
 export default function ExpensesScreen() {
-  const { showTimeWindowPicker, setShowTimeWindowPicker, expenses } = useAppStore();
+  const { showTimeWindowPicker, setShowTimeWindowPicker, expenses, setExpenses } = useAppStore();
   const [selectedTimeWindow, setSelectedTimeWindow] = useState(timeWindowOptions[0].value);
   const [selectedCategories, setSelectedCategories] = useState<ExpenseCategory[]>([]);
+  const [categories, setCategories] = useState<ExpenseCategory[]>([]);
+  const [listOpacity] = useState(new Animated.Value(1));
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
 
-  // Käytä oikeita expenses-tietoja storesta sen sijaan että kovakoodaat ne
-  const filteredExpenses: Expense[] = expenses.filter((expense) => {
-    // Lisää tänne aikaväli- ja kategoria-filtteröinti
-    if (selectedCategories.length > 0 && !selectedCategories.includes(expense.category)) {
-      return false;
-    }
-    // Lisää aikaväli-filtteri tarpeen mukaan
-    return true;
-  });
+  useFocusEffect(
+    useCallback(() => {
+      const fetchExpenses = async () => {
+      try {
+        if (!currentGroupId) {
+          console.warn('No current group selected');
+          return;
+        }
+        const expenses = await expenseApi.getExpensesByGroupId(currentGroupId);
+        console.log('Fetched expenses:', expenses);
+        setExpenses(expenses);
+        const categories = Array.from(new Set(expenses.map((expense) => expense.category).filter(Boolean))) as ExpenseCategory[];
+        setCategories(categories);
+        console.log('Fetched categories:', categories);
+      }catch (error) {
+        console.error('Failed to fetch expenses:', error);
+      }
+    };
+      fetchExpenses();
+    }, []),
+  );
+
 
   const handleTimeWindowChange = (value: string) => {
     setSelectedTimeWindow(value);
@@ -46,26 +56,51 @@ export default function ExpensesScreen() {
 
   const scrollViewStyle = useMemo(() => ({ paddingHorizontal: 2 }), []);
 
+  const filteredExpenses = useMemo(() => {
+    if (selectedCategories.length === 0) {
+      return expenses;
+    }
+    
+    return expenses.filter((expense) => 
+      expense.category && selectedCategories.includes(expense.category as ExpenseCategory)
+    );
+  }, [expenses, selectedCategories]);
+
   const handleCategorySelect = useCallback((category: ExpenseCategory) => {
+  Animated.timing(listOpacity, {
+    toValue: 0,
+    duration: 50,
+    useNativeDriver: true,
+  }).start(() => {
+
+    console.log('Toggling category:', category);
     setSelectedCategories((prevSelected) =>
       prevSelected.includes(category)
         ? prevSelected.filter((c) => c !== category)
-        : [...prevSelected, category],
+        : [...prevSelected, category]
     );
-  }, []);
+    
+
+    Animated.timing(listOpacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  });
+}, [listOpacity])
 
   const RenderHeader = useMemo(
     () => (
       <View className="p-0 mt-0" style={{ zIndex: 10 }}>
         <View className="flex-row items-center mb-6 justify-between px-4">
           <View className="relative" style={{ zIndex: 1 }}>
-            <View className="flex-row items-center bg-white rounded-xl shadow">
+            <View className="flex-row items-center bg-white rounded-xl">
               <Pressable
                 onPress={() => {
                   setShowTimeWindowPicker(!showTimeWindowPicker);
                 }}
-                style={{ width: 100, paddingHorizontal: 20, justifyContent: 'space-between' }}
-                className="flex-row items-center pr-2 border-r border-slate-200 text-center"
+                style={{ width: 100, height: '100%', paddingHorizontal: 20, justifyContent: 'space-between' }}
+                className="flex-row items-center my-0 py-0 rounded-l-xl pr-2 border-r border-slate-200 text-center active:bg-slate-100"
               >
                 <Text className="font-medium font-semibold text-muted pr-2">
                   {timeWindowOptions.find((opt) => opt.value === selectedTimeWindow)?.label}
@@ -76,14 +111,14 @@ export default function ExpensesScreen() {
               </Pressable>
               <View className="p-3 pl-2">
                 <Text className="font-bold text-DEFAULT pl-2 pr-2">
-                  {filteredExpenses.reduce((sum, e) => sum + e.amount, 0).toFixed(2)} €
+                  {(filteredExpenses?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || 0).toFixed(2)} €
                 </Text>
               </View>
             </View>
           </View>
           <Pressable
             onPress={() => setShowAddExpenseModal(true)}
-            className="flex-row items-center bg-primary px-3 py-2 rounded-xl"
+            className="flex-row items-center bg-primary px-3 py-2 rounded-xl active:bg-primaryDark shadow"
           >
             <Text className="text-white font-sans text-DEFAULT text-base mr-2 text-[11p]">
               Add Expense
@@ -99,7 +134,7 @@ export default function ExpensesScreen() {
             contentContainerStyle={scrollViewStyle}
             persistentScrollbar={false}
           >
-            {allCategories.map((category) => {
+            {categories.map((category) => {
               const isSelected = selectedCategories.includes(category);
               return (
                 <Pressable
@@ -133,15 +168,21 @@ export default function ExpensesScreen() {
 
   const renderExpenseItem = useCallback(
     ({ item }: { item: Expense }) => (
-      <View className="bg-surface rounded-lg p-4 my-2 mx-4 mt-0 shadow">
+      <View className="bg-surface rounded-lg p-4 my-2 mx-4 mt-0 border-[1px] border-slate-100">
         <View className="flex-row justify-between items-center">
           <View>
             <Text className="text-lg font-medium font-semibold text-DEFAULT">
-              {item.description}
+              {item.title || item.description}
             </Text>
-            <Text className="text-sm font-sans text-muted">{item.date}</Text>
+            {item.category && (
+              <Text className="text-sm text-muted capitalize">
+                {item.category}
+              </Text>
+            )}
           </View>
-          <Text className="text-lg font-bold text-danger">{item.amount.toFixed(2)} €</Text>
+          <Text className="text-lg font-bold text-danger">
+            {(Number(item.amount) || 0).toFixed(2)} €
+          </Text>
         </View>
       </View>
     ),
@@ -151,19 +192,21 @@ export default function ExpensesScreen() {
   return (
     <View className="flex-1 bg-background pt-4">
       {RenderHeader}
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={filteredExpenses}
-        keyExtractor={(item) => item.id}
-        renderItem={renderExpenseItem}
-        contentContainerStyle={{ paddingBottom: 16 }}
-        onScrollBeginDrag={() => {
-          if (showTimeWindowPicker) {
-            setShowTimeWindowPicker(false);
-          }
-        }}
-        removeClippedSubviews={false}
-      />
+      <Animated.View style={{ opacity: listOpacity }} className="flex-1">
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={filteredExpenses}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderExpenseItem}
+          contentContainerStyle={{ paddingBottom: 16 }}
+          onScrollBeginDrag={() => {
+            if (showTimeWindowPicker) {
+              setShowTimeWindowPicker(false);
+            }
+          }}
+          removeClippedSubviews={false}
+        />
+      </Animated.View>
 
       <Modal
         visible={showAddExpenseModal}

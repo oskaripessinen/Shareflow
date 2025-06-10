@@ -10,7 +10,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose }) => {
   return (
     <Pressable className="flex-1 justify-end" onPress={onClose}>
       <Pressable
-        className="bg-white rounded-t-2xl pt-5 pb-8 px-5 w-full shadow-lg"
+        className="bg-white rounded-t-2xl pt-5 pb-5 px-5 w-full shadow-lg"
         onPress={(e) => e.stopPropagation()}
       >
         <View className="flex-row justify-between items-center mb-6">

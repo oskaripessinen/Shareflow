@@ -102,7 +102,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
       }
     }
     if (userGroups.length === 1) {
-      onClose(); // Close the modal if this was the last group
+      onClose();
     }
   };
 
@@ -151,7 +151,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
           }}
           className={`py-4 px-5 border-t border-slate-100 flex-row justify-between items-center active:bg-slate-50 ${
             item.id === currentGroupId ? 'bg-slate-100' : 'bg-white'
-          } ${deletingItemId === item.id ? 'opacity-60' : ''}`}
+          } ${deletingItemId === item.id ? 'opacity-40' : ''}`}
         >
           <Text
             className={`text-base ${

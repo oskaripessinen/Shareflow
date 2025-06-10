@@ -25,12 +25,16 @@ export type ExpenseFilters = {
 };
 
 export interface Expense {
-  id: string;
+  id: number;
+  group_id: number;
   amount: number;
-  description: string;
-  category: ExpenseCategory;
-  date: string;
-  receiptImage?: string;
+  title: string;
+  description?: string;
+  category?: string;
+  paid_by: string;
+  expense_date: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface Investment {
@@ -118,6 +122,7 @@ interface AppState {
   addExpense: (expense: Expense) => void;
   updateExpense: (expense: Expense) => void;
   deleteExpense: (id: string) => void;
+  setExpenses: (expenses: Expense[]) => void;
   addInvestment: (investment: Investment) => void;
   updateInvestment: (investment: Investment) => void;
   deleteInvestment: (id: string) => void;
@@ -125,7 +130,6 @@ interface AppState {
   updateGoal: (goal: Goal) => void;
   deleteGoal: (id: string) => void;
   setShowTimeWindowPicker: (show: boolean) => void;
-  loadSampleData: () => void;
   resetState: () => void;
 }
 
@@ -139,101 +143,6 @@ const initialState = {
   goals: [],
   savings: {
     target: 0,
-  },
-  showTimeWindowPicker: false,
-};
-
-const sampleData = {
-  income: {
-    amount: 3200,
-    isGross: false,
-  },
-  expenses: [
-    {
-      id: '1',
-      amount: 850,
-      description: 'Rent',
-      category: 'housing' as ExpenseCategory,
-      date: '2025-05-01T12:00:00Z',
-    },
-    {
-      id: '2',
-      amount: 350,
-      description: 'Groceries',
-      category: 'food' as ExpenseCategory,
-      date: '2025-05-05T14:30:00Z',
-    },
-    {
-      id: '3',
-      amount: 120,
-      description: 'Phone and Internet',
-      category: 'utilities' as ExpenseCategory,
-      date: '2025-05-10T09:15:00Z',
-    },
-    {
-      id: '4',
-      amount: 75,
-      description: 'Movie and Dinner',
-      category: 'entertainment' as ExpenseCategory,
-      date: '2025-05-15T18:45:00Z',
-    },
-    {
-      id: '5',
-      amount: 200,
-      description: 'Monthly Bus Pass',
-      category: 'transportation' as ExpenseCategory,
-      date: '2025-05-02T10:00:00Z',
-    },
-  ],
-  investments: [
-    {
-      id: '1',
-      name: 'Global Index Fund',
-      type: 'fund' as InvestmentType,
-      quantity: 10,
-      purchasePrice: 100,
-      currentPrice: 108,
-      purchaseDate: '2025-01-15T12:00:00Z',
-    },
-    {
-      id: '2',
-      name: 'Apple Inc.',
-      type: 'stock' as InvestmentType,
-      quantity: 50,
-      purchasePrice: 150,
-      currentPrice: 165,
-      purchaseDate: '2025-02-20T12:00:00Z',
-    },
-    {
-      id: '3',
-      name: 'Bitcoin',
-      type: 'crypto' as InvestmentType,
-      quantity: 0.05,
-      purchasePrice: 30000,
-      currentPrice: 35000,
-      purchaseDate: '2025-03-10T12:00:00Z',
-    },
-  ],
-  goals: [
-    {
-      id: '1',
-      title: 'Vacation',
-      targetAmount: 1500,
-      currentAmount: 800,
-      targetDate: '2025-08-01T12:00:00Z',
-      color: '#0891b2',
-    },
-    {
-      id: '2',
-      title: 'New Computer',
-      targetAmount: 1200,
-      currentAmount: 450,
-      targetDate: '2025-11-15T12:00:00Z',
-      color: '#14b8a6',
-    },
-  ],
-  savings: {
-    target: 500,
   },
   showTimeWindowPicker: false,
 };
@@ -259,8 +168,9 @@ export const useAppStore = create<AppState>()(
         })),
       deleteExpense: (id) =>
         set((state) => ({
-          expenses: state.expenses.filter((exp) => exp.id !== id),
+          expenses: state.expenses.filter((exp) => exp.id !== parseInt(id)),
         })),
+      setExpenses: (expenses) => set({ expenses }),
 
       addInvestment: (investment) =>
         set((state) => ({
@@ -292,7 +202,6 @@ export const useAppStore = create<AppState>()(
 
       setShowTimeWindowPicker: (showTimeWindowPicker) => set({ showTimeWindowPicker }),
 
-      loadSampleData: () => set(sampleData),
       resetState: () => set(initialState),
     }),
     {

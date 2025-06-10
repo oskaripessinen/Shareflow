@@ -23,7 +23,7 @@ export default function SelectTimeFrame({
   return (
     <Pressable className="flex-1 justify-end black" onPress={() => setShowTimeWindowPicker(false)}>
       <Pressable
-        className="bg-white rounded-t-2xl pt-3 pb-5 shadow-lg"
+        className="bg-white rounded-t-2xl pt-3 pb-0 shadow-lg"
         onPress={(e) => e.stopPropagation()}
       >
         <View className="flex-row items-center justify-between px-5 mt-1 mb-0">
