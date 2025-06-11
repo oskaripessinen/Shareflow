@@ -1,10 +1,11 @@
 import { useState, useMemo, useCallback } from 'react';
-import { View, Text, Pressable, Modal, FlatList, ScrollView, Animated } from 'react-native';
+import { View, Text, Pressable, Modal, FlatList, ScrollView, Animated, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Plus, ChevronDown } from 'lucide-react-native';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
+import AddExpenseForm  from 'components/expenses/AddExpenseForm';
 import { expenseApi } from '../../api/expenses';
 import { useGroupStore } from '@/../context/AppContext';
 
@@ -24,26 +25,32 @@ export default function ExpensesScreen() {
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
   const [listOpacity] = useState(new Animated.Value(1));
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  const [showAddExpenseForm, setShowAddExpenseForm] = useState(false);
   const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
+  const [loading, setLoading] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       const fetchExpenses = async () => {
-      try {
-        if (!currentGroupId) {
-          console.warn('No current group selected');
-          return;
+        setLoading(true);
+        try {
+          if (!currentGroupId) {
+            console.warn('No current group selected');
+            return;
+          }
+          const expenses = await expenseApi.getExpensesByGroupId(currentGroupId);
+          console.log('Fetched expenses:', expenses);
+          setExpenses(expenses);        
+          const categories = Array.from(new Set(expenses.map((expense) => expense.category).filter(Boolean))) as ExpenseCategory[];
+          setCategories(categories);
+          console.log('Fetched categories:', categories);
+        } catch (error) {
+          console.error('Failed to fetch expenses:', error);
+        } finally {
+          setLoading(false);
         }
-        const expenses = await expenseApi.getExpensesByGroupId(currentGroupId);
-        console.log('Fetched expenses:', expenses);
-        setExpenses(expenses);
-        const categories = Array.from(new Set(expenses.map((expense) => expense.category).filter(Boolean))) as ExpenseCategory[];
-        setCategories(categories);
-        console.log('Fetched categories:', categories);
-      }catch (error) {
-        console.error('Failed to fetch expenses:', error);
-      }
-    };
+      };
+
       fetchExpenses();
     }, []),
   );
@@ -126,34 +133,6 @@ export default function ExpensesScreen() {
             <Plus size={23} color="#fff" />
           </Pressable>
         </View>
-
-        <View className="mt-0 mb-6 pl-4">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={scrollViewStyle}
-            persistentScrollbar={false}
-          >
-            {categories.map((category) => {
-              const isSelected = selectedCategories.includes(category);
-              return (
-                <Pressable
-                  key={category}
-                  onPress={() => handleCategorySelect(category)}
-                  className={`px-4 py-2 rounded-full mr-2 border
-                  ${isSelected ? 'bg-[#3B82F6] border-[#3B82F6]' : 'bg-white border-slate-300'}`}
-                >
-                  <Text
-                    className={`text-sm font-medium font-sans
-                    ${isSelected ? 'text-white' : 'text-muted'}`}
-                  >
-                    {category}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
-        </View>
       </View>
     ),
     [
@@ -192,21 +171,57 @@ export default function ExpensesScreen() {
   return (
     <View className="flex-1 bg-background pt-4">
       {RenderHeader}
-      <Animated.View style={{ opacity: listOpacity }} className="flex-1">
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          data={filteredExpenses}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderExpenseItem}
-          contentContainerStyle={{ paddingBottom: 16 }}
-          onScrollBeginDrag={() => {
-            if (showTimeWindowPicker) {
-              setShowTimeWindowPicker(false);
-            }
-          }}
-          removeClippedSubviews={false}
-        />
-      </Animated.View>
+      
+      {loading ? (
+        <ActivityIndicator color="grey"/>
+      ) : (
+        <>
+          <View className="mt-0 mb-6 pl-4">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={scrollViewStyle}
+              persistentScrollbar={false}
+            >
+              {categories.map((category) => {
+                const isSelected = selectedCategories.includes(category);
+                return (
+                  <Pressable
+                    key={category}
+                    onPress={() => handleCategorySelect(category)}
+                    className={`px-4 py-2 rounded-full mr-2 border
+                    ${isSelected ? 'bg-[#3B82F6] border-[#3B82F6]' : 'bg-white border-slate-300'}`}
+                  >
+                    <Text
+                      className={`text-sm font-medium font-sans
+                      ${isSelected ? 'text-white' : 'text-muted'}`}
+                    >
+                      {category}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          <Animated.View style={{ opacity: listOpacity, flex: 1 }}>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={filteredExpenses}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={renderExpenseItem}
+              contentContainerStyle={{ paddingBottom: 16 }}
+              onScrollBeginDrag={() => {
+                if (showTimeWindowPicker) {
+                  setShowTimeWindowPicker(false);
+                }
+              }}
+              removeClippedSubviews={false}
+            />
+          </Animated.View>
+        </>
+      )}
+
 
       <Modal
         visible={showAddExpenseModal}
@@ -215,7 +230,7 @@ export default function ExpensesScreen() {
         backdropColor="transparent"
         statusBarTranslucent={true}
       >
-        <AddExpense onClose={() => setShowAddExpenseModal(false)} />
+        <AddExpense onClose={() => setShowAddExpenseModal(false)} setShowAddExpenseForm={setShowAddExpenseForm} />
       </Modal>
 
       <Modal
@@ -231,6 +246,22 @@ export default function ExpensesScreen() {
           selectedTimeWindow={selectedTimeWindow}
           handleTimeWindowChange={handleTimeWindowChange}
           timeWindowOptions={timeWindowOptions}
+        />
+      </Modal>
+
+      <Modal
+        visible={showAddExpenseForm}
+        animationType="fade"
+        onRequestClose={() => setShowAddExpenseForm(false)}
+        presentationStyle="overFullScreen"
+        statusBarTranslucent={true}
+      >
+        <AddExpenseForm 
+          onClose={() => setShowAddExpenseForm(false)} 
+          onExpenseAdded={() => {
+            setShowAddExpenseForm(false);
+            setShowAddExpenseModal(false);
+          }}
         />
       </Modal>
     </View>

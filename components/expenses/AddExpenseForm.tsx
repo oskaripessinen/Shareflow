@@ -1,228 +1,229 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   Pressable,
-  Platform,
   ScrollView,
-  KeyboardAvoidingView,
+  ActivityIndicator
 } from 'react-native';
-import { X, Camera } from 'lucide-react-native';
-import { useAppStore, ExpenseCategory } from '@/../context/AppContext';
-import { Picker } from '@react-native-picker/picker';
+import { X, Calendar, Euro, FileText, User } from 'lucide-react-native';
+import { ExpenseCategory } from '@/../context/AppContext';
+import { expenseApi } from '@/../api/expenses';
+import { useGroupStore, useAuthStore } from '@/../context/AppContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function AddExpenseForm({ onClose }: { onClose: () => void }) {
-  const { addExpense } = useAppStore();
+interface AddExpenseFormProps {
+  onClose: () => void;
+  onExpenseAdded?: () => void;
+  setShowAddExpenseModal?: (show: boolean) => void;
+}
+
+const expenseCategories: { label: string; value: ExpenseCategory; }[] = [
+  { label: 'Food', value: 'food'},
+  { label: 'Housing', value: 'housing' },
+  { label: 'Transportation', value: 'transportation'},
+  { label: 'Entertainment', value: 'entertainment' },
+  { label: 'Utilities', value: 'utilities' },
+  { label: 'Health', value: 'health' },
+  { label: 'Clothing', value: 'clothing' },
+  { label: 'Other', value: 'other' },
+];
+
+export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpenseModal }: AddExpenseFormProps) {
+  const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<ExpenseCategory>('food');
-  const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
+  const [expenseDate, setExpenseDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const currentGroup = useGroupStore((state) => state.currentGroup);
+  const userId = useAuthStore((state) => state.googleId);
 
-  const categoryOptions = [
-    { label: 'Food', value: 'food' },
-    { label: 'Housing', value: 'housing' },
-    { label: 'Transportation', value: 'transportation' },
-    { label: 'Entertaiment', value: 'entertainment' },
-    { label: 'Utilities', value: 'utilities' },
-    { label: 'Health', value: 'health' },
-    { label: 'Clothing', value: 'clothing' },
-    { label: 'Other', value: 'other' },
-  ];
-
-  const handleAddExpense = () => {
-    if (!amount || isNaN(parseFloat(amount))) {
-      setError('Give a valid amount');
+  const handleSubmit = async () => {
+    setShowAddExpenseModal?.(false);
+    if (!title.trim()) {
+      return;
+    }
+    
+    if (!amount.trim() || isNaN(Number(amount))) {
+      return;
+    }
+    
+    if (!currentGroup) {
       return;
     }
 
-    if (!description) {
-      setError('give a valid description');
-      return;
+    setIsLoading(true);
+    
+    try {
+      if (!userId) {
+        return;
+      }
+      await expenseApi.createExpense(
+        {
+          group_id: currentGroup.id,
+          amount: Number(amount),
+          title: title.trim(),
+          description: description.trim() || undefined,
+          category: selectedCategory || undefined,
+          expense_date: expenseDate,
+        },
+        userId
+      );
+
+      onExpenseAdded?.();
+      onClose();
+    } catch (error) {
+      console.error('Failed to create expense:', error);
+    } finally {
+      setIsLoading(false);
     }
-
-    const newExpense = {
-      id: Date.now().toString(),
-      amount: parseFloat(amount),
-      description,
-      category: category,
-      date: new Date().toISOString(),
-    };
-
-    addExpense(newExpense);
-    onClose();
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.keyboardAvoid}
+    <SafeAreaView
+      className="flex-1" 
     >
-      <View style={styles.container}>
-        <View style={styles.modalContent}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Add expense</Text>
-            <Pressable onPress={onClose} style={styles.closeButton}>
-              <X size={24} color="#64748b" />
+      <View className="flex-1 bg-white">
+
+        <View className="flex-row items-center justify-between px-5 pb-5 border-b border-slate-200">
+          <Text className="text-xl font-semibold text-DEFAULT">Add Expense</Text>
+          <Pressable
+            onPress={onClose}
+            className="p-2 rounded-full bg-slate-200 active:bg-slate-200"
+          >
+            <X size={22} color="#64748b" />
+          </Pressable>
+        </View>
+
+        <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
+          <View className="mb-4">
+            <Text className="text-sm font-sans text-muted mb-2">Title *</Text>
+            <View className="flex-row items-center bg-slate-50 rounded-lg border border-slate-200">
+              <View className="p-3">
+                <FileText size={20} color="#64748b" />
+              </View>
+              <TextInput
+                value={title}
+                onChangeText={setTitle}
+                placeholder="Enter expense title"
+                className="flex-1 p-3 text-DEFAULT"
+                placeholderTextColor="#94a3b8"
+              />
+            </View>
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-sm font-sans text-muted mb-2">Amount *</Text>
+            <View className="flex-row items-center bg-slate-50 rounded-lg border border-slate-200">
+              <View className="p-3">
+                <Euro size={20} color="#64748b" />
+              </View>
+              <TextInput
+                value={amount}
+                onChangeText={setAmount}
+                placeholder="0.00"
+                keyboardType="numeric"
+                className="flex-1 p-3 text-DEFAULT"
+                placeholderTextColor="#94a3b8"
+              />
+              <View className="p-3">
+              </View>
+            </View>
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-sm font-sans text-muted mb-2">Category</Text>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              className="flex-row"
+            >
+              {expenseCategories.map((category) => (
+                <Pressable
+                  key={category.value}
+                  onPress={() => setSelectedCategory(
+                    selectedCategory === category.value ? null : category.value
+                  )}
+                  className={`mr-3 p-2 rounded-full border-2 min-w-[80px] items-center ${
+                    selectedCategory === category.value
+                      ? 'border-primary bg-primary/10'
+                      : 'border-slate-200 bg-white'
+                  }`}
+                >
+                  <Text 
+                    className={`text-xs font-medium ${
+                      selectedCategory === category.value ? 'text-primary' : 'text-muted'
+                    }`}
+                  >
+                    {category.label}
+                  </Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-sm font-sans text-muted mb-2">Description</Text>
+            <View className="bg-slate-50 rounded-lg border border-slate-200">
+              <TextInput
+                value={description}
+                onChangeText={setDescription}
+                placeholder="Enter description (optional)"
+                multiline
+                numberOfLines={3}
+                className="p-3 text-DEFAULT"
+                placeholderTextColor="#94a3b8"
+                textAlignVertical="top"
+              />
+            </View>
+          </View>
+
+          <View className="mb-6">
+            <Text className="text-sm font-sans text-muted mb-2">Date</Text>
+            <Pressable className="flex-row items-center bg-slate-50 rounded-lg border border-slate-200 p-3">
+              <Calendar size={20} color="#64748b" />
+              <Text className="ml-3 text-DEFAULT">
+                {expenseDate.toLocaleDateString()}
+              </Text>
             </Pressable>
           </View>
 
-          <ScrollView style={styles.form}>
-            {error && (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-              </View>
-            )}
-
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Amount (€)</Text>
-              <TextInput
-                style={styles.input}
-                value={amount}
-                onChangeText={setAmount}
-                keyboardType="numeric"
-                placeholder="0.00"
-              />
-            </View>
-
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Description</Text>
-              <TextInput
-                style={styles.input}
-                value={description}
-                onChangeText={setDescription}
-                placeholder="Expense description"
-              />
-            </View>
-
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Category</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={category}
-                  onValueChange={(itemValue) => setCategory(itemValue)}
-                  style={styles.picker}
-                >
-                  {categoryOptions.map((option) => (
-                    <Picker.Item key={option.value} label={option.label} value={option.value} />
-                  ))}
-                </Picker>
+          {currentGroup && (
+            <View className="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <View className="flex-row items-center">
+                <User size={16} color="#3B82F6" />
+                <Text className="ml-2 text-sm text-blue-700">
+                  Adding to: {currentGroup.name}
+                </Text>
               </View>
             </View>
+          )}
+        </ScrollView>
 
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Receipt</Text>
-              <Pressable style={styles.cameraButton}>
-                <Camera size={24} color="#0891b2" />
-                <Text style={styles.cameraText}>Add receipt</Text>
-              </Pressable>
-            </View>
+        <View className="p-4 border-t border-slate-200">
+          <View className="flex-row space-x-3">
 
-            <Pressable style={styles.addButton} onPress={handleAddExpense}>
-              <Text style={styles.addButtonText}>Add expense</Text>
+            <Pressable
+              onPress={handleSubmit}
+              disabled={isLoading || title.trim() === '' || amount.trim() === ''}
+              className={`flex-1 p-4 rounded-lg flex-row items-center justify-center gap-4
+                ${isLoading ? 'bg-slate-300' : 'bg-primary active:bg-primaryDark'}
+                ${title == '' ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'}
+                ${amount.trim() === '' ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'}`
+            }
+            >
+              <Text className="text-center font-medium text-white">
+                {isLoading ? '' : 'Add Expense'}
+              </Text>
+              {isLoading && <ActivityIndicator color="white"/>}
             </Pressable>
-          </ScrollView>
+          </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  keyboardAvoid: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    padding: 16,
-    height: '70%',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#0f172a', // Slate-900
-  },
-  closeButton: {
-    padding: 4,
-  },
-  form: {
-    flex: 1,
-  },
-  errorContainer: {
-    backgroundColor: '#fee2e2', // Red-100
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: '#ef4444', // Red-500
-    fontSize: 14,
-  },
-  formGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#334155', // Slate-700
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#f8fafc', // Slate-50
-    borderWidth: 1,
-    borderColor: '#e2e8f0', // Slate-200
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-  },
-  pickerContainer: {
-    backgroundColor: '#f8fafc', // Slate-50
-    borderWidth: 1,
-    borderColor: '#e2e8f0', // Slate-200
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  picker: {
-    height: 50,
-  },
-  cameraButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#e0f2fe', // Cyan-100
-    borderRadius: 8,
-    padding: 12,
-  },
-  cameraText: {
-    color: '#0891b2', // Cyan-600
-    fontWeight: '500',
-    marginLeft: 8,
-  },
-  addButton: {
-    backgroundColor: '#0891b2', // Cyan-600
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 16,
-    marginBottom: 32,
-  },
-  addButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

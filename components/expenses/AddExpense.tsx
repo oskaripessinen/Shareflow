@@ -4,9 +4,10 @@ import { Image, Edit3, X } from 'lucide-react-native';
 
 interface AddExpenseProps {
   onClose: () => void;
+  setShowAddExpenseForm: (show: boolean) => void;
 }
 
-const AddExpense: React.FC<AddExpenseProps> = ({ onClose }) => {
+const AddExpense: React.FC<AddExpenseProps> = ({ onClose, setShowAddExpenseForm }) => {
   return (
     <Pressable className="flex-1 justify-end" onPress={onClose}>
       <Pressable
@@ -22,7 +23,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose }) => {
 
         <View className="w-full items-center">
           <View className="w-full">
-            <Pressable className="flex-row items-center p-3.5 rounded-lg w-full active:bg-slate-50 justify-center">
+            <Pressable onPress={() => setShowAddExpenseForm(true)} className="flex-row items-center p-3.5 rounded-lg w-full active:bg-slate-50 justify-center">
               <Edit3 size={22} color="black" className="mr-3" />
               <Text className="text-base font-medium text-slate-700 ml-4">Add Manually</Text>
             </Pressable>
