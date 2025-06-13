@@ -17,6 +17,7 @@ interface AddExpenseFormProps {
   onClose: () => void;
   onExpenseAdded?: () => void;
   setShowAddExpenseModal?: (show: boolean) => void;
+  updateExpenses?: () => void;
 }
 
 const expenseCategories: { label: string; value: ExpenseCategory; }[] = [
@@ -75,6 +76,8 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
 
       onExpenseAdded?.();
       onClose();
+      
+      
     } catch (error) {
       console.error('Failed to create expense:', error);
     } finally {

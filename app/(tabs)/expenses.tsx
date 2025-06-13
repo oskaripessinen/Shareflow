@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { View, Text, Pressable, Modal, FlatList, ScrollView, Animated, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Plus, ChevronDown } from 'lucide-react-native';
@@ -19,9 +19,10 @@ const timeWindowOptions = [
 
 
 export default function ExpensesScreen() {
-  const { showTimeWindowPicker, setShowTimeWindowPicker, expenses, setExpenses } = useAppStore();
+  const { expenses, setExpenses } = useAppStore();
   const [selectedTimeWindow, setSelectedTimeWindow] = useState(timeWindowOptions[0].value);
   const [selectedCategories, setSelectedCategories] = useState<ExpenseCategory[]>([]);
+  const [showTimeWindowPicker, setShowTimeWindowPicker] = useState(false);
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
   const [listOpacity] = useState(new Animated.Value(1));
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
@@ -56,6 +57,7 @@ export default function ExpensesScreen() {
   );
 
 
+
   const handleTimeWindowChange = (value: string) => {
     setSelectedTimeWindow(value);
     setShowTimeWindowPicker(false);
@@ -72,6 +74,38 @@ export default function ExpensesScreen() {
       expense.category && selectedCategories.includes(expense.category as ExpenseCategory)
     );
   }, [expenses, selectedCategories]);
+
+  const updateExpenses =  useCallback(async () => {
+    Animated.timing(listOpacity, {
+      toValue: 0,
+      duration: 50,
+      useNativeDriver: true,
+    }).start();
+
+    if (!currentGroupId) {
+      console.warn('No current group selected');
+      return;
+    }
+    const expenses = await expenseApi.getExpensesByGroupId(currentGroupId)
+  
+    console.log('Fetched expenses:', expenses);
+    setExpenses(expenses);
+    const categories = Array.from(new Set(expenses.map((expense) => expense.category).filter(Boolean))) as ExpenseCategory[];
+    setCategories(categories);
+    console.log('Fetched categories:', categories);
+    Animated.timing(listOpacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+
+  }, [currentGroupId, setExpenses]);
+
+    useEffect(() => {
+    if(showAddExpenseForm === false) {
+      updateExpenses();
+    }
+  }, [showAddExpenseForm, updateExpenses]);
 
   const handleCategorySelect = useCallback((category: ExpenseCategory) => {
   Animated.timing(listOpacity, {
