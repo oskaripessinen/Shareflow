@@ -50,3 +50,9 @@ export type ExpenseCategory =
   | 'health'
   | 'clothing'
   | 'other';
+
+  export interface ReactNativeFile {
+    uri: string;
+    type: string;
+    name: string;
+  }

@@ -139,4 +139,41 @@ export const expenseApi = {
       throw error;
     }
   },
+
+  classifyExpense: async (data: string): Promise<string> => {
+    try {
+      const response = await apiClient.post<{ category: string }>(
+        '/api/expenses/classify',
+        { data }
+      );
+      return response.category;
+    } catch (error) {
+      console.error('Failed to classify expense:', error);
+      throw error;
+    }
+  },
+
+  orcDetection: async (base64Image: string): Promise<string> => {
+    try {
+      console.log('Sending OCR request with base64 image');
+
+      const response = await apiClient.post<{
+        success: boolean;
+        data?: { text: string };
+        message?: string;
+      }>('/api/expenses/orc', {
+        image: base64Image
+      });
+
+      if (response.success && response.data) {
+        return response.data.text || '';
+      } else {
+        throw new Error(response.message || 'OCR failed');
+      }
+    } catch (error) {
+      console.error('OCR detection failed:', error);
+      throw error;
+    }
+  },
+
 };

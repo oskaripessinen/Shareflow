@@ -36,7 +36,7 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
-  const [expenseDate, setExpenseDate] = useState(new Date());
+  const [expenseDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
   
   const currentGroup = useGroupStore((state) => state.currentGroup);

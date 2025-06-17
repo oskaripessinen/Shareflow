@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // NOTE: Update this to include the paths to all of your component files.
   content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
@@ -13,9 +12,11 @@ module.exports = {
         secondary: '#60A5FA ',
         accent: '#10B981',
         danger: '#EF4444',
+        muted: '#2b2b2b',
+        default: '#111827',
         text: {
           DEFAULT: '#111827',
-          muted: '#CBD5E1',
+          muted: '#2b2b2b',
           danger: '#EF4444',
         },
       },

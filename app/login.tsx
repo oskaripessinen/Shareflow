@@ -132,7 +132,7 @@ export default function LoginScreen() {
 
   return (
     <SafeAreaView className="flex-1 p-4 justify-center items-center">
-      <Text className="text-3xl font-semibold mb-8">ShareFlow</Text>
+      <Text className="text-3xl font-semibold text-default mb-8">ShareFlow</Text>
 
       <TouchableOpacity
         disabled={loading}
@@ -140,8 +140,8 @@ export default function LoginScreen() {
         className="flex-row items-center bg-white px-6 py-3 rounded-full shadow"
       >
         <Image source={GoogleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
-        <Text className="text-base font-sans">
-          {loading ? 'Signing in…' : 'Sign in with Google'}
+        <Text className="text-base text-default font-sans">
+          Sign in with Google
         </Text>
       </TouchableOpacity>
 

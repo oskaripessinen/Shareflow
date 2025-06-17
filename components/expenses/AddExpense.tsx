@@ -1,6 +1,7 @@
-import React from 'react';
-import { Text, Pressable, View } from 'react-native';
+import React, { useState } from 'react';
+import { Text, Pressable, View, Modal } from 'react-native';
 import { Image, Edit3, X } from 'lucide-react-native';
+import CameraView from './CameraView';
 
 interface AddExpenseProps {
   onClose: () => void;
@@ -8,34 +9,69 @@ interface AddExpenseProps {
 }
 
 const AddExpense: React.FC<AddExpenseProps> = ({ onClose, setShowAddExpenseForm }) => {
-  return (
-    <Pressable className="flex-1 justify-end" onPress={onClose}>
-      <Pressable
-        className="bg-white rounded-t-2xl pt-5 pb-5 px-5 w-full shadow-lg"
-        onPress={(e) => e.stopPropagation()}
-      >
-        <View className="flex-row justify-between items-center mb-6">
-          <Text className="text-xl font-bold text-slate-800">Add Expense</Text>
-          <Pressable onPress={onClose} className="p-1">
-            <X size={24} color="#64748b" />
-          </Pressable>
-        </View>
+  const [showCamera, setShowCamera] = useState(false);
 
-        <View className="w-full items-center">
-          <View className="w-full">
-            <Pressable onPress={() => setShowAddExpenseForm(true)} className="flex-row items-center p-3.5 rounded-lg w-full active:bg-slate-50 justify-center">
-              <Edit3 size={22} color="black" className="mr-3" />
-              <Text className="text-base font-medium text-slate-700 ml-4">Add Manually</Text>
-            </Pressable>
-            <View className="h-px bg-slate-200 w-full my-2" />
-            <Pressable className="flex-row items-center p-3.5 rounded-lg w-full justify-center active:bg-slate-50">
-              <Image size={22} color="black" className="mr-3" />
-              <Text className="font-medium text-slate-700 ml-4">Add With an Image</Text>
+  const addExpensePhoto = () => {
+    setShowCamera(true);
+  };
+
+  // Korjaa function signature vastaamaan CameraView:n odotuksia
+  const handlePhotoTaken = (photoUri: string) => {
+
+    setShowCamera(false);
+    setShowAddExpenseForm(true);
+  };
+
+  return (
+    <>
+      <Pressable className="flex-1 justify-end" onPress={onClose}>
+        <Pressable
+          className="bg-white rounded-t-2xl pt-5 pb-5 px-5 w-full shadow-lg"
+          onPress={(e) => e.stopPropagation()}
+        >
+          <View className="flex-row justify-between items-center mb-6">
+            <Text className="text-xl font-bold text-slate-800">Add Expense</Text>
+            <Pressable onPress={onClose} className="p-1">
+              <X size={24} color="#64748b" />
             </Pressable>
           </View>
-        </View>
+
+          <View className="w-full items-center">
+            <View className="w-full">
+              <Pressable
+                onPress={() => setShowAddExpenseForm(true)}
+                className="flex-row items-center p-3.5 rounded-lg w-full active:bg-slate-50 justify-center"
+              >
+                <Edit3 size={22} color="black" className="mr-3" />
+                <Text className="text-base font-medium text-slate-700 ml-4">Add Manually</Text>
+              </Pressable>
+
+              <View className="h-px bg-slate-200 w-full my-2" />
+
+              <Pressable
+                onPress={addExpensePhoto}
+                className="flex-row items-center p-3.5 rounded-lg w-full justify-center active:bg-slate-50"
+              >
+                <Image size={22} color="black" className="mr-3" />
+                <Text className="font-medium text-slate-700 ml-4">Add With an Image</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Pressable>
       </Pressable>
-    </Pressable>
+
+      <Modal
+        visible={showCamera}
+        animationType="fade"
+        presentationStyle="fullScreen"
+        statusBarTranslucent={true}
+      >
+        <CameraView
+          onClose={() => setShowCamera(false)}
+          onPhotoTaken={handlePhotoTaken}
+        />
+      </Modal>
+    </>
   );
 };
 

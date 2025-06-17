@@ -151,7 +151,7 @@ export default function ExpensesScreen() {
                 </View>
               </Pressable>
               <View className="p-3 pl-2">
-                <Text className="font-bold text-DEFAULT pl-2 pr-2">
+                <Text className="font-bold text-default pl-2 pr-2">
                   {(filteredExpenses?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || 0).toFixed(2)} €
                 </Text>
               </View>
@@ -161,7 +161,7 @@ export default function ExpensesScreen() {
             onPress={() => setShowAddExpenseModal(true)}
             className="flex-row items-center bg-primary px-3 py-2 rounded-xl active:bg-primaryDark shadow"
           >
-            <Text className="text-white font-sans text-DEFAULT text-base mr-2 text-[11p]">
+            <Text className="text-white font-sans text-white text-base mr-2 text-[11p]">
               Add Expense
             </Text>
             <Plus size={23} color="#fff" />
@@ -184,7 +184,7 @@ export default function ExpensesScreen() {
       <View className="bg-surface rounded-lg p-4 my-2 mx-4 mt-0 border-[1px] border-slate-100">
         <View className="flex-row justify-between items-center">
           <View>
-            <Text className="text-lg font-medium font-semibold text-DEFAULT">
+            <Text className="text-lg font-medium font-semibold text-default">
               {item.title || item.description}
             </Text>
             {item.category && (
