@@ -41,6 +41,12 @@ export interface ExpensesResponse {
   data: Expense[];
 }
 
+export interface ExpenseClassification {
+  expenseName: string;
+  totalPrice: string;
+  category: ExpenseCategory | null;
+}
+
 export type ExpenseCategory = 
   | 'food'
   | 'housing'

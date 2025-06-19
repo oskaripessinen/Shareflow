@@ -5,6 +5,7 @@ import {
   CreateExpenseResponse,
   ExpensesResponse,
   UpdateExpenseRequest,
+  ExpenseClassification,
 } from '../types/expense';
 
 export const expenseApi = {
@@ -20,8 +21,6 @@ export const expenseApi = {
     userId: string,
   ): Promise<Expense> => {
     try {
-      console.log('Creating expense:', expenseData);
-      console.log('User ID:', userId);
       
       const createRequest: CreateExpenseRequest = {
         ...expenseData,
@@ -34,10 +33,8 @@ export const expenseApi = {
         throw new Error(response.message || 'Failed to create expense');
       }
 
-      console.log('Expense created successfully:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Failed to create expense:', error);
       throw error;
     }
   },
@@ -47,7 +44,6 @@ export const expenseApi = {
       const response = await apiClient.get<ExpensesResponse>(`/api/expenses/${groupId}`);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch expenses:', error);
       throw error;
     }
   },
@@ -57,7 +53,6 @@ export const expenseApi = {
       const response = await apiClient.get<ExpensesResponse>(`/api/expenses/user/${userId}`);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch user expenses:', error);
       throw error;
     }
   },
@@ -67,7 +62,6 @@ export const expenseApi = {
       const response = await apiClient.get<CreateExpenseResponse>(`/api/expenses/${expenseId}`);
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch expense:', error);
       throw error;
     }
   },
@@ -78,8 +72,6 @@ export const expenseApi = {
     userId: string,
   ): Promise<Expense> => {
     try {
-      console.log('Updating expense:', expenseId, expenseData);
-      
       const response = await apiClient.put<CreateExpenseResponse>(
         `/api/expenses/${expenseId}`,
         {
@@ -91,11 +83,8 @@ export const expenseApi = {
       if (!response.success) {
         throw new Error(response.message || 'Failed to update expense');
       }
-
-      console.log('Expense updated successfully:', response.data);
       return response.data;
     } catch (error) {
-      console.error('Failed to update expense:', error);
       throw error;
     }
   },
@@ -105,9 +94,7 @@ export const expenseApi = {
       await apiClient.delete<{ success: boolean }>(
         `/api/expenses/${expenseId}?userId=${userId}`
       );
-      console.log('Expense deleted successfully:', expenseId);
     } catch (error) {
-      console.error('Failed to delete expense:', error);
       throw error;
     }
   },
@@ -123,7 +110,6 @@ export const expenseApi = {
       );
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch expenses by date range:', error);
       throw error;
     }
   },
@@ -135,43 +121,39 @@ export const expenseApi = {
       );
       return response.data;
     } catch (error) {
-      console.error('Failed to fetch expenses by category:', error);
       throw error;
     }
   },
 
-  classifyExpense: async (data: string): Promise<string> => {
+  classifyExpense: async (data: string): Promise<ExpenseClassification> => {
     try {
-      const response = await apiClient.post<{ category: string }>(
+      const response = await apiClient.post<{ data: ExpenseClassification }>(
         '/api/expenses/classify',
         { data }
       );
-      return response.category;
+      return response.data;
     } catch (error) {
-      console.error('Failed to classify expense:', error);
       throw error;
     }
   },
 
   orcDetection: async (base64Image: string): Promise<string> => {
     try {
-      console.log('Sending OCR request with base64 image');
 
       const response = await apiClient.post<{
         success: boolean;
-        data?: { text: string };
+        data?: string;
         message?: string;
       }>('/api/expenses/orc', {
         image: base64Image
       });
 
       if (response.success && response.data) {
-        return response.data.text || '';
+        return response.data || '';
       } else {
         throw new Error(response.message || 'OCR failed');
       }
     } catch (error) {
-      console.error('OCR detection failed:', error);
       throw error;
     }
   },

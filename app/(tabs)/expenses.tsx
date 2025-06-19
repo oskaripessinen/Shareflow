@@ -1,11 +1,10 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { View, Text, Pressable, Modal, FlatList, ScrollView, Animated, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Plus, ChevronDown } from 'lucide-react-native';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
-import AddExpenseForm  from 'components/expenses/AddExpenseForm';
 import { expenseApi } from '../../api/expenses';
 import { useGroupStore } from '@/../context/AppContext';
 
@@ -26,7 +25,7 @@ export default function ExpensesScreen() {
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
   const [listOpacity] = useState(new Animated.Value(1));
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
-  const [showAddExpenseForm, setShowAddExpenseForm] = useState(false);
+
   const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
   const [loading, setLoading] = useState(false);
 
@@ -101,11 +100,6 @@ export default function ExpensesScreen() {
 
   }, [currentGroupId, setExpenses]);
 
-    useEffect(() => {
-    if(showAddExpenseForm === false) {
-      updateExpenses();
-    }
-  }, [showAddExpenseForm, updateExpenses]);
 
   const handleCategorySelect = useCallback((category: ExpenseCategory) => {
   Animated.timing(listOpacity, {
@@ -264,7 +258,7 @@ export default function ExpensesScreen() {
         backdropColor="transparent"
         statusBarTranslucent={true}
       >
-        <AddExpense onClose={() => setShowAddExpenseModal(false)} setShowAddExpenseForm={setShowAddExpenseForm} />
+        <AddExpense onClose={() => setShowAddExpenseModal(false)}/>
       </Modal>
 
       <Modal
@@ -283,21 +277,6 @@ export default function ExpensesScreen() {
         />
       </Modal>
 
-      <Modal
-        visible={showAddExpenseForm}
-        animationType="fade"
-        onRequestClose={() => setShowAddExpenseForm(false)}
-        presentationStyle="overFullScreen"
-        statusBarTranslucent={true}
-      >
-        <AddExpenseForm 
-          onClose={() => setShowAddExpenseForm(false)} 
-          onExpenseAdded={() => {
-            setShowAddExpenseForm(false);
-            setShowAddExpenseModal(false);
-          }}
-        />
-      </Modal>
     </View>
   );
 }

@@ -11,7 +11,7 @@ import {
   Animated,
 } from 'react-native';
 import { Camera, useCameraDevices, useCameraPermission, PhotoFile } from 'react-native-vision-camera';
-import { X, Zap, ZapOff } from 'lucide-react-native';
+import { X } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface CameraViewProps {
@@ -23,7 +23,6 @@ const { width, height } = Dimensions.get('window');
 
 export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
   const { hasPermission, requestPermission } = useCameraPermission();
-  const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [isCapturing, setIsCapturing] = useState(false);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,10 +36,6 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
   useEffect(() => {
     if (hasPermission === null) {
       requestPermission();
-    } else if (hasPermission === true) {
-      setTimeout(() => {
-        setIsCameraReady(true);
-      }, 1000);
     }
   }, [hasPermission, requestPermission]);
 
@@ -86,11 +81,10 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
       });
 
 
-
-      console.log('Mock OCR Result: Grocery Store - $25.99');
-
       if (photo?.path) {
-        onPhotoTaken(photo.path);
+        const base64Photo = await convertToBase64(photo.path);
+        console.log('Photo taken:', base64Photo);
+        onPhotoTaken(base64Photo);
       }
     } catch (error) {
       console.error('Error taking photo:', error);
@@ -99,16 +93,6 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
       setIsCapturing(false);
       setIsLoading(false);
     }
-  };
-
-  const toggleFlash = () => {
-    setFlash(current => {
-      switch (current) {
-        case 'off': return 'on';
-        case 'on': return 'off';
-        default: return 'off';
-      }
-    });
   };
 
   if (hasPermission == null) {
@@ -197,16 +181,6 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
           <X size={24} color="#fff" />
         </Pressable>
         
-        <Pressable 
-          onPress={toggleFlash} 
-          className="w-11 h-11 rounded-full items-center justify-center"
-        >
-          {flash === 'off' ? (
-            <ZapOff size={24} color="#fff" />
-          ) : (
-            <Zap size={24} color="#fff" />
-          )}
-        </Pressable>
       </SafeAreaView>
 
       {isCameraReady && (

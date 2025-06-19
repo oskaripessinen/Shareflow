@@ -5,7 +5,8 @@ import {
   TextInput,
   Pressable,
   ScrollView,
-  ActivityIndicator
+  ActivityIndicator,
+  Animated
 } from 'react-native';
 import { X, Calendar, Euro, FileText, User } from 'lucide-react-native';
 import { ExpenseCategory } from '@/../context/AppContext';
@@ -18,6 +19,13 @@ interface AddExpenseFormProps {
   onExpenseAdded?: () => void;
   setShowAddExpenseModal?: (show: boolean) => void;
   updateExpenses?: () => void;
+  classifying?: boolean;
+  amount: string;
+  setAmount: (amount: string) => void;
+  title: string;
+  setTitle: (title: string) => void;
+  selectedCategory: ExpenseCategory | null;
+  setSelectedCategory: (category: ExpenseCategory | null) => void;
 }
 
 const expenseCategories: { label: string; value: ExpenseCategory; }[] = [
@@ -31,14 +39,21 @@ const expenseCategories: { label: string; value: ExpenseCategory; }[] = [
   { label: 'Other', value: 'other' },
 ];
 
-export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpenseModal }: AddExpenseFormProps) {
-  const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
+export default function AddExpenseForm({ 
+  onClose, 
+  onExpenseAdded, 
+  setShowAddExpenseModal, 
+  classifying, 
+  amount, 
+  setAmount, 
+  title, 
+  setTitle, 
+  selectedCategory, 
+  setSelectedCategory }: AddExpenseFormProps) {
   const [expenseDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
-  
+  const [description, setDescription] = useState('');
+
   const currentGroup = useGroupStore((state) => state.currentGroup);
   const userId = useAuthStore((state) => state.googleId);
 
@@ -85,14 +100,11 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
     }
   };
 
-  return (
-    <SafeAreaView
-      className="flex-1" 
-    >
-      <View className="flex-1 bg-white">
+  const Form = () => (
+    <Animated.View className="flex-1 bg-white">
 
         <View className="flex-row items-center justify-between px-5 pb-5 border-b border-slate-200">
-          <Text className="text-xl font-semibold text-DEFAULT">Add Expense</Text>
+          <Text className="text-xl font-semibold text-default">Add Expense</Text>
           <Pressable
             onPress={onClose}
             className="p-2 rounded-full bg-slate-200 active:bg-slate-200"
@@ -112,7 +124,7 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
                 value={title}
                 onChangeText={setTitle}
                 placeholder="Enter expense title"
-                className="flex-1 p-3 text-DEFAULT"
+                className="flex-1 p-3 text-default"
                 placeholderTextColor="#94a3b8"
               />
             </View>
@@ -129,7 +141,7 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
                 onChangeText={setAmount}
                 placeholder="0.00"
                 keyboardType="numeric"
-                className="flex-1 p-3 text-DEFAULT"
+                className="flex-1 p-3 text-default"
                 placeholderTextColor="#94a3b8"
               />
               <View className="p-3">
@@ -177,7 +189,7 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
                 placeholder="Enter description (optional)"
                 multiline
                 numberOfLines={3}
-                className="p-3 text-DEFAULT"
+                className="p-3 text-default"
                 placeholderTextColor="#94a3b8"
                 textAlignVertical="top"
               />
@@ -188,7 +200,7 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
             <Text className="text-sm font-sans text-muted mb-2">Date</Text>
             <Pressable className="flex-row items-center bg-slate-50 rounded-lg border border-slate-200 p-3">
               <Calendar size={20} color="#64748b" />
-              <Text className="ml-3 text-DEFAULT">
+              <Text className="ml-3 text-default">
                 {expenseDate.toLocaleDateString()}
               </Text>
             </Pressable>
@@ -211,11 +223,11 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
 
             <Pressable
               onPress={handleSubmit}
-              disabled={isLoading || title.trim() === '' || amount.trim() === ''}
+              disabled={isLoading || title === '' || amount === ''}
               className={`flex-1 p-4 rounded-lg flex-row items-center justify-center gap-4
                 ${isLoading ? 'bg-slate-300' : 'bg-primary active:bg-primaryDark'}
-                ${title == '' ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'}
-                ${amount.trim() === '' ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'}`
+                ${title === '' ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'}
+                ${amount === '' ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'}`
             }
             >
               <Text className="text-center font-medium text-white">
@@ -225,6 +237,22 @@ export default function AddExpenseForm({ onClose, onExpenseAdded, setShowAddExpe
             </Pressable>
           </View>
         </View>
+      </Animated.View>
+  );
+
+  return (
+    <SafeAreaView
+      className="flex-1" 
+    >
+      <View className="flex-1 bg-background">
+        {classifying ? (
+          <View className="flex-1 items-center justify-center">
+            <ActivityIndicator size="large" color="#3B82F6" />
+            <Text className="text-lg text-muted mt-4">Classifying expense...</Text>
+          </View>
+        ) : (
+          <Form />
+        )}
       </View>
     </SafeAreaView>
   );
