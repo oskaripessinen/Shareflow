@@ -69,7 +69,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
           className="bg-white rounded-t-2xl pt-5 pb-5 px-5 w-full shadow-lg"
           onPress={(e) => e.stopPropagation()}
         >
-          <View className="flex-row justify-between items-center mb-6">
+          <View className="flex-row justify-between items-center mb-3">
             <Text className="text-xl font-bold text-slate-800">Add Expense</Text>
             <Pressable onPress={onClose} className="p-1">
               <X size={24} color="#64748b" />

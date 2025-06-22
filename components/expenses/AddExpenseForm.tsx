@@ -13,6 +13,8 @@ import { ExpenseCategory } from '@/../context/AppContext';
 import { expenseApi } from '@/../api/expenses';
 import { useGroupStore, useAuthStore } from '@/../context/AppContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 interface AddExpenseFormProps {
   onClose: () => void;
@@ -50,9 +52,16 @@ export default function AddExpenseForm({
   setTitle, 
   selectedCategory, 
   setSelectedCategory }: AddExpenseFormProps) {
-  const [expenseDate] = useState(new Date());
+  const [expenseDate, setExpenseDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
   const [description, setDescription] = useState('');
+  const [show, setShow] = useState(false);
+
+  const onChange = (event: unknown, selectedDate?: Date) => {
+    const currentDate = selectedDate || expenseDate;
+    setShow(false);
+    setExpenseDate(currentDate);
+  };
 
   const currentGroup = useGroupStore((state) => state.currentGroup);
   const userId = useAuthStore((state) => state.googleId);
@@ -198,12 +207,20 @@ export default function AddExpenseForm({
 
           <View className="mb-6">
             <Text className="text-sm font-sans text-muted mb-2">Date</Text>
-            <Pressable className="flex-row items-center bg-slate-50 rounded-lg border border-slate-200 p-3">
+            <Pressable onPress={() => setShow(true)} className="flex-row items-center bg-slate-50 rounded-lg border border-slate-200 p-3">
               <Calendar size={20} color="#64748b" />
               <Text className="ml-3 text-default">
                 {expenseDate.toLocaleDateString()}
               </Text>
             </Pressable>
+            {show && (
+              <DateTimePicker
+                value={expenseDate}
+                mode="date"
+                display="default"
+                onChange={onChange}
+              />
+            )}
           </View>
 
           {currentGroup && (
