@@ -8,9 +8,10 @@ import { ExpenseCategory } from 'context/AppContext';
 
 interface AddExpenseProps {
   onClose: () => void;
+  updateExpenses?: () => void;
 }
 
-const AddExpense: React.FC<AddExpenseProps> = ({ onClose }) => {
+const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
   const [showCamera, setShowCamera] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState(false);
@@ -27,18 +28,18 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose }) => {
   const handlePhotoTaken = async (base64: string) => {
     
     setShowAddExpenseForm(true);
-    try {
     setLoading(true);
-    const result = await expenseApi.orcDetection(base64);
-    console.log('OCR Result:', result);
-    const expenseClassification = await expenseApi.classifyExpense(result);
-    console.log('Expense classification:', expenseClassification);
-    setTitle(expenseClassification.expenseName);
-    setAmount(expenseClassification.totalPrice.toString());
-    setSelectedCategory(expenseClassification.category);
-    console.log(title);
-    setLoading(false);
-    setShowCamera(false);
+    try {
+      
+
+      const result = await expenseApi.orcDetection(base64);
+      const expenseClassification = await expenseApi.classifyExpense(result);
+
+      setTitle(expenseClassification.expenseName);
+      setAmount(expenseClassification.totalPrice.toString());
+      setSelectedCategory(expenseClassification.category);
+      setLoading(false);
+      setShowCamera(false);
     }
     catch (error) {
       console.error('Error processing photo:', error);
@@ -53,7 +54,13 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose }) => {
     
   };
 
+  const handleClose = () => {
 
+    setShowAddExpenseForm(false);
+    if (updateExpenses) {
+      updateExpenses();
+    }
+  };
 
   return (
     <>
@@ -112,7 +119,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose }) => {
         statusBarTranslucent={true}
       >
         <AddExpenseForm 
-          onClose={() => setShowAddExpenseForm(false)} 
+          onClose={handleClose} 
           onExpenseAdded={() => {
             setShowAddExpenseForm(false);
           }}

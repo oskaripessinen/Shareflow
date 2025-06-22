@@ -87,11 +87,9 @@ export default function ExpensesScreen() {
     }
     const expenses = await expenseApi.getExpensesByGroupId(currentGroupId)
   
-    console.log('Fetched expenses:', expenses);
     setExpenses(expenses);
     const categories = Array.from(new Set(expenses.map((expense) => expense.category).filter(Boolean))) as ExpenseCategory[];
     setCategories(categories);
-    console.log('Fetched categories:', categories);
     Animated.timing(listOpacity, {
       toValue: 1,
       duration: 300,
@@ -107,8 +105,6 @@ export default function ExpensesScreen() {
     duration: 50,
     useNativeDriver: true,
   }).start(() => {
-
-    console.log('Toggling category:', category);
     setSelectedCategories((prevSelected) =>
       prevSelected.includes(category)
         ? prevSelected.filter((c) => c !== category)
@@ -258,7 +254,7 @@ export default function ExpensesScreen() {
         backdropColor="transparent"
         statusBarTranslucent={true}
       >
-        <AddExpense onClose={() => setShowAddExpenseModal(false)}/>
+        <AddExpense onClose={() => setShowAddExpenseModal(false)} updateExpenses={updateExpenses} />
       </Modal>
 
       <Modal
