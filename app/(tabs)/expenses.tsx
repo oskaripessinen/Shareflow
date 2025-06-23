@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { View, Text, Pressable, Modal, FlatList, ScrollView, Animated, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, Modal, ScrollView, Animated, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Plus, ChevronDown } from 'lucide-react-native';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
@@ -7,6 +7,7 @@ import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
 import { expenseApi } from '../../api/expenses';
 import { useGroupStore } from '@/../context/AppContext';
+import ExpenseBar from 'components/expenses/ExpenseBar';
 
 const timeWindowOptions = [
   { label: 'Today', value: 'today' },
@@ -60,19 +61,34 @@ export default function ExpensesScreen() {
   const handleTimeWindowChange = (value: string) => {
     setSelectedTimeWindow(value);
     setShowTimeWindowPicker(false);
+    
   };
 
   const scrollViewStyle = useMemo(() => ({ paddingHorizontal: 2 }), []);
 
   const filteredExpenses = useMemo(() => {
-    if (selectedCategories.length === 0) {
-      return expenses;
-    }
+  const getTimeLimit = (timeWindow: string): number => {
+    const DAY = 24 * 60 * 60 * 1000;
+    const limits = {
+      'today': DAY,
+      'week': 7 * DAY,
+      'month': 30 * DAY,
+      'year': 365 * DAY,
+      'all': Infinity
+    };
+    return limits[timeWindow as keyof typeof limits] || Infinity;
+  };
+
+  return expenses.filter((expense) => {
+    const categoryMatch = selectedCategories.length === 0 || 
+      (expense.category && selectedCategories.includes(expense.category as ExpenseCategory));
+    const expenseDate = new Date(expense.created_at);
+    const timeDiff = Date.now() - expenseDate.getTime();
+    const timeMatch = timeDiff <= getTimeLimit(selectedTimeWindow);
     
-    return expenses.filter((expense) => 
-      expense.category && selectedCategories.includes(expense.category as ExpenseCategory)
-    );
-  }, [expenses, selectedCategories]);
+    return categoryMatch && timeMatch;
+  });
+}, [expenses, selectedCategories, selectedTimeWindow]);
 
   const updateExpenses =  useCallback(async () => {
     Animated.timing(listOpacity, {
@@ -133,7 +149,7 @@ export default function ExpensesScreen() {
                 style={{ width: 100, height: '100%', paddingHorizontal: 20, justifyContent: 'space-between' }}
                 className="flex-row items-center my-0 py-0 rounded-l-xl pr-2 border-r border-slate-200 text-center active:bg-slate-100"
               >
-                <Text className="font-medium font-semibold text-muted pr-2">
+                <Text className="font-medium font-semibold text-muted text-base pr-2">
                   {timeWindowOptions.find((opt) => opt.value === selectedTimeWindow)?.label}
                 </Text>
                 <View className="mr-2">
@@ -169,7 +185,7 @@ export default function ExpensesScreen() {
     ],
   );
 
-  const renderExpenseItem = useCallback(
+  const RenderExpenseItem = useCallback(
     ({ item }: { item: Expense }) => (
       <View className="bg-surface rounded-lg p-4 my-2 mx-4 mt-0 border-[1px] border-slate-100">
         <View className="flex-row justify-between items-center">
@@ -193,7 +209,7 @@ export default function ExpensesScreen() {
   );
 
   return (
-    <View className="flex-1 bg-background pt-4">
+    <ScrollView className="flex-1 bg-background pt-4">
       {RenderHeader}
       
       {loading ? (
@@ -201,6 +217,7 @@ export default function ExpensesScreen() {
       ) : (
         <>
           <View className="mt-0 mb-6 pl-4">
+            
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -229,19 +246,15 @@ export default function ExpensesScreen() {
           </View>
 
           <Animated.View style={{ opacity: listOpacity, flex: 1 }}>
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={filteredExpenses}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderExpenseItem}
-              contentContainerStyle={{ paddingBottom: 16 }}
-              onScrollBeginDrag={() => {
-                if (showTimeWindowPicker) {
-                  setShowTimeWindowPicker(false);
-                }
-              }}
-              removeClippedSubviews={false}
-            />
+            <ExpenseBar expenses={filteredExpenses}/>
+            <View>
+              {filteredExpenses.map((expense, index) => (
+                <RenderExpenseItem 
+                  key={index}
+                  item={expense}
+                />
+              ))}
+            </View>
           </Animated.View>
         </>
       )}
@@ -273,6 +286,6 @@ export default function ExpensesScreen() {
         />
       </Modal>
 
-    </View>
+    </ScrollView>
   );
 }

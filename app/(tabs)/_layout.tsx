@@ -16,12 +16,12 @@ export default function TabLayout() {
             backgroundColor: 'white',
             borderTopWidth: 1,
             borderTopColor: '#e2e8f0',
-            paddingTop: 5,
+            paddingTop: 8,
             paddingBottom: 5,
-            height: 60,
+            height: 55,
           },
           tabBarLabelStyle: {
-            fontSize: 12,
+            fontSize: 0,
             fontWeight: '500',
             fontFamily: 'Poppins_600SemiBold',
           },
@@ -38,28 +38,28 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Overview',
+            title: '',
             tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
           }}
         />
         <Tabs.Screen
           name="income"
           options={{
-            title: 'Income',
+            title: '',
             tabBarIcon: ({ color, size }) => <HandCoins size={size} color={color} />,
           }}
         />
         <Tabs.Screen
           name="expenses"
           options={{
-            title: 'Expenses',
+            title: '',
             tabBarIcon: ({ color, size }) => <CreditCard size={size} color={color} />,
           }}
         />
         <Tabs.Screen
           name="investments"
           options={{
-            title: 'Savings',
+            title: '',
             tabBarIcon: ({ color, size }) => <TrendingUp size={size} color={color} />,
           }}
         />
