@@ -140,9 +140,7 @@ export default function LoginScreen() {
         className="flex-row items-center bg-white px-6 py-3 rounded-full shadow"
       >
         <Image source={GoogleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
-        <Text className="text-base text-default font-sans">
-          Sign in with Google
-        </Text>
+        <Text className="text-base text-default font-sans">Sign in with Google</Text>
       </TouchableOpacity>
 
       <View className="mt-4 h-16 justify-center items-center">

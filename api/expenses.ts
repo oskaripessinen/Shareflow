@@ -21,7 +21,6 @@ export const expenseApi = {
     userId: string,
   ): Promise<Expense> => {
     try {
-      
       const createRequest: CreateExpenseRequest = {
         ...expenseData,
         paid_by: userId,
@@ -72,13 +71,10 @@ export const expenseApi = {
     userId: string,
   ): Promise<Expense> => {
     try {
-      const response = await apiClient.put<CreateExpenseResponse>(
-        `/api/expenses/${expenseId}`,
-        {
-          ...expenseData,
-          updated_by: userId,
-        }
-      );
+      const response = await apiClient.put<CreateExpenseResponse>(`/api/expenses/${expenseId}`, {
+        ...expenseData,
+        updated_by: userId,
+      });
 
       if (!response.success) {
         throw new Error(response.message || 'Failed to update expense');
@@ -91,9 +87,7 @@ export const expenseApi = {
 
   deleteExpense: async (expenseId: number, userId: string): Promise<void> => {
     try {
-      await apiClient.delete<{ success: boolean }>(
-        `/api/expenses/${expenseId}?userId=${userId}`
-      );
+      await apiClient.delete<{ success: boolean }>(`/api/expenses/${expenseId}?userId=${userId}`);
     } catch (error) {
       throw error;
     }
@@ -106,7 +100,7 @@ export const expenseApi = {
   ): Promise<Expense[]> => {
     try {
       const response = await apiClient.get<ExpensesResponse>(
-        `/api/expenses/range?group_id=${groupId}&start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`
+        `/api/expenses/range?group_id=${groupId}&start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`,
       );
       return response.data;
     } catch (error) {
@@ -117,7 +111,7 @@ export const expenseApi = {
   getExpensesByCategory: async (groupId: number, category: string): Promise<Expense[]> => {
     try {
       const response = await apiClient.get<ExpensesResponse>(
-        `/api/expenses/category?group_id=${groupId}&category=${category}`
+        `/api/expenses/category?group_id=${groupId}&category=${category}`,
       );
       return response.data;
     } catch (error) {
@@ -129,7 +123,7 @@ export const expenseApi = {
     try {
       const response = await apiClient.post<{ data: ExpenseClassification }>(
         '/api/expenses/classify',
-        { data }
+        { data },
       );
       return response.data;
     } catch (error) {
@@ -139,13 +133,12 @@ export const expenseApi = {
 
   orcDetection: async (base64Image: string): Promise<string> => {
     try {
-
       const response = await apiClient.post<{
         success: boolean;
         data?: string;
         message?: string;
       }>('/api/expenses/orc', {
-        image: base64Image
+        image: base64Image,
       });
 
       if (response.success && response.data) {
@@ -157,5 +150,4 @@ export const expenseApi = {
       throw error;
     }
   },
-
 };

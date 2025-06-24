@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Text, Pressable, View, Modal } from 'react-native';
-import { Image, Edit3, X,  } from 'lucide-react-native';
+import { Image, Edit3, X } from 'lucide-react-native';
 import CameraView from './CameraView';
 import { expenseApi } from 'api/expenses';
-import AddExpenseForm  from 'components/expenses/AddExpenseForm';
+import AddExpenseForm from 'components/expenses/AddExpenseForm';
 import { ExpenseCategory } from 'context/AppContext';
 
 interface AddExpenseProps {
@@ -18,20 +18,15 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
-  
 
   const addExpensePhoto = () => {
     setShowCamera(true);
   };
 
-
   const handlePhotoTaken = async (base64: string) => {
-    
     setShowAddExpenseForm(true);
     setLoading(true);
     try {
-      
-
       const result = await expenseApi.orcDetection(base64);
       const expenseClassification = await expenseApi.classifyExpense(result);
 
@@ -40,22 +35,17 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
       setSelectedCategory(expenseClassification.category);
       setLoading(false);
       setShowCamera(false);
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error processing photo:', error);
       setLoading(false);
       setShowCamera(false);
-    }
-    finally {
+    } finally {
       setShowCamera(false);
       setLoading(false);
     }
-
-    
   };
 
   const handleClose = () => {
-
     setShowAddExpenseForm(false);
     if (updateExpenses) {
       updateExpenses();
@@ -106,10 +96,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
         presentationStyle="fullScreen"
         statusBarTranslucent={true}
       >
-        <CameraView
-          onClose={() => setShowCamera(false)}
-          onPhotoTaken={handlePhotoTaken}
-        />
+        <CameraView onClose={() => setShowCamera(false)} onPhotoTaken={handlePhotoTaken} />
       </Modal>
       <Modal
         visible={showAddExpenseForm}
@@ -118,8 +105,8 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
         presentationStyle="overFullScreen"
         statusBarTranslucent={true}
       >
-        <AddExpenseForm 
-          onClose={handleClose} 
+        <AddExpenseForm
+          onClose={handleClose}
           onExpenseAdded={() => {
             setShowAddExpenseForm(false);
           }}
@@ -131,7 +118,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
         />
-    </Modal>
+      </Modal>
     </>
   );
 };

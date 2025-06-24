@@ -11,7 +11,7 @@ const GroupHeader = () => {
   const { userGroups, currentGroup, setCurrentGroup } = useGroups();
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
   const [isOptionsModalVisible, setOptionsModal] = useState(false);
-  
+
   useEffect(() => {
     if (!currentGroup && userGroups.length > 0) {
       setCurrentGroup(userGroups[0]);
@@ -36,10 +36,10 @@ const GroupHeader = () => {
   return (
     <>
       <SafeAreaView
-        className="bg-slate-50 shadow-sm z-20"
+        className="bg-slate-50 shadow-sm z-20 border-b border-slate-200"
         style={{ paddingTop: Platform.OS === 'android' ? 40 : 0 }}
       >
-        <View className="flex-row items-center px-4 mb-3 pt-5 border-b-1 border-slate-600">
+        <View className="flex-row items-center px-4 mb-3 pt-5">
           <Pressable className="opacity-0 py-1 px-3">
             <EllipsisVertical size={22} color="#475569" />
           </Pressable>
@@ -55,9 +55,12 @@ const GroupHeader = () => {
             >
               {currentGroup ? currentGroup.name : 'Select Group'}
             </Text>
-            <ChevronDown size={20} className='active:color-slate-600' />
+            <ChevronDown size={20} className="active:color-slate-600" />
           </Pressable>
-          <Pressable onPress={() => setOptionsModal(true)} className="py-2 px-1 mx-2 rounded-xl active:bg-slate-100">
+          <Pressable
+            onPress={() => setOptionsModal(true)}
+            className="py-2 px-1 mx-2 rounded-xl active:bg-slate-100"
+          >
             <EllipsisVertical size={22} color="#475569" />
           </Pressable>
         </View>

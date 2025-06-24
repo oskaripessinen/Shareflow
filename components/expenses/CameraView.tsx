@@ -10,7 +10,12 @@ import {
   StyleSheet,
   Animated,
 } from 'react-native';
-import { Camera, useCameraDevices, useCameraPermission, PhotoFile } from 'react-native-vision-camera';
+import {
+  Camera,
+  useCameraDevices,
+  useCameraPermission,
+  PhotoFile,
+} from 'react-native-vision-camera';
 import { X } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -28,10 +33,10 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [animatedOpacity] = useState(new Animated.Value(0));
   const [isActive, setIsActive] = useState(true);
-  
+
   const cameraRef = useRef<Camera>(null);
   const devices = useCameraDevices();
-  const device = devices.find(d => d.position === 'back');
+  const device = devices.find((d) => d.position === 'back');
 
   useEffect(() => {
     if (hasPermission === null) {
@@ -45,12 +50,11 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
     };
   }, []);
 
-
   const convertToBase64 = async (photoPath: string): Promise<string> => {
     try {
       const response = await fetch(`file://${photoPath}`);
       const blob = await response.blob();
-      
+
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -73,13 +77,10 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
     try {
       setIsCapturing(true);
       setIsLoading(true);
-      
-
 
       const photo: PhotoFile = await cameraRef.current.takeSnapshot({
         quality: 0.8,
       });
-
 
       if (photo?.path) {
         const base64Photo = await convertToBase64(photo.path);
@@ -111,14 +112,14 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
           <Text className="text-white text-lg mb-5 text-center">
             We need your permission to show the camera
           </Text>
-          <Pressable 
-            onPress={requestPermission} 
+          <Pressable
+            onPress={requestPermission}
             className="bg-primary px-5 py-2.5 rounded-lg active:bg-primaryDark mb-4"
           >
             <Text className="text-white text-base font-semibold">Grant Permission</Text>
           </Pressable>
-          <Pressable 
-            onPress={onClose} 
+          <Pressable
+            onPress={onClose}
             className="bg-gray-600 px-5 py-2.5 rounded-lg active:bg-gray-700"
           >
             <Text className="text-white text-base font-semibold">Close</Text>
@@ -132,8 +133,8 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
     return (
       <View className="flex-1 bg-black items-center justify-center">
         <Text className="text-white text-lg">No camera device found</Text>
-        <Pressable 
-          onPress={onClose} 
+        <Pressable
+          onPress={onClose}
           className="bg-gray-600 px-5 py-2.5 rounded-lg active:bg-gray-700 mt-4"
         >
           <Text className="text-white text-base font-semibold">Close</Text>
@@ -174,39 +175,31 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
           Platform.OS === 'ios' ? 'top-15' : 'top-8'
         }`}
       >
-        <Pressable 
-          onPress={onClose} 
-          className="w-11 h-11 rounded-full items-center justify-center"
-        >
+        <Pressable onPress={onClose} className="w-11 h-11 rounded-full items-center justify-center">
           <X size={24} color="#fff" />
         </Pressable>
-        
       </SafeAreaView>
 
       {isCameraReady && (
-        <View 
+        <View
           className={`absolute left-0 right-0 h-30 justify-center items-center ${
             Platform.OS === 'ios' ? 'bottom-10' : 'bottom-5'
           }`}
         >
-          <View 
-            className="flex-row items-center justify-center px-5"
-            style={{ width: width - 40 }}
-          >
-            <Pressable 
-              onPress={takePhoto} 
+          <View className="flex-row items-center justify-center px-5" style={{ width: width - 40 }}>
+            <Pressable
+              onPress={takePhoto}
               className={`w-20 h-20 rounded-full bg-white items-center justify-center shadow-lg ${
                 isCapturing ? 'opacity-50' : ''
               }`}
               disabled={isCapturing}
             >
-              <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center">
-              </View>
+              <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center"></View>
             </Pressable>
           </View>
         </View>
       )}
-      
+
       {isLoading && (
         <Animated.View style={[styles.loadingOverlay, { opacity: animatedOpacity }]}>
           <ActivityIndicator size="large" color="grey" />

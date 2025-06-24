@@ -47,7 +47,7 @@ export interface ExpenseClassification {
   category: ExpenseCategory | null;
 }
 
-export type ExpenseCategory = 
+export type ExpenseCategory =
   | 'food'
   | 'housing'
   | 'transportation'
@@ -57,8 +57,8 @@ export type ExpenseCategory =
   | 'clothing'
   | 'other';
 
-  export interface ReactNativeFile {
-    uri: string;
-    type: string;
-    name: string;
-  }
+export interface ReactNativeFile {
+  uri: string;
+  type: string;
+  name: string;
+}

@@ -1,5 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
-import { View, Text, Pressable, Modal, ScrollView, Animated, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  Modal,
+  ScrollView,
+  Animated,
+  ActivityIndicator,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Plus, ChevronDown } from 'lucide-react-native';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
@@ -15,8 +23,6 @@ const timeWindowOptions = [
   { label: 'Month', value: 'this_month' },
   { label: 'Year', value: 'last_year' },
 ];
-
-
 
 export default function ExpensesScreen() {
   const { expenses, setExpenses } = useAppStore();
@@ -41,8 +47,10 @@ export default function ExpensesScreen() {
           }
           const expenses = await expenseApi.getExpensesByGroupId(currentGroupId);
           console.log('Fetched expenses:', expenses);
-          setExpenses(expenses);        
-          const categories = Array.from(new Set(expenses.map((expense) => expense.category).filter(Boolean))) as ExpenseCategory[];
+          setExpenses(expenses);
+          const categories = Array.from(
+            new Set(expenses.map((expense) => expense.category).filter(Boolean)),
+          ) as ExpenseCategory[];
           setCategories(categories);
           console.log('Fetched categories:', categories);
         } catch (error) {
@@ -56,41 +64,51 @@ export default function ExpensesScreen() {
     }, []),
   );
 
-
-
   const handleTimeWindowChange = (value: string) => {
-    setSelectedTimeWindow(value);
-    setShowTimeWindowPicker(false);
-    
+    Animated.timing(listOpacity, {
+      toValue: 0,
+      duration: 50,
+      useNativeDriver: true,
+    }).start(() => {
+      setSelectedTimeWindow(value);
+      setShowTimeWindowPicker(false);
+
+      Animated.timing(listOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    });
   };
 
   const scrollViewStyle = useMemo(() => ({ paddingHorizontal: 2 }), []);
 
   const filteredExpenses = useMemo(() => {
-  const getTimeLimit = (timeWindow: string): number => {
-    const DAY = 24 * 60 * 60 * 1000;
-    const limits = {
-      'today': DAY,
-      'week': 7 * DAY,
-      'month': 30 * DAY,
-      'year': 365 * DAY,
-      'all': Infinity
+    const getTimeLimit = (timeWindow: string): number => {
+      const DAY = 24 * 60 * 60 * 1000;
+      const limits = {
+        today: DAY,
+        week: 7 * DAY,
+        month: 30 * DAY,
+        year: 365 * DAY,
+        all: Infinity,
+      };
+      return limits[timeWindow as keyof typeof limits] || Infinity;
     };
-    return limits[timeWindow as keyof typeof limits] || Infinity;
-  };
 
-  return expenses.filter((expense) => {
-    const categoryMatch = selectedCategories.length === 0 || 
-      (expense.category && selectedCategories.includes(expense.category as ExpenseCategory));
-    const expenseDate = new Date(expense.created_at);
-    const timeDiff = Date.now() - expenseDate.getTime();
-    const timeMatch = timeDiff <= getTimeLimit(selectedTimeWindow);
-    
-    return categoryMatch && timeMatch;
-  });
-}, [expenses, selectedCategories, selectedTimeWindow]);
+    return expenses.filter((expense) => {
+      const categoryMatch =
+        selectedCategories.length === 0 ||
+        (expense.category && selectedCategories.includes(expense.category as ExpenseCategory));
+      const expenseDate = new Date(expense.created_at);
+      const timeDiff = Date.now() - expenseDate.getTime();
+      const timeMatch = timeDiff <= getTimeLimit(selectedTimeWindow);
 
-  const updateExpenses =  useCallback(async () => {
+      return categoryMatch && timeMatch;
+    });
+  }, [expenses, selectedCategories, selectedTimeWindow]);
+
+  const updateExpenses = useCallback(async () => {
     Animated.timing(listOpacity, {
       toValue: 0,
       duration: 50,
@@ -101,52 +119,59 @@ export default function ExpensesScreen() {
       console.warn('No current group selected');
       return;
     }
-    const expenses = await expenseApi.getExpensesByGroupId(currentGroupId)
-  
+    const expenses = await expenseApi.getExpensesByGroupId(currentGroupId);
+
     setExpenses(expenses);
-    const categories = Array.from(new Set(expenses.map((expense) => expense.category).filter(Boolean))) as ExpenseCategory[];
+    const categories = Array.from(
+      new Set(expenses.map((expense) => expense.category).filter(Boolean)),
+    ) as ExpenseCategory[];
     setCategories(categories);
     Animated.timing(listOpacity, {
       toValue: 1,
       duration: 300,
       useNativeDriver: true,
     }).start();
-
   }, [currentGroupId, setExpenses]);
 
+  const handleCategorySelect = useCallback(
+    (category: ExpenseCategory) => {
+      Animated.timing(listOpacity, {
+        toValue: 0,
+        duration: 50,
+        useNativeDriver: true,
+      }).start(() => {
+        setSelectedCategories((prevSelected) =>
+          prevSelected.includes(category)
+            ? prevSelected.filter((c) => c !== category)
+            : [...prevSelected, category],
+        );
 
-  const handleCategorySelect = useCallback((category: ExpenseCategory) => {
-  Animated.timing(listOpacity, {
-    toValue: 0,
-    duration: 50,
-    useNativeDriver: true,
-  }).start(() => {
-    setSelectedCategories((prevSelected) =>
-      prevSelected.includes(category)
-        ? prevSelected.filter((c) => c !== category)
-        : [...prevSelected, category]
-    );
-    
-
-    Animated.timing(listOpacity, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  });
-}, [listOpacity])
+        Animated.timing(listOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
+    },
+    [listOpacity],
+  );
 
   const RenderHeader = useMemo(
     () => (
       <View className="p-0 mt-0" style={{ zIndex: 10 }}>
-        <View className="flex-row items-center mb-6 justify-between px-4">
+        <View className="flex-row items-center mb-5 justify-between px-4">
           <View className="relative" style={{ zIndex: 1 }}>
-            <View className="flex-row items-center bg-white rounded-xl">
+            <View className="flex-row items-center bg-white rounded-xl border border-slate-200">
               <Pressable
                 onPress={() => {
                   setShowTimeWindowPicker(!showTimeWindowPicker);
                 }}
-                style={{ width: 100, height: '100%', paddingHorizontal: 20, justifyContent: 'space-between' }}
+                style={{
+                  width: 100,
+                  height: '100%',
+                  paddingHorizontal: 20,
+                  justifyContent: 'space-between',
+                }}
                 className="flex-row items-center my-0 py-0 rounded-l-xl pr-2 border-r border-slate-200 text-center active:bg-slate-100"
               >
                 <Text className="font-medium font-semibold text-muted text-base pr-2">
@@ -158,7 +183,10 @@ export default function ExpensesScreen() {
               </Pressable>
               <View className="p-3 pl-2">
                 <Text className="font-bold text-default pl-2 pr-2">
-                  {(filteredExpenses?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || 0).toFixed(2)} €
+                  {(
+                    filteredExpenses?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || 0
+                  ).toFixed(2)}{' '}
+                  €
                 </Text>
               </View>
             </View>
@@ -167,10 +195,10 @@ export default function ExpensesScreen() {
             onPress={() => setShowAddExpenseModal(true)}
             className="flex-row items-center bg-primary px-3 py-2 rounded-xl active:bg-primaryDark shadow"
           >
-            <Text className="text-white font-sans text-white text-base mr-2 text-[11p]">
+            <Plus size={20} color="#fff" />
+            <Text className="text-white font-sans text-white text-base mx-2 text-[11p]">
               Add Expense
             </Text>
-            <Plus size={23} color="#fff" />
           </Pressable>
         </View>
       </View>
@@ -187,16 +215,14 @@ export default function ExpensesScreen() {
 
   const RenderExpenseItem = useCallback(
     ({ item }: { item: Expense }) => (
-      <View className="bg-surface rounded-lg p-4 my-2 mx-4 mt-0 border-[1px] border-slate-100">
+      <View className="bg-surface rounded-xl p-4 my-2 mx-4 mt-0 border border-slate-200">
         <View className="flex-row justify-between items-center">
           <View>
             <Text className="text-lg font-medium font-semibold text-default">
               {item.title || item.description}
             </Text>
             {item.category && (
-              <Text className="text-sm text-muted capitalize">
-                {item.category}
-              </Text>
+              <Text className="text-sm text-muted capitalize">{item.category}</Text>
             )}
           </View>
           <Text className="text-lg font-bold text-danger">
@@ -211,13 +237,12 @@ export default function ExpensesScreen() {
   return (
     <ScrollView className="flex-1 bg-background pt-4">
       {RenderHeader}
-      
+
       {loading ? (
-        <ActivityIndicator color="grey"/>
+        <ActivityIndicator color="grey" />
       ) : (
         <>
           <View className="mt-0 mb-6 pl-4">
-            
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -231,7 +256,7 @@ export default function ExpensesScreen() {
                     key={category}
                     onPress={() => handleCategorySelect(category)}
                     className={`px-4 py-2 rounded-full mr-2 border
-                    ${isSelected ? 'bg-[#3B82F6] border-[#3B82F6]' : 'bg-white border-slate-300'}`}
+                    ${isSelected ? 'bg-[#3B82F6] border-[#3B82F6]' : 'bg-white border-slate-200'}`}
                   >
                     <Text
                       className={`text-sm font-medium font-sans
@@ -246,19 +271,15 @@ export default function ExpensesScreen() {
           </View>
 
           <Animated.View style={{ opacity: listOpacity, flex: 1 }}>
-            <ExpenseBar expenses={filteredExpenses}/>
-            <View>
+            <ExpenseBar expenses={filteredExpenses} />
+            <View className="pb-5">
               {filteredExpenses.map((expense, index) => (
-                <RenderExpenseItem 
-                  key={index}
-                  item={expense}
-                />
+                <RenderExpenseItem key={index} item={expense} />
               ))}
             </View>
           </Animated.View>
         </>
       )}
-
 
       <Modal
         visible={showAddExpenseModal}
@@ -285,7 +306,6 @@ export default function ExpensesScreen() {
           timeWindowOptions={timeWindowOptions}
         />
       </Modal>
-
     </ScrollView>
   );
 }

@@ -7,26 +7,26 @@ interface ChartData {
 }
 
 interface InvestmentChartProps {
-  data?: ChartData[]; 
+  data?: ChartData[];
 }
 
 const TEST_DATA: ChartData[] = [
   {
     type: 'stock',
     value: 15000,
-    color: '#3B82F6', 
+    color: '#3B82F6',
   },
   {
     type: 'etf',
     value: 8500,
-    color: '#10B981', 
+    color: '#10B981',
   },
   {
     type: 'crypto',
     value: 5200,
-    color: '#F59E0B', 
+    color: '#F59E0B',
   },
-  { 
+  {
     type: 'fund',
     value: 12000,
     color: '#8B5CF6',
@@ -43,7 +43,7 @@ const TEST_DATA: ChartData[] = [
   },
 ];
 
-export default function InvestmentChart({ }: InvestmentChartProps) {
+export default function InvestmentChart({}: InvestmentChartProps) {
   const typeLabels = {
     stock: 'Stocks',
     fund: 'Funds',
@@ -65,42 +65,39 @@ export default function InvestmentChart({ }: InvestmentChartProps) {
         <Text style={styles.totalValue}>Total: {totalValue.toLocaleString()} €</Text>
       </View>
 
-      
-        <>
-          <View style={styles.chartContainer}>
-            <View style={styles.barChart}>
-              {sortedData.map((item, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.barSegment,
-                    {
-                      backgroundColor: item.color,
-                      width: `${Math.max(5, (item.value / totalValue) * 100)}%`,
-                    },
-                  ]}
-                />
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.legend}>
+      <>
+        <View style={styles.chartContainer}>
+          <View style={styles.barChart}>
             {sortedData.map((item, index) => (
-              <View key={index} style={styles.legendItem}>
-                <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-                <Text style={styles.legendText}>
-                  {typeLabels[item.type as keyof typeof typeLabels] || 'Other'}
-                </Text>
-                <Text style={styles.legendAmount}>{item.value.toLocaleString()} €</Text>
-                <Text style={styles.legendPercentage}>
-                  {((item.value / totalValue) * 100).toFixed(1)}%
-                </Text>
-              </View>
+              <View
+                key={index}
+                style={[
+                  styles.barSegment,
+                  {
+                    backgroundColor: item.color,
+                    width: `${Math.max(5, (item.value / totalValue) * 100)}%`,
+                  },
+                ]}
+              />
             ))}
           </View>
-        </>
+        </View>
 
-      
+        <View style={styles.legend}>
+          {sortedData.map((item, index) => (
+            <View key={index} style={styles.legendItem}>
+              <View style={[styles.legendColor, { backgroundColor: item.color }]} />
+              <Text style={styles.legendText}>
+                {typeLabels[item.type as keyof typeof typeLabels] || 'Other'}
+              </Text>
+              <Text style={styles.legendAmount}>{item.value.toLocaleString()} €</Text>
+              <Text style={styles.legendPercentage}>
+                {((item.value / totalValue) * 100).toFixed(1)}%
+              </Text>
+            </View>
+          ))}
+        </View>
+      </>
     </View>
   );
 }
