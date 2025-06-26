@@ -3,6 +3,7 @@ import { View, Text, Pressable, SafeAreaView, Platform, Modal } from 'react-nati
 import { Users, ChevronDown, EllipsisVertical } from 'lucide-react-native';
 import SelectGroup from './SelectGroup';
 import OptionsModal from './OptionsModal';
+import InviteModal from './InviteModal';
 import { useGroups } from '@/../context/AppContext';
 import { Group } from '@/../types/groups';
 import { router } from 'expo-router';
@@ -11,6 +12,7 @@ const GroupHeader = () => {
   const { userGroups, currentGroup, setCurrentGroup } = useGroups();
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
   const [isOptionsModalVisible, setOptionsModal] = useState(false);
+  const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
 
   useEffect(() => {
     if (!currentGroup && userGroups.length > 0) {
@@ -21,16 +23,21 @@ const GroupHeader = () => {
   const handleSelectGroup = (group: Group) => {
     setCurrentGroup(group);
     setIsGroupSelectorModalVisible(false);
-    console.log('Selected group:', group);
   };
 
   const handleOpenGroupSelector = () => {
     if (userGroups.length === 0) {
-      console.warn('No groups available to select');
       router.push('/create_group');
       return;
     }
     setIsGroupSelectorModalVisible(true);
+  };
+
+  const handleOpenInviteModal = () => {
+    if (!currentGroup) {
+      return;
+    }
+    setIsInviteModalVisible(true);
   };
 
   return (
@@ -95,8 +102,18 @@ const GroupHeader = () => {
         statusBarTranslucent={true}
       >
         <Pressable className="flex-1 justify-end" onPress={() => setOptionsModal(false)}>
-          <OptionsModal onClose={() => setOptionsModal(false)} />
+          <OptionsModal onClose={() => setOptionsModal(false)} handleOpenInviteModal={handleOpenInviteModal} />
         </Pressable>
+      </Modal>
+
+      <Modal
+        visible={isInviteModalVisible}
+        animationType="fade"
+        onRequestClose={() => setIsInviteModalVisible(false)}
+        presentationStyle="overFullScreen"
+        statusBarTranslucent={true}
+      >
+        <InviteModal groups={userGroups} onClose={() => setIsInviteModalVisible(false)} />
       </Modal>
     </>
   );

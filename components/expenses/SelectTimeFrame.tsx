@@ -14,12 +14,8 @@ interface SelectTimeFrameProps {
   timeWindowOptions: TimeWindowOption[];
 }
 
-const SelectTimeFrame: React.FC<SelectTimeFrameProps> = ({
-  setShowTimeWindowPicker,
-  selectedTimeWindow,
-  handleTimeWindowChange,
-  timeWindowOptions,
-}) => {
+const SelectTimeFrame: React.FC<SelectTimeFrameProps> = ({ setShowTimeWindowPicker, selectedTimeWindow, handleTimeWindowChange, timeWindowOptions }) =>
+  {
   return (
     <Pressable className="flex-1 justify-end black" onPress={() => setShowTimeWindowPicker(false)}>
       <Pressable
@@ -53,6 +49,6 @@ const SelectTimeFrame: React.FC<SelectTimeFrameProps> = ({
       </Pressable>
     </Pressable>
   );
-};
+}
 
 export default SelectTimeFrame;

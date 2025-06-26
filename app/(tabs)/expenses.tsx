@@ -26,7 +26,7 @@ const timeWindowOptions = [
 
 export default function ExpensesScreen() {
   const { expenses, setExpenses } = useAppStore();
-  const [selectedTimeWindow, setSelectedTimeWindow] = useState(timeWindowOptions[0].value);
+  const [selectedTimeWindow, setSelectedTimeWindow] = useState(timeWindowOptions[1].value);
   const [selectedCategories, setSelectedCategories] = useState<ExpenseCategory[]>([]);
   const [showTimeWindowPicker, setShowTimeWindowPicker] = useState(false);
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
@@ -40,6 +40,7 @@ export default function ExpensesScreen() {
     useCallback(() => {
       const fetchExpenses = async () => {
         setLoading(true);
+        listOpacity.setValue(0);
         try {
           if (!currentGroupId) {
             console.warn('No current group selected');
@@ -57,6 +58,11 @@ export default function ExpensesScreen() {
           console.error('Failed to fetch expenses:', error);
         } finally {
           setLoading(false);
+          Animated.timing(listOpacity, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }).start();
         }
       };
 
@@ -174,7 +180,7 @@ export default function ExpensesScreen() {
                 }}
                 className="flex-row items-center my-0 py-0 rounded-l-xl pr-2 border-r border-slate-200 text-center active:bg-slate-100"
               >
-                <Text className="font-medium font-semibold text-muted text-base pr-2">
+                <Text className="font-medium font-semibold text-default text-base pr-2">
                   {timeWindowOptions.find((opt) => opt.value === selectedTimeWindow)?.label}
                 </Text>
                 <View className="mr-2">
@@ -182,7 +188,7 @@ export default function ExpensesScreen() {
                 </View>
               </Pressable>
               <View className="p-3 pl-2">
-                <Text className="font-bold text-default pl-2 pr-2">
+                <Text className="font-bold text-default px-2 w-[100px] text-center">
                   {(
                     filteredExpenses?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || 0
                   ).toFixed(2)}{' '}
@@ -222,7 +228,7 @@ export default function ExpensesScreen() {
               {item.title || item.description}
             </Text>
             {item.category && (
-              <Text className="text-sm text-muted capitalize">{item.category}</Text>
+              <Text className="text-sm text-muted capitalize font-sans">{item.category}</Text>
             )}
           </View>
           <Text className="text-lg font-bold text-danger">

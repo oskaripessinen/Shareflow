@@ -8,9 +8,10 @@ interface OptionsProps {
   onClose: () => void;
   loading?: boolean;
   setLoading?: (loading: boolean) => void;
+  handleOpenInviteModal: () => void;
 }
 
-const OptionsModal: React.FC<OptionsProps> = ({ onClose }) => {
+const OptionsModal: React.FC<OptionsProps> = ({ onClose, handleOpenInviteModal }) => {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
@@ -44,7 +45,7 @@ const OptionsModal: React.FC<OptionsProps> = ({ onClose }) => {
 
         <View className="w-full items-center">
           <View className="w-full">
-            <Pressable className="flex-row items-center p-3.5 rounded-lg w-full justify-center active:bg-slate-50">
+            <Pressable onPress={handleOpenInviteModal} className="flex-row items-center p-3.5 rounded-lg w-full justify-center active:bg-slate-50">
               <UserPlus size={20} color="black" className="mr-3" />
               <Text className="font-base font-medium text-slate-700 ml-4">Invite user</Text>
             </Pressable>

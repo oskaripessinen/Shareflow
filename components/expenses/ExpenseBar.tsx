@@ -59,7 +59,7 @@ const ExpenseBar: React.FC<ExpenseBarProps> = ({ expenses }) => {
 
   return (
     <View className="bg-white rounded-xl px-4 mx-4 py-3 mb-5 border border-slate-200">
-      <Text className="text-lg font-bold text-center mb-6 mt-1 text-slate-800">
+      <Text className="text-lg font-semibold text-center mb-6 mt-1 text-slate-800">
         Expenses by Category
       </Text>
       <View className="flex-row h-8 rounded-lg overflow-hidden mb-4 bg-gray-200">
@@ -99,9 +99,9 @@ const ExpenseBar: React.FC<ExpenseBarProps> = ({ expenses }) => {
                 className="w-4 h-4 rounded mr-3"
                 style={{ backgroundColor: getCategoryColor(category as ExpenseCategory) }}
               />
-              <Text className="flex-1 text-slate-700 capitalize">{category}</Text>
-              <Text className="text-slate-600 font-medium">€{value.toFixed(2)}</Text>
-              <Text className="text-slate-500 text-sm ml-2 w-12 text-right">
+              <Text className="flex-1 text-default capitalize font-semibold text-base">{category}</Text>
+              <Text className="text-default font-semibold text-sm">€{value.toFixed(2)}</Text>
+              <Text className="text-muted text-sm font-sans text-sm ml-2 w-12 text-right">
                 {percentage.toFixed(1)}%
               </Text>
             </View>
