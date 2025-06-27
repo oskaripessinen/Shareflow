@@ -113,7 +113,7 @@ const GroupHeader = () => {
         presentationStyle="overFullScreen"
         statusBarTranslucent={true}
       >
-        <InviteModal groups={userGroups} onClose={() => setIsInviteModalVisible(false)} />
+        <InviteModal groups={userGroups} onClose={() => setIsInviteModalVisible(false)} currentGroup={currentGroup} />
       </Modal>
     </>
   );

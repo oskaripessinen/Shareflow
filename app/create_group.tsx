@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useAuth, useGroups } from '../context/AppContext';
 import { useRouter } from 'expo-router';
-import { Users, X } from 'lucide-react-native';
+import { ChevronLeft, Users, X } from 'lucide-react-native';
 import { groupApi } from 'api/groups';
 
 export default function CreateGroupScreen() {
@@ -83,6 +83,11 @@ export default function CreateGroupScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
+      <View className="px-5 pt-16 pb-2 bg-background">
+        <TouchableOpacity onPress={() => router.back()} className="p-1">
+          <ChevronLeft size={28} color="#475569" />
+        </TouchableOpacity>
+      </View>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
@@ -137,7 +142,7 @@ export default function CreateGroupScreen() {
                 {isEmailInputFocused && (
                   <View className="p-1">
                     <Text
-                      className={`p-1 ${
+                      className={`p-1 text-base ${
                         loading || !inviteEmail.trim()
                           ? 'text-slate-300 font-sans'
                           : 'text-primary font-semibold'
