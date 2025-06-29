@@ -9,13 +9,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { Plus, ChevronDown } from 'lucide-react-native';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
 import { expenseApi } from '../../api/expenses';
 import { useGroupStore } from '@/../context/AppContext';
 import ExpenseBar from 'components/expenses/ExpenseBar';
+import Header from 'components/expenses/Header';
 
 const timeWindowOptions = [
   { label: 'Today', value: 'today' },
@@ -162,68 +162,18 @@ export default function ExpensesScreen() {
     [listOpacity],
   );
 
-  const RenderHeader = useMemo(
-    () => (
-      <View className="p-0 mt-0" style={{ zIndex: 10 }}>
-        <View className="flex-row items-center mb-5 justify-between px-4">
-          <View className="relative" style={{ zIndex: 1 }}>
-            <View className="flex-row items-center bg-white rounded-xl border border-slate-200">
-              <Pressable
-                onPress={() => {
-                  setShowTimeWindowPicker(!showTimeWindowPicker);
-                }}
-                style={{
-                  width: 100,
-                  height: '100%',
-                  paddingHorizontal: 20,
-                  justifyContent: 'space-between',
-                }}
-                className="flex-row items-center my-0 py-0 rounded-l-xl pr-2 border-r border-slate-200 text-center active:bg-slate-100"
-              >
-                <Text className="font-medium font-semibold text-default text-base pr-2">
-                  {timeWindowOptions.find((opt) => opt.value === selectedTimeWindow)?.label}
-                </Text>
-                <View className="mr-2">
-                  <ChevronDown size={16} color="#64748b" />
-                </View>
-              </Pressable>
-              <View className="p-3 pl-2">
-                <Text className="font-bold text-default px-2 w-[100px] text-center">
-                  {(
-                    filteredExpenses?.reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || 0
-                  ).toFixed(2)}{' '}
-                  €
-                </Text>
-              </View>
-            </View>
-          </View>
-          <Pressable
-            onPress={() => setShowAddExpenseModal(true)}
-            className="flex-row items-center bg-primary px-3 py-2 rounded-xl active:bg-primaryDark shadow"
-          >
-            <Plus size={20} color="#fff" />
-            <Text className="text-white font-sans text-white text-base mx-2 text-[11p]">
-              Add Expense
-            </Text>
-          </Pressable>
-        </View>
-      </View>
-    ),
-    [
-      selectedCategories,
-      selectedTimeWindow,
-      showTimeWindowPicker,
-      filteredExpenses,
-      handleCategorySelect,
-      scrollViewStyle,
-    ],
-  );
+  
 
   const RenderExpenseItem = useCallback(
-    ({ item }: { item: Expense }) => (
-      <View className="bg-surface rounded-xl p-4 my-2 mx-4 mt-0 border border-slate-200">
+    ({ item }: { item: Expense }) => {
+      const createdDate = item.created_at instanceof Date 
+      ? item.created_at 
+      : new Date(item.created_at);
+
+      return (
+      <View className="bg-surface rounded-xl py-3 px-4 my-2 mx-4 mt-0 border border-slate-200">
         <View className="flex-row justify-between items-center">
-          <View>
+          <View className='flex-col gap-2'>
             <Text className="text-lg font-medium font-semibold text-default">
               {item.title || item.description}
             </Text>
@@ -231,18 +181,31 @@ export default function ExpensesScreen() {
               <Text className="text-sm text-muted capitalize font-sans">{item.category}</Text>
             )}
           </View>
-          <Text className="text-lg font-bold text-danger">
-            {(Number(item.amount) || 0).toFixed(2)} €
-          </Text>
+          <View className="flex-col gap-2">
+            <Text className="text-lg font-bold text-danger">
+              {(Number(item.amount) || 0).toFixed(2)} €
+            </Text>
+            <Text className='text-sm text-muted font-sans text-right'>
+              {createdDate.toLocaleDateString('fi-FI')}
+            </Text>
+          </View>
+          
         </View>
-      </View>
-    ),
+      </View>)
+    },
     [],
   );
 
   return (
     <ScrollView className="flex-1 bg-background pt-4">
-      {RenderHeader}
+      <Header
+        selectedTimeWindow={selectedTimeWindow}
+        showTimeWindowPicker={showTimeWindowPicker}
+        filteredExpenses={filteredExpenses}
+        setShowTimeWindowPicker={setShowTimeWindowPicker}
+        setShowAddExpenseModal={setShowAddExpenseModal}
+        timeWindowOptions={timeWindowOptions}
+      />
 
       {loading ? (
         <ActivityIndicator color="grey" />

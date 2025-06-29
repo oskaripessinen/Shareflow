@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Group } from 'types/groups';
 import { ChevronDown, UserPlus, X, Check, ChevronLeft } from 'lucide-react-native';
+import { groupApi } from 'api/groups';
 
 interface CreateGroupScreenProps {
   groups: Group[];
@@ -56,6 +57,25 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
   const handleSelectGroup = (group: Group) => {
     setSelectedGroup(group);
     setShowGroupDropdown(false);
+  };
+
+  const handleInvite = async () => {
+    if (!selectedGroup?.id || invitees.length === 0) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      for (const email of invitees) {
+        await groupApi.inviteMember(selectedGroup.id, email);
+      }
+      console.log('Invitations sent:', invitees);
+    } catch (error) {
+      console.error('Failed to invite members:', error);
+    } finally {
+      setLoading(false);
+      onClose();
+    }
   };
 
   const GroupDropdown = () => (
@@ -124,7 +144,7 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="px-5 mt-16 pb-2 bg-background">
+      <View className="px-4 mt-16 pb-2 bg-background">
         <TouchableOpacity onPress={onClose} className="p-1">
           <ChevronLeft size={28} color="#475569" />
         </TouchableOpacity>
@@ -173,7 +193,7 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
             <View className="relative">
               <TextInput
                 className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 bg-surface placeholder:text-slate-500"
-                placeholder="Invite with email (optional)"
+                placeholder="Invite with email"
                 value={inviteEmail}
                 onChangeText={setInviteEmail}
                 keyboardType="email-address"
@@ -237,6 +257,7 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
               loading || !selectedGroup?.name.trim() ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'
             }`}
             disabled={loading || !selectedGroup?.name.trim()}
+            onPress={handleInvite}
           >
             {loading ? (
               <ActivityIndicator color="white" />

@@ -6,6 +6,7 @@ import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator } 
 import { validateToken } from '../api/validateToken';
 import { useAuth, useGroups } from '../context/AppContext';
 import { groupApi } from 'api/groups';
+import logo from '../assets/images/logo.png';
 
 import GoogleLogo from '../assets/images/google-logo.png';
 
@@ -131,16 +132,21 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 p-4 justify-center items-center">
-      <Text className="text-3xl font-semibold text-default mb-8">ShareFlow</Text>
-
+    <SafeAreaView className="flex-1 p-4 mt-4 justify-center items-center">
+      <View className='flex-row items-center justify-center gap-1'>
+        <Image source={logo} style={{ width: 40, height: 70, left: -5 }} />
+        <View className='flex-row items-start'>
+          <Text className="text-3xl font-semibold text-default">Share</Text>
+          <Text className='text-3xl font-semibold text-primary'>Flow</Text>
+        </View>
+      </View>
       <TouchableOpacity
         disabled={loading}
         onPress={signInAsync}
         className="flex-row items-center bg-white px-6 py-3 rounded-full shadow"
       >
         <Image source={GoogleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
-        <Text className="text-base text-default font-sans">Sign in with Google</Text>
+        <Text className="text-base text-default font-semibold">Sign in with Google</Text>
       </TouchableOpacity>
 
       <View className="mt-4 h-16 justify-center items-center">

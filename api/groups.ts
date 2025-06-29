@@ -124,4 +124,19 @@ export const groupApi = {
       throw error;
     }
   },
+
+  inviteMember: async (
+    groupId: number,
+    email: string,
+  ): Promise<void> => {
+    try {
+      await apiClient.post<{ success: boolean }>(`/api/groups/${groupId}/invite`, {
+        email,
+      });
+    } catch (error) {
+      console.error('Failed to invite member:', error);
+      throw error;
+    }
+  }
 };
+
