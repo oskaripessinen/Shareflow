@@ -4,22 +4,45 @@ import {  ChevronDown, EllipsisVertical } from 'lucide-react-native';
 import SelectGroup from './SelectGroup';
 import OptionsModal from './OptionsModal';
 import InviteModal from './InviteModal';
-import { useGroups } from '@/../context/AppContext';
+import { useGroups, useAuthStore } from '@/../context/AppContext';
 import { Group } from '@/../types/groups';
 import { router } from 'expo-router';
 import logo from '../../assets/images/logo.png';
+import { groupApi } from '@/../api/groups';
+
 
 const GroupHeader = () => {
   const { userGroups, currentGroup, setCurrentGroup } = useGroups();
+  const { googleId } = useAuthStore();
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
   const [isOptionsModalVisible, setOptionsModal] = useState(false);
   const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
+  const [invites, setInvites] = useState<Group[]>([]);
+
+  const fetchInvites = async () => {
+    try {
+      if (!googleId) {
+        console.warn('No Google ID found, cannot fetch invites');
+        return;
+      }
+      const invites = await groupApi.getGroupInvitations();
+      setInvites(invites);
+    } catch (error) {
+      console.error('Error fetching invites:', error);
+    }
+  }
+
+  useEffect(() => {
+    fetchInvites();
+  }, [googleId]);
 
   useEffect(() => {
     if (!currentGroup && userGroups.length > 0) {
       setCurrentGroup(userGroups[0]);
     }
+    
   }, [userGroups, currentGroup, setCurrentGroup]);
+
 
   const handleSelectGroup = (group: Group) => {
     setCurrentGroup(group);
@@ -72,7 +95,7 @@ const GroupHeader = () => {
                 {userGroups.length > 0 && (
                   <View className="absolute -top-2 -left-5 bg-primary rounded-full w-5 h-5 items-center justify-center border-2 border-white">
                     <Text className="text-white text-[8px] font-bold">
-                      {userGroups.length}
+                      {invites.length}
                     </Text>
                   </View>
                 )}

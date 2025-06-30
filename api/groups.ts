@@ -137,6 +137,16 @@ export const groupApi = {
       console.error('Failed to invite member:', error);
       throw error;
     }
-  }
+  },
+
+  getGroupInvitations: async (): Promise<Group[]> => {
+    try {
+      const response = await apiClient.get<GroupsResponse>(`/api/groups/user/invites`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch group invitations:', error);
+      throw error;
+    }
+  },
 };
 
