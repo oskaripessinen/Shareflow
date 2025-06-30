@@ -8,7 +8,8 @@ import { useAuth, useGroups } from '../context/AppContext';
 import { groupApi } from 'api/groups';
 import logo from '../assets/images/logo.png';
 
-import GoogleLogo from '../assets/images/google-logo.png';
+import GoogleLogo from '../assets/images/google.png';
+import AppleLogo from '../assets/images/apple.png';
 
 export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
@@ -132,7 +133,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 p-4 mt-4 justify-center items-center">
+    <SafeAreaView className="flex-1 p-4 mt-4 items-center justify-center bg-background">
       <View className='flex-row items-center justify-center gap-1'>
         <Image source={logo} style={{ width: 40, height: 70, left: -5 }} />
         <View className='flex-row items-start'>
@@ -140,13 +141,20 @@ export default function LoginScreen() {
           <Text className='text-3xl font-semibold text-primary'>Flow</Text>
         </View>
       </View>
+      <Text className="text-base font-semibold text-muted mt-1 mb-5">
+        Log in
+      </Text>
       <TouchableOpacity
         disabled={loading}
         onPress={signInAsync}
-        className="flex-row items-center bg-white px-6 py-3 rounded-full shadow"
+        className="flex-row items-center bg-white px-6 py-3 rounded-full shadow w-[90%] justify-center active:bg-slate-100 border border-slate-200"
       >
         <Image source={GoogleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
-        <Text className="text-base text-default font-semibold">Sign in with Google</Text>
+        <Text className="text-base text-default font-semibold">Continue with Google</Text>
+      </TouchableOpacity>
+      <TouchableOpacity className="flex-row items-center bg-white px-6 py-3 rounded-full shadow w-[90%] justify-center mt-4 active:bg-slate-100 border border-slate-200">
+        <Image source={AppleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
+        <Text className="text-base text-default font-semibold">Continue with Apple</Text>
       </TouchableOpacity>
 
       <View className="mt-4 h-16 justify-center items-center">

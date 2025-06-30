@@ -47,26 +47,27 @@ const GroupHeader = () => {
         className="bg-slate-50 shadow-sm z-20 border-b border-slate-200 w-full" 
         style={{ paddingTop: Platform.OS === 'android' ? 40 : 0 }}
       >
-        <View className="flex-row items-center justify-between px-4 py-3">
-          <View className="">
+        <View className="flex-row items-center justify-between px-2 py-3">
+          <View className="flex-row items-center">
             <Image 
               source={logo} 
-              style={{ width: 60, height: 40 }} 
+              style={{ width: 50, height: 40 }} 
             />
+
           </View>
-          <View className="flex-1 items-center left-[5px]">
+          <View className="flex-1 items-center ml-6">
             <TouchableOpacity
               onPress={handleOpenGroupSelector}
-              className="flex-row items-center px-4 py-2 rounded-lg active:bg-slate-200"
+              className="flex-row items-center px-4 py-2 rounded-lg active:bg-slate-200 w-full justify-center"
             >
               <Text
-                className="text-base font-semibold text-slate-700 mr-2"
+                className="text-base font-semibold text-default mr-1"
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
                 {currentGroup ? currentGroup.name : 'Select Group'}
               </Text>
-              <ChevronDown size={20} color="#64748B" />
+              <ChevronDown size={20} color="black" />
             </TouchableOpacity>
           </View>
           
@@ -75,7 +76,7 @@ const GroupHeader = () => {
               onPress={() => setOptionsModal(true)}
               className="p-2 rounded-lg active:bg-slate-200"
             >
-              <EllipsisVertical size={22} color="#000000DE" />
+              <EllipsisVertical size={22} color="black" />
             </TouchableOpacity>
           </View>
         </View>

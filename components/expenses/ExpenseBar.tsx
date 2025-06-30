@@ -100,7 +100,7 @@ const ExpenseBar: React.FC<ExpenseBarProps> = ({ expenses }) => {
                 style={{ backgroundColor: getCategoryColor(category as ExpenseCategory) }}
               />
               <Text className="flex-1 text-default capitalize font-semibold text-base">{category}</Text>
-              <Text className="text-default font-semibold text-sm">€{value.toFixed(2)}</Text>
+              <Text className="text-default font-semibold text-sm">{value.toFixed(2)} €</Text>
               <Text className="text-muted text-sm font-sans text-sm ml-2 w-12 text-right">
                 {percentage.toFixed(1)}%
               </Text>

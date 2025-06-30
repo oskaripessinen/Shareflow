@@ -28,6 +28,7 @@ export default function ExpensesScreen() {
   const { expenses, setExpenses } = useAppStore();
   const [selectedTimeWindow, setSelectedTimeWindow] = useState(timeWindowOptions[1].value);
   const [selectedCategories, setSelectedCategories] = useState<ExpenseCategory[]>([]);
+  const [selectedCategoryBubbles, setSelectedCategoryBubbles] = useState<ExpenseCategory[]>([]);
   const [showTimeWindowPicker, setShowTimeWindowPicker] = useState(false);
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
   const [listOpacity] = useState(new Animated.Value(1));
@@ -73,7 +74,7 @@ export default function ExpensesScreen() {
   const handleTimeWindowChange = (value: string) => {
     Animated.timing(listOpacity, {
       toValue: 0,
-      duration: 50,
+      duration: 100,
       useNativeDriver: true,
     }).start(() => {
       setSelectedTimeWindow(value);
@@ -81,7 +82,7 @@ export default function ExpensesScreen() {
 
       Animated.timing(listOpacity, {
         toValue: 1,
-        duration: 300,
+        duration: 200,
         useNativeDriver: true,
       }).start();
     });
@@ -117,7 +118,7 @@ export default function ExpensesScreen() {
   const updateExpenses = useCallback(async () => {
     Animated.timing(listOpacity, {
       toValue: 0,
-      duration: 50,
+      duration: 100,
       useNativeDriver: true,
     }).start();
 
@@ -134,16 +135,21 @@ export default function ExpensesScreen() {
     setCategories(categories);
     Animated.timing(listOpacity, {
       toValue: 1,
-      duration: 300,
+      duration: 200,
       useNativeDriver: true,
     }).start();
   }, [currentGroupId, setExpenses]);
 
   const handleCategorySelect = useCallback(
     (category: ExpenseCategory) => {
+      setSelectedCategoryBubbles((prevSelected) =>
+          prevSelected.includes(category)
+            ? prevSelected.filter((c) => c !== category)
+            : [...prevSelected, category],
+        );
       Animated.timing(listOpacity, {
         toValue: 0,
-        duration: 50,
+        duration: 100,
         useNativeDriver: true,
       }).start(() => {
         setSelectedCategories((prevSelected) =>
@@ -151,10 +157,9 @@ export default function ExpensesScreen() {
             ? prevSelected.filter((c) => c !== category)
             : [...prevSelected, category],
         );
-
         Animated.timing(listOpacity, {
           toValue: 1,
-          duration: 300,
+          duration: 200,
           useNativeDriver: true,
         }).start();
       });
@@ -177,16 +182,19 @@ export default function ExpensesScreen() {
             <Text className="text-lg font-medium font-semibold text-default">
               {item.title || item.description}
             </Text>
-            {item.category && (
-              <Text className="text-sm text-muted capitalize font-sans">{item.category}</Text>
-            )}
+            
+            <Text className="text-sm text-muted capitalize font-sans">{item.category || 'other'}</Text>
+           
           </View>
           <View className="flex-col gap-2">
             <Text className="text-lg font-bold text-danger">
               {(Number(item.amount) || 0).toFixed(2)} €
             </Text>
             <Text className='text-sm text-muted font-sans text-right'>
-              {createdDate.toLocaleDateString('fi-FI')}
+              {createdDate.toLocaleDateString('en-GB', {
+                month: 'short',
+                day: 'numeric',
+              })}
             </Text>
           </View>
           
@@ -219,7 +227,7 @@ export default function ExpensesScreen() {
               persistentScrollbar={false}
             >
               {categories.map((category) => {
-                const isSelected = selectedCategories.includes(category);
+                const isSelected = selectedCategoryBubbles.includes(category);
                 return (
                   <Pressable
                     key={category}
