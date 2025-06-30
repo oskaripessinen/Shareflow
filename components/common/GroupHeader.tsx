@@ -60,18 +60,29 @@ const GroupHeader = () => {
               onPress={handleOpenGroupSelector}
               className="flex-row items-center px-4 py-2 rounded-lg active:bg-slate-200 w-full justify-center"
             >
-              <Text
-                className="text-base font-semibold text-default mr-1"
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {currentGroup ? currentGroup.name : 'Select Group'}
-              </Text>
-              <ChevronDown size={20} color="black" />
+              <View className="flex-row items-center justify-between">
+                <Text
+                  className="text-base font-semibold text-default mr-1"
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {currentGroup ? currentGroup.name : 'Select Group'}
+                </Text>
+                <ChevronDown size={20} color="black" />
+                {userGroups.length > 0 && (
+                  <View className="absolute -top-2 -left-5 bg-primary rounded-full w-5 h-5 items-center justify-center border-2 border-white">
+                    <Text className="text-white text-[8px] font-bold">
+                      {userGroups.length}
+                    </Text>
+                  </View>
+                )}
+              </View>
             </TouchableOpacity>
+            
           </View>
           
-          <View className="w-16 items-end">
+          <View className="w-16 items-end flex-row justify-end">
+
             <TouchableOpacity
               onPress={() => setOptionsModal(true)}
               className="p-2 rounded-lg active:bg-slate-200"
