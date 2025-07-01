@@ -7,6 +7,8 @@ import {
   GroupsResponse,
   AddMemberRequest,
   JoinGroupResponse,
+  GroupInvitation,
+  GroupInvitationResponse
 } from '../types/groups';
 
 export const groupApi = {
@@ -139,9 +141,9 @@ export const groupApi = {
     }
   },
 
-  getGroupInvitations: async (): Promise<Group[]> => {
+  getGroupInvitations: async (): Promise<GroupInvitation[]> => {
     try {
-      const response = await apiClient.get<GroupsResponse>(`/api/groups/user/invites`);
+      const response = await apiClient.get<GroupInvitationResponse>(`/api/groups/invites`);
       return response.data;
     } catch (error) {
       console.error('Failed to fetch group invitations:', error);

@@ -9,7 +9,7 @@ import { Group } from '@/../types/groups';
 import { router } from 'expo-router';
 import logo from '../../assets/images/logo.png';
 import { groupApi } from '@/../api/groups';
-
+import { GroupInvitation } from '@/../types/groups';
 
 const GroupHeader = () => {
   const { userGroups, currentGroup, setCurrentGroup } = useGroups();
@@ -17,7 +17,7 @@ const GroupHeader = () => {
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
   const [isOptionsModalVisible, setOptionsModal] = useState(false);
   const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
-  const [invites, setInvites] = useState<Group[]>([]);
+  const [invites, setInvites] = useState<GroupInvitation[]>([]);
 
   const fetchInvites = async () => {
     try {
@@ -78,10 +78,10 @@ const GroupHeader = () => {
             />
 
           </View>
-          <View className="flex-1 items-center ml-6">
+          <View className="flex-1 items-center">
             <TouchableOpacity
               onPress={handleOpenGroupSelector}
-              className="flex-row items-center px-4 py-2 rounded-lg active:bg-slate-200 w-full justify-center"
+              className="flex-row items-center pl-8 pr-4 py-2 rounded-lg active:bg-slate-200 justify-center"
             >
               <View className="flex-row items-center justify-between">
                 <Text
@@ -132,6 +132,7 @@ const GroupHeader = () => {
             currentGroupId={currentGroup?.id || null}
             onSelectGroup={handleSelectGroup}
             onClose={() => setIsGroupSelectorModalVisible(false)}
+            invites={invites}
           />
         </Pressable>
       </Modal>

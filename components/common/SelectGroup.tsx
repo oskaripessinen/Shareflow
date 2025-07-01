@@ -12,14 +12,16 @@ import { X, Check } from 'lucide-react-native';
 import { Group } from '@/../types/groups';
 import { useGroups, useAuthStore } from 'context/AppContext';
 import { groupApi } from 'api/groups';
+import { GroupInvitation } from '@/../types/groups';
 
 interface SelectGroupProps {
   currentGroupId: number | null;
   onSelectGroup: (group: Group) => void;
   onClose: () => void;
+  invites?: GroupInvitation[];
 }
 
-const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup, onClose }) => {
+const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup, onClose, invites }) => {
   const { userGroups, leaveGroup } = useGroups();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Group | null>(null);
@@ -33,6 +35,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const deleteAnimations = useRef<{ [key: number]: Animated.Value }>({}).current;
 
+  console.log('invites:', invites);
   useEffect(() => {
     if (isDeleteModalVisible) {
       Animated.timing(fadeAnim, {
@@ -116,6 +119,35 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
       setIsDeleteModalVisible(true);
     });
   };
+
+  const renderInvitesHeader = () => (
+    <View
+      className="flex-col border-t border-slate-100 active:bg-slate-50">
+      {invites?.map((invite) => (
+        <Pressable
+          className="pl-5 rounded-lg bg-background"
+          key={invite.id}
+          onLongPress={() => {
+            if (deletingItemId === invite.id) return;
+            
+          }}
+          
+        >
+          <View className='flex-row justify-between items-center'>
+            <View>
+              <Text className="text-base font-semibold text-slate-800">{invite.group_name}</Text>
+              <Text className="text-sm font-sans text-default">{invite.inviter_name}</Text>
+            </View>
+            <View className='flex-row items-center'>
+              <Pressable className="bg-slate-200 py-4 px-4 rounded-sm">
+                <Text className="text-sm font-semibold text-secondary">Join</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Pressable>
+      ))}
+    </View>
+  );
 
   const renderGroupItem = ({ item }: { item: Group }) => {
     const animValue = deleteAnimations[item.id] || new Animated.Value(1);
@@ -228,6 +260,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
         <FlatList
           data={userGroups}
           renderItem={renderGroupItem}
+          ListHeaderComponent={renderInvitesHeader}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={{ paddingBottom: 5 }}
           className="bg-white"
