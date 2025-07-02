@@ -33,6 +33,10 @@ const GroupHeader = () => {
   }
 
   useEffect(() => {
+    if (!googleId) {
+      console.warn('No Google ID found, cannot fetch user groups');
+      return;
+    }
     fetchInvites();
   }, [googleId]);
 
@@ -81,7 +85,7 @@ const GroupHeader = () => {
           <View className="flex-1 items-center">
             <TouchableOpacity
               onPress={handleOpenGroupSelector}
-              className="flex-row items-center pl-8 pr-4 py-2 rounded-lg active:bg-slate-200 justify-center"
+              className="flex-row items-center pl-8 pr-4 py-2 rounded-lg justify-center w-full"
             >
               <View className="flex-row items-center justify-between">
                 <Text
@@ -108,7 +112,7 @@ const GroupHeader = () => {
 
             <TouchableOpacity
               onPress={() => setOptionsModal(true)}
-              className="p-2 rounded-lg active:bg-slate-200"
+              className="p-2 rounded-lg"
             >
               <EllipsisVertical size={22} color="black" />
             </TouchableOpacity>
@@ -133,6 +137,7 @@ const GroupHeader = () => {
             onSelectGroup={handleSelectGroup}
             onClose={() => setIsGroupSelectorModalVisible(false)}
             invites={invites}
+            setInvites={setInvites}
           />
         </Pressable>
       </Modal>

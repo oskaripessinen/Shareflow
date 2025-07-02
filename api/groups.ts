@@ -62,10 +62,10 @@ export const groupApi = {
     }
   },
 
-  getGroupWithMembers: async (groupId: number, userId: string): Promise<Group> => {
+  getGroupWithId: async (groupId: number): Promise<Group> => {
     try {
       const response = await apiClient.get<CreateGroupResponse>(
-        `/api/groups/${groupId}/members?userId=${userId}`,
+        `/api/groups/${groupId}`,
       );
       return response.data;
     } catch (error) {
@@ -150,5 +150,17 @@ export const groupApi = {
       throw error;
     }
   },
+
+  acceptInvitation: async (inviteId: number, userId: string): Promise<GroupMember> => { 
+    try {
+      const response = await apiClient.post<JoinGroupResponse>(`/api/groups/invites/${inviteId}/accept`, {
+        userId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to accept group invitation:', error);
+      throw error;
+    }
+  }
 };
 
