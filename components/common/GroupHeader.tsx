@@ -74,7 +74,7 @@ const GroupHeader = () => {
         className="bg-slate-50 shadow-sm z-20 border-b border-slate-200 w-full" 
         style={{ paddingTop: Platform.OS === 'android' ? 40 : 0 }}
       >
-        <View className="flex-row items-center justify-between px-2 py-3">
+        <View className="flex-row items-center justify-between px-2 pt-2 pb-1">
           <View className="flex-row items-center">
             <Image 
               source={logo} 
@@ -96,7 +96,7 @@ const GroupHeader = () => {
                   {currentGroup ? currentGroup.name : 'Select Group'}
                 </Text>
                 <ChevronDown size={20} color="black" />
-                {userGroups.length > 0 && (
+                {invites.length > 0 && (
                   <View className="absolute -top-2 -left-5 bg-primary rounded-full w-5 h-5 items-center justify-center border-2 border-white">
                     <Text className="text-white text-[8px] font-bold">
                       {invites.length}
@@ -138,6 +138,8 @@ const GroupHeader = () => {
             onClose={() => setIsGroupSelectorModalVisible(false)}
             invites={invites}
             setInvites={setInvites}
+            setCurrentGroup={setCurrentGroup}
+            handleOpenInviteModal={handleOpenInviteModal}
           />
         </Pressable>
       </Modal>

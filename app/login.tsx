@@ -135,14 +135,14 @@ export default function LoginScreen() {
   return (
     <SafeAreaView className="flex-1 p-4 mt-4 items-center justify-center bg-background">
       <View className='flex-row items-center justify-center gap-1'>
-        <Image source={logo} style={{ width: 40, height: 70, left: -5 }} />
+        <Image source={logo} style={{ width: 40, height: 75, left: -5 }} />
         <View className='flex-row items-start'>
-          <Text className="text-3xl font-semibold text-default">Share</Text>
-          <Text className='text-3xl font-semibold text-primary'>Flow</Text>
+          <Text className="text-4xl font-semibold text-default">Share</Text>
+          <Text className='text-4xl font-semibold text-primary'>Flow</Text>
         </View>
       </View>
-      <Text className="text-base font-semibold text-muted mt-1 mb-5">
-        Log in
+      <Text className="text-sm font-semibold text-muted mt-4 mb-4">
+        log in
       </Text>
       <TouchableOpacity
         disabled={loading}

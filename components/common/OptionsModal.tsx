@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, Pressable, View, ActivityIndicator } from 'react-native';
-import { LogOut, Users, UserPlus, X } from 'lucide-react-native';
+import { X } from 'lucide-react-native';
 import { signOut } from 'utils/auth';
 import { router } from 'expo-router';
 
@@ -33,10 +33,10 @@ const OptionsModal: React.FC<OptionsProps> = ({ onClose, handleOpenInviteModal }
   return (
     <Pressable className="flex-1 justify-end" onPress={onClose}>
       <Pressable
-        className="bg-white rounded-t-2xl pt-4 pb-2 px-5 w-full shadow-lg"
+        className="bg-white rounded-t-2xl pt-4 pb-2 px-0 w-full shadow-lg"
         onPress={(e) => e.stopPropagation()}
       >
-        <View className="flex-row justify-between items-center">
+        <View className="flex-row justify-between items-center mx-5 pb-2 pt-1">
           <Text className="text-xl font-semibold text-slate-800">Manage</Text>
           <Pressable onPress={onClose} className="p-1">
             <X size={24} color="#64748b" />
@@ -45,24 +45,22 @@ const OptionsModal: React.FC<OptionsProps> = ({ onClose, handleOpenInviteModal }
 
         <View className="w-full items-center">
           <View className="w-full">
-            <Pressable onPress={handleOpenInviteModal} className="flex-row items-center p-3.5 rounded-lg w-full justify-center active:bg-slate-50">
-              <UserPlus size={20} color="black" className="mr-3" />
+            <View className="h-px bg-slate-200 w-full my-2" />
+            <Pressable onPress={handleOpenInviteModal} className="flex-row items-center p-3.5 rounded-lg w-[90%] mx-auto justify-center active:bg-slate-50">
               <Text className="font-base font-medium text-slate-700 ml-4">Invite user</Text>
             </Pressable>
-            <View className="h-px bg-slate-200 w-full my-2" />
+            <View className="h-px bg-slate-200 w-[90%] my-2 mx-auto" />
             <Pressable
               onPress={() => handleNewGroup()}
-              className="flex-row items-center p-3.5 rounded-lg w-full active:bg-slate-50 justify-center"
+              className="flex-row items-center p-3.5 rounded-lg w-[90%] active:bg-slate-50 justify-center mx-auto"
             >
-              <Users size={20} color="black" className="mr-3" />
               <Text className="font-base font-medium text-slate-700 ml-4">New group</Text>
             </Pressable>
-            <View className="h-px bg-slate-200 w-full my-2" />
+            <View className="h-px bg-slate-200 w-[90%] my-2 mx-auto" />
             <Pressable
               onPress={() => handleLogout()}
-              className="flex-row items-center p-3.5 rounded-lg w-full justify-center active:bg-slate-50"
+              className="flex-row items-center p-3.5 rounded-lg w-[90%] mx-auto justify-center active:bg-slate-50"
             >
-              <LogOut size={20} color="#EF4444" className="mr-3" />
               <Text className="font-base font-medium ml-4 text-danger">Log out</Text>
             </Pressable>
           </View>

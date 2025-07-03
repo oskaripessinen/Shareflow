@@ -21,9 +21,11 @@ interface SelectGroupProps {
   onClose: () => void;
   invites?: GroupInvitation[];
   setInvites?: (invites: GroupInvitation[]) => void;
+  setCurrentGroup?: (group: Group) => void;
+  handleOpenInviteModal?: () => void;
 }
 
-const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup, onClose, invites, setInvites }) => {
+const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup, onClose, invites, setInvites, setCurrentGroup, handleOpenInviteModal }) => {
   const { userGroups, leaveGroup, setUserGroups } = useGroups();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Group | null>(null);
@@ -289,7 +291,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
           <Text
             className={`text-base ${
               item.id === currentGroupId ? 'font-bold text-primary' : 'text-slate-700'
-            } ${fromInvite ? 'text-green-700' : ''}`}
+            } ${fromInvite ? 'text-green-700 bg-green-50' : ''}`}
           >
             {item.name}
           </Text>
@@ -321,16 +323,30 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
           shadowRadius: 5,
           elevation: 5,
         }}
-        className="bg-white p-0 rounded-2xl shadow-xl border border-gray-200"
+        className="bg-white p-0 rounded-2xl shadow-xl border border-gray-100"
       >
         <Text className="text-lg font-semibold mt-3 px-4 text-slate-800">Settings</Text>
         <Text className="text-sm text-slate-500 px-4 mb-3">
           {itemToDelete.name} groups settings.
         </Text>
-        <View className="flex-row justify-center mx-0 px-0">
+        <View className="flex-col justify-center mx-0 px-0">
+          <View className="h-px bg-slate-200 w-full my-0 mx-auto" />
+          <TouchableOpacity
+            onPress={() => {
+              setIsDeleteModalVisible(false);
+              setItemToDelete(null);
+              setCurrentGroup?.(itemToDelete);
+              handleOpenInviteModal?.();
+            }}
+            className="w-full py-3 px-0 mx-0 bg-white rounded-b-2xl text-center justify-center items-center active:bg-slate-50 flex-row items-center gap-3"
+          >
+            <Text className="font-semibold text-default">Invite</Text>
+          </TouchableOpacity>
+          <View className="h-px bg-slate-200 w-[90%] my-0 mx-auto" />
+        
           <TouchableOpacity
             onPress={() => deleteItem(itemToDelete.id)}
-            className="w-full py-3 px-0 mx-0 bg-white rounded-b-2xl text-center justify-center items-center border-t border-slate-100 active:bg-slate-50"
+            className="w-full py-3 px-0 mx-0 bg-white rounded-b-2xl text-center justify-center items-center active:bg-slate-50"
           >
             <Text className="font-semibold text-danger">Leave Group</Text>
           </TouchableOpacity>

@@ -23,7 +23,7 @@ const SelectTimeFrame: React.FC<SelectTimeFrameProps> = ({ setShowTimeWindowPick
         onPress={(e) => e.stopPropagation()}
       >
         <View className="flex-row items-center justify-between px-5 mt-1 mb-0">
-          <Text className="text-xl font-semibold text-DEFAULT">Select Time Frame</Text>
+          <Text className="text-xl font-semibold text-default">Select time frame</Text>
           <Pressable onPress={() => setShowTimeWindowPicker(false)}>
             <X size={24} color="#334155" />
           </Pressable>

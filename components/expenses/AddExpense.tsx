@@ -56,10 +56,10 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
     <>
       <Pressable className="flex-1 justify-end" onPress={onClose}>
         <Pressable
-          className="bg-white rounded-t-2xl pt-5 pb-5 px-5 w-full shadow-lg"
+          className="bg-white rounded-t-2xl pt-5 pb-5 w-full shadow-lg"
           onPress={(e) => e.stopPropagation()}
         >
-          <View className="flex-row justify-between items-center mb-3">
+          <View className="flex-row justify-between items-center mb-3 mx-5">
             <Text className="text-xl font-bold text-slate-800">Add Expense</Text>
             <Pressable onPress={onClose} className="p-1">
               <X size={24} color="#64748b" />
@@ -68,19 +68,20 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
 
           <View className="w-full items-center">
             <View className="w-full">
+              <View className="h-px bg-slate-200 w-full mb-2 mt-1" />
               <Pressable
                 onPress={() => setShowAddExpenseForm(true)}
-                className="flex-row items-center p-3.5 rounded-lg w-full active:bg-slate-50 justify-center"
+                className="flex-row items-center p-3.5 rounded-lg active:bg-slate-50 justify-center w-[90%] mx-auto"
               >
                 <Edit3 size={22} color="black" className="mr-3" />
                 <Text className="text-base font-medium text-slate-700 ml-4">Add Manually</Text>
               </Pressable>
 
-              <View className="h-px bg-slate-200 w-full my-2" />
+              <View className="h-px bg-slate-200 w-[90%] mx-auto my-2" />
 
               <Pressable
                 onPress={addExpensePhoto}
-                className="flex-row items-center p-3.5 rounded-lg w-full justify-center active:bg-slate-50"
+                className="flex-row items-center p-3.5 rounded-lg justify-center active:bg-slate-50 w-[90%] mx-auto"
               >
                 <Image size={22} color="black" className="mr-3" />
                 <Text className="font-medium text-slate-700 ml-4">Add With an Image</Text>
