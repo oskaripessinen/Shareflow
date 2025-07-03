@@ -15,9 +15,12 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
   const [showCamera, setShowCamera] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showAddExpenseForm, setShowAddExpenseForm] = useState(false);
-  const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(null);
+  
+  const [ocrResults, setOcrResults] = useState<{
+    title?: string;
+    amount?: string;
+    category?: ExpenseCategory | null;
+  }>({});
 
   const addExpensePhoto = () => {
     setShowCamera(true);
@@ -26,37 +29,42 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
   const handlePhotoTaken = async (base64: string) => {
     setShowAddExpenseForm(true);
     setLoading(true);
+    setShowCamera(false);
+    
     try {
       const result = await expenseApi.orcDetection(base64);
       const expenseClassification = await expenseApi.classifyExpense(result);
 
-      setTitle(expenseClassification.expenseName);
-      setAmount(expenseClassification.totalPrice.toString());
-      setSelectedCategory(expenseClassification.category);
-      setLoading(false);
-      setShowCamera(false);
+      setOcrResults({
+        title: expenseClassification.expenseName,
+        amount: expenseClassification.totalPrice.toString(),
+        category: expenseClassification.category,
+      });
     } catch (error) {
       console.error('Error processing photo:', error);
-      setLoading(false);
-      setShowCamera(false);
     } finally {
-      setShowCamera(false);
       setLoading(false);
     }
   };
 
   const handleClose = () => {
     setShowAddExpenseForm(false);
+    setOcrResults({});
     if (updateExpenses) {
       updateExpenses();
     }
+  };
+
+  const handleShowAddExpenseForm = () => {
+    setOcrResults({});
+    setShowAddExpenseForm(true);
   };
 
   return (
     <>
       <Pressable className="flex-1 justify-end" onPress={onClose}>
         <Pressable
-          className="bg-white rounded-t-2xl pt-5 pb-5 w-full shadow-lg"
+          className="bg-white rounded-t-2xl pt-5 pb-3 w-full shadow-lg"
           onPress={(e) => e.stopPropagation()}
         >
           <View className="flex-row justify-between items-center mb-3 mx-5">
@@ -70,7 +78,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
             <View className="w-full">
               <View className="h-px bg-slate-200 w-full mb-2 mt-1" />
               <Pressable
-                onPress={() => setShowAddExpenseForm(true)}
+                onPress={handleShowAddExpenseForm}
                 className="flex-row items-center p-3.5 rounded-lg active:bg-slate-50 justify-center w-[90%] mx-auto"
               >
                 <Edit3 size={22} color="black" className="mr-3" />
@@ -99,6 +107,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
       >
         <CameraView onClose={() => setShowCamera(false)} onPhotoTaken={handlePhotoTaken} />
       </Modal>
+      
       <Modal
         visible={showAddExpenseForm}
         animationType="fade"
@@ -112,12 +121,7 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
             setShowAddExpenseForm(false);
           }}
           classifying={loading}
-          amount={amount}
-          setAmount={setAmount}
-          title={title}
-          setTitle={setTitle}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
+          initialData={ocrResults}
         />
       </Modal>
     </>

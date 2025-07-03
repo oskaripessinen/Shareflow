@@ -205,7 +205,7 @@ export default function ExpensesScreen() {
   );
 
   return (
-    <ScrollView className="flex-1 bg-background pt-4">
+    <ScrollView className="flex-1 bg-background pt-4" keyboardShouldPersistTaps='always'>
       <Header
         selectedTimeWindow={selectedTimeWindow}
         showTimeWindowPicker={showTimeWindowPicker}
@@ -225,6 +225,8 @@ export default function ExpensesScreen() {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={scrollViewStyle}
               persistentScrollbar={false}
+              keyboardShouldPersistTaps='always'
+
             >
               {categories.map((category) => {
                 const isSelected = selectedCategoryBubbles.includes(category);
