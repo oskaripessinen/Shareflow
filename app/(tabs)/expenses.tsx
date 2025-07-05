@@ -3,12 +3,12 @@ import {
   View,
   Text,
   Pressable,
-  Modal,
   ScrollView,
   Animated,
   ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import Modal from 'react-native-modal';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
@@ -261,22 +261,29 @@ export default function ExpensesScreen() {
       )}
 
       <Modal
-        visible={showAddExpenseModal}
-        animationType="fade"
-        presentationStyle="overFullScreen"
-        backdropColor="transparent"
+        isVisible={showAddExpenseModal}
+        onSwipeComplete={() => setShowAddExpenseModal(false)}
+        swipeDirection="down"
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onBackdropPress={() => setShowAddExpenseModal(false)}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
         statusBarTranslucent={true}
+        backdropOpacity={0.5}
       >
         <AddExpense onClose={() => setShowAddExpenseModal(false)} updateExpenses={updateExpenses} />
       </Modal>
 
       <Modal
-        visible={showTimeWindowPicker}
-        animationType="fade"
-        onRequestClose={() => setShowTimeWindowPicker(false)}
-        presentationStyle="overFullScreen"
-        backdropColor="transparent"
+        isVisible={showTimeWindowPicker}
+        onSwipeComplete={() => setShowTimeWindowPicker(false)}
+        swipeDirection="down"
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onBackdropPress={() => setShowTimeWindowPicker(false)}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
         statusBarTranslucent={true}
+        backdropOpacity={0.5}
       >
         <SelectTimeFrame
           setShowTimeWindowPicker={setShowTimeWindowPicker}

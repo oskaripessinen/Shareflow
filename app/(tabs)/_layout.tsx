@@ -39,28 +39,28 @@ export default function TabLayout() {
           name="index"
           options={{
             title: 'Home',
-            tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+            tabBarIcon: ({ color, size, focused }) => <Home strokeWidth={focused ? 2 : 1.5} size={size} color={color} />,
           }}
         />
         <Tabs.Screen
           name="income"
           options={{
             title: 'Income',
-            tabBarIcon: ({ color, size }) => <HandCoins size={size} color={color} />,
+            tabBarIcon: ({ color, size, focused }) => <HandCoins strokeWidth={focused ? 2 : 1.5} size={size} color={color} />,
           }}
         />
         <Tabs.Screen
           name="expenses"
           options={{
             title: 'Expenses',
-            tabBarIcon: ({ color, size }) => <CreditCard size={size} color={color} />,
+            tabBarIcon: ({ color, size, focused }) => <CreditCard strokeWidth={focused ? 2 : 1.5} size={size} color={color} />,
           }}
         />
         <Tabs.Screen
           name="investments"
           options={{
             title: 'Savings',
-            tabBarIcon: ({ color, size }) => <TrendingUp size={size} color={color} />,
+            tabBarIcon: ({ color, size, focused }) => <TrendingUp strokeWidth={focused ? 2 : 1.5} size={size} color={color} />,
           }}
         />
       </Tabs>

@@ -50,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({
               </View>
             </Pressable>
             <View className="p-3 pl-2">
-              <Text className="font-bold text-default px-2 text-center min-w-[100px]" numberOfLines={1}>
+              <Text className="font-bold text-default px-2 text-center min-w-[100px] text-base" numberOfLines={1}>
                 {(
                   filteredExpenses?.reduce((sum: number, e: Expense) => sum + (Number(e.amount) || 0), 0) || 0
                 ).toFixed(2)}{' '}
@@ -61,9 +61,10 @@ const Header: React.FC<HeaderProps> = ({
         </View>
         <Pressable
           onPress={() => setShowAddExpenseModal(true)}
-          className="flex-row items-center bg-primary px-3 py-3 rounded-full active:bg-primaryDark shadow"
+          className="flex-row items-center bg-primary pr-4 pl-2.5 py-2.5 rounded-xl active:bg-primaryDark shadow gap-1"
         >
-          <Plus size={20} color="#fff" />
+          <Plus strokeWidth={2.5} size={18} color="#fff" />
+          <Text className='text-white font-semibold text-base'>Expense</Text>
         </Pressable>
       </View>
     </View>

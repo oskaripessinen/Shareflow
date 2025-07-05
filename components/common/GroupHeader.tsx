@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, SafeAreaView, Platform, Modal, TouchableOpacity, Image } from 'react-native';
+import { View, Text, Pressable, SafeAreaView, Platform, TouchableOpacity, Image } from 'react-native';
+import Modal from 'react-native-modal';
 import {  ChevronDown, EllipsisVertical } from 'lucide-react-native';
 import SelectGroup from './SelectGroup';
 import OptionsModal from './OptionsModal';
@@ -121,17 +122,17 @@ const GroupHeader = () => {
       </SafeAreaView>
 
       <Modal
-        visible={isGroupSelectorModalVisible}
-        animationType="fade"
-        onRequestClose={() => setIsGroupSelectorModalVisible(false)}
-        presentationStyle="overFullScreen"
-        backdropColor="transparent"
+        isVisible={isGroupSelectorModalVisible}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onSwipeComplete={() => setIsGroupSelectorModalVisible(false)}
+        onBackdropPress={() => setIsGroupSelectorModalVisible(false)}
+        swipeDirection="down"
+        backdropOpacity={0.5}
         statusBarTranslucent={true}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
       >
-        <Pressable
-          className="flex-1 justify-end"
-          onPress={() => setIsGroupSelectorModalVisible(false)}
-        >
+
           <SelectGroup
             currentGroupId={currentGroup?.id || null}
             onSelectGroup={handleSelectGroup}
@@ -141,16 +142,17 @@ const GroupHeader = () => {
             setCurrentGroup={setCurrentGroup}
             handleOpenInviteModal={handleOpenInviteModal}
           />
-        </Pressable>
       </Modal>
 
       <Modal
-        visible={isOptionsModalVisible}
-        animationType="fade"
-        onRequestClose={() => setOptionsModal(false)}
-        presentationStyle="overFullScreen"
-        backdropColor="transparent"
+        isVisible={isOptionsModalVisible}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onSwipeComplete={() => setOptionsModal(false)}
+        swipeDirection={'down'}
+        backdropOpacity={0.5}
         statusBarTranslucent={true}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
       >
         <Pressable className="flex-1 justify-end" onPress={() => setOptionsModal(false)}>
           <OptionsModal onClose={() => setOptionsModal(false)} handleOpenInviteModal={handleOpenInviteModal} />
@@ -158,11 +160,12 @@ const GroupHeader = () => {
       </Modal>
 
       <Modal
-        visible={isInviteModalVisible}
-        animationType="fade"
-        onRequestClose={() => setIsInviteModalVisible(false)}
-        presentationStyle="overFullScreen"
+        isVisible={isInviteModalVisible}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        swipeDirection={'down'}
         statusBarTranslucent={true}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
       >
         <InviteModal groups={userGroups} onClose={() => setIsInviteModalVisible(false)} currentGroup={currentGroup} />
       </Modal>

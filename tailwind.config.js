@@ -12,11 +12,11 @@ module.exports = {
         secondary: '#60A5FA ',
         accent: '#10B981',
         danger: '#EF4444',
-        muted: '#00000099',
+        muted: '#000000b3',
         default: '#000000DE',
         text: {
           DEFAULT: '#000000DE',
-          muted: '#00000099',
+          muted: '#000000CC',
           danger: '#EF4444',
         },
       },

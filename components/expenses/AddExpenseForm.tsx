@@ -7,7 +7,6 @@ import {
   ScrollView,
   ActivityIndicator,
   KeyboardAvoidingView,
-  TouchableOpacity,
   Platform,
 } from 'react-native';
 import { X, Calendar, Euro, FileText, User } from 'lucide-react-native';
