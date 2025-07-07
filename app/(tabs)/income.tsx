@@ -1,17 +1,295 @@
-import React from 'react';
-import { View, Text, SafeAreaView } from 'react-native';
-import { Landmark } from 'lucide-react-native';
+import React, { useState, useMemo, useCallback } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  Animated,
+  ActivityIndicator,
+} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import Modal from 'react-native-modal';
+import { Income, IncomeCategory, useAppStore } from '@/../context/AppContext';
+import SelectTimeFrame from '@/../components/common/SelectTimeFrame';
+import AddIncome from '@/../components/income/AddIncome';
+import { incomeApi } from '../../api/income';
+import { useGroupStore } from '@/../context/AppContext';
+import IncomeBar from 'components/income/IncomeBar';
+import Header from 'components/income/Header';
+
+const timeWindowOptions = [
+  { label: 'Today', value: 'today' },
+  { label: '7 days', value: '7 days' },
+  { label: 'Month', value: 'this_month' },
+  { label: 'Year', value: 'last_year' },
+];
 
 export default function IncomeScreen() {
+  const { incomes, setIncomes } = useAppStore();
+  const [selectedTimeWindow, setSelectedTimeWindow] = useState(timeWindowOptions[1].value);
+  const [selectedCategories, setSelectedCategories] = useState<IncomeCategory[]>([]);
+  const [selectedCategoryBubbles, setSelectedCategoryBubbles] = useState<IncomeCategory[]>([]);
+  const [showTimeWindowPicker, setShowTimeWindowPicker] = useState(false);
+  const [categories, setCategories] = useState<IncomeCategory[]>([]);
+  const [listOpacity] = useState(new Animated.Value(1));
+  const [showAddIncomeModal, setShowAddIncomeModal] = useState(false);
+
+  const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
+  const [loading, setLoading] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchIncomes = async () => {
+        setLoading(true);
+        listOpacity.setValue(0);
+        try {
+          if (!currentGroupId) {
+            console.warn('No current group selected');
+            return;
+          }
+          const incomes = await incomeApi.getIncomesByGroupId(currentGroupId);
+          console.log('Fetched incomes:', incomes);
+          setIncomes(incomes);
+          const categories = Array.from(
+            new Set(incomes.map((income) => income.category).filter(Boolean)),
+          ) as IncomeCategory[];
+          setCategories(categories);
+          console.log('Fetched categories:', categories);
+        } catch (error) {
+          console.error('Failed to fetch incomes:', error);
+        } finally {
+          setLoading(false);
+          Animated.timing(listOpacity, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }).start();
+        }
+      };
+
+      fetchIncomes();
+    }, []),
+  );
+
+  const handleTimeWindowChange = (value: string) => {
+    Animated.timing(listOpacity, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true,
+    }).start(() => {
+      setSelectedTimeWindow(value);
+      setShowTimeWindowPicker(false);
+
+      Animated.timing(listOpacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
+  };
+
+  const scrollViewStyle = useMemo(() => ({ paddingHorizontal: 2 }), []);
+
+  const filteredIncomes = useMemo(() => {
+    const getTimeLimit = (timeWindow: string): number => {
+      const DAY = 24 * 60 * 60 * 1000;
+      const limits = {
+        today: DAY,
+        week: 7 * DAY,
+        month: 30 * DAY,
+        year: 365 * DAY,
+        all: Infinity,
+      };
+      return limits[timeWindow as keyof typeof limits] || Infinity;
+    };
+
+    return incomes.filter((income) => {
+      const categoryMatch =
+        selectedCategories.length === 0 ||
+        (income.category && selectedCategories.includes(income.category as IncomeCategory));
+      const incomeDate = new Date(income.created_at);
+      const timeDiff = Date.now() - incomeDate.getTime();
+      const timeMatch = timeDiff <= getTimeLimit(selectedTimeWindow);
+
+      return categoryMatch && timeMatch;
+    });
+  }, [incomes, selectedCategories, selectedTimeWindow]);
+
+  const updateIncomes = useCallback(async () => {
+    Animated.timing(listOpacity, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+
+    if (!currentGroupId) {
+      console.warn('No current group selected');
+      return;
+    }
+    const incomes = await incomeApi.getIncomesByGroupId(currentGroupId);
+
+    setIncomes(incomes);
+    const categories = Array.from(
+      new Set(incomes.map((income) => income.category).filter(Boolean)),
+    ) as IncomeCategory[];
+    setCategories(categories);
+    Animated.timing(listOpacity, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [currentGroupId, setIncomes]);
+
+  const handleCategorySelect = useCallback(
+    (category: IncomeCategory) => {
+      setSelectedCategoryBubbles((prevSelected) =>
+          prevSelected.includes(category)
+            ? prevSelected.filter((c) => c !== category)
+            : [...prevSelected, category],
+        );
+      Animated.timing(listOpacity, {
+        toValue: 0,
+        duration: 100,
+        useNativeDriver: true,
+      }).start(() => {
+        setSelectedCategories((prevSelected) =>
+          prevSelected.includes(category)
+            ? prevSelected.filter((c) => c !== category)
+            : [...prevSelected, category],
+        );
+        Animated.timing(listOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      });
+    },
+    [listOpacity],
+  );
+
+  const RenderIncomeItem = useCallback(
+    ({ item }: { item: Income }) => {
+      const createdDate = item.created_at instanceof Date 
+      ? item.created_at 
+      : new Date(item.created_at);
+
+      return (
+      <View className="bg-surface rounded-xl py-3 px-4 my-2 mx-4 mt-0 border border-slate-200">
+        <View className="flex-row justify-between items-center">
+          <View className='flex-col gap-2'>
+            <Text className="text-lg font-medium font-semibold text-default">
+              {item.title || item.description}
+            </Text>
+            
+            <Text className="text-sm text-muted capitalize font-sans">{item.category || 'other'}</Text>
+           
+          </View>
+          <View className="flex-col gap-2">
+            <Text className="text-lg font-bold text-green-600">
+              +{(Number(item.amount) || 0).toFixed(2)} €
+            </Text>
+            <Text className='text-sm text-muted font-sans text-right'>
+              {createdDate.toLocaleDateString('en-GB', {
+                month: 'short',
+                day: 'numeric',
+              })}
+            </Text>
+          </View>
+          
+        </View>
+      </View>)
+    },
+    [],
+  );
+
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-1 items-center justify-center p-4">
-        <Landmark size={48} color="#16A34A" className="mb-4" />
-        <Text className="text-2xl font-bold text-slate-800 mb-2">Income Tracking</Text>
-        <Text className="text-base text-slate-600 text-center">
-          This is where you will manage and view your income.
-        </Text>
-      </View>
-    </SafeAreaView>
+    <ScrollView className="flex-1 bg-background pt-4" keyboardShouldPersistTaps='always'>
+      <Header
+        selectedTimeWindow={selectedTimeWindow}
+        showTimeWindowPicker={showTimeWindowPicker}
+        filteredIncomes={filteredIncomes}
+        setShowTimeWindowPicker={setShowTimeWindowPicker}
+        setShowAddIncomeModal={setShowAddIncomeModal}
+        timeWindowOptions={timeWindowOptions}
+      />
+
+      {loading ? (
+        <ActivityIndicator color="grey" />
+      ) : (
+        <>
+          <View className="mt-0 mb-6 pl-4">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={scrollViewStyle}
+              persistentScrollbar={false}
+              keyboardShouldPersistTaps='always'
+
+            >
+              {categories.map((category) => {
+                const isSelected = selectedCategoryBubbles.includes(category);
+                return (
+                  <Pressable
+                    key={category}
+                    onPress={() => handleCategorySelect(category)}
+                    className={`px-4 py-2 rounded-full mr-2 border
+                    ${isSelected ? 'bg-[#16A34A] border-[#16A34A]' : 'bg-white border-slate-200'}`}
+                  >
+                    <Text
+                      className={`text-sm font-medium font-sans
+                      ${isSelected ? 'text-white' : 'text-muted'}`}
+                    >
+                      {category}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          <Animated.View style={{ opacity: listOpacity, flex: 1 }}>
+            <IncomeBar incomes={filteredIncomes} />
+            <View className="pb-5">
+              {filteredIncomes.map((income, index) => (
+                <RenderIncomeItem key={index} item={income} />
+              ))}
+            </View>
+          </Animated.View>
+        </>
+      )}
+
+      <Modal
+        isVisible={showAddIncomeModal}
+        onSwipeComplete={() => setShowAddIncomeModal(false)}
+        swipeDirection="down"
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onBackdropPress={() => setShowAddIncomeModal(false)}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
+        statusBarTranslucent={true}
+        backdropOpacity={0.5}
+      >
+        <AddIncome onClose={() => setShowAddIncomeModal(false)} updateIncomes={updateIncomes} />
+      </Modal>
+
+      <Modal
+        isVisible={showTimeWindowPicker}
+        onSwipeComplete={() => setShowTimeWindowPicker(false)}
+        swipeDirection="down"
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onBackdropPress={() => setShowTimeWindowPicker(false)}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
+        statusBarTranslucent={true}
+        backdropOpacity={0.5}
+      >
+        <SelectTimeFrame
+          setShowTimeWindowPicker={setShowTimeWindowPicker}
+          selectedTimeWindow={selectedTimeWindow}
+          handleTimeWindowChange={handleTimeWindowChange}
+          timeWindowOptions={timeWindowOptions}
+        />
+      </Modal>
+    </ScrollView>
   );
 }

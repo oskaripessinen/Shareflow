@@ -10,7 +10,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
-import SelectTimeFrame from '@/../components/expenses/SelectTimeFrame';
+import SelectTimeFrame from 'components/common/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
 import { expenseApi } from '../../api/expenses';
 import { useGroupStore } from '@/../context/AppContext';

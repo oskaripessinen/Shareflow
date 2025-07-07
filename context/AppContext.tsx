@@ -16,6 +16,8 @@ export type ExpenseCategory =
 
 export type InvestmentType = 'stock' | 'fund' | 'crypto' | 'etf' | 'bond' | 'other';
 
+export type IncomeCategory = 'salary' | 'freelance' | 'investments' | 'business' | 'gifts' | 'other';
+
 export type ExpenseFilters = {
   month: number | 'all';
   year: number | 'all';
@@ -56,13 +58,25 @@ export interface Goal {
   color: string;
 }
 
-interface Income {
+export interface Income {
+  id: string;
+  title: string;
   amount: number;
-  isGross: boolean;
+  category: IncomeCategory;
+  description?: string;
+  created_at: Date;
+  group_id: number;
+  user_id: string;
 }
 
 interface Savings {
   target: number;
+}
+
+// ✅ Uusi interface tulojen hallintaan
+interface IncomeSettings {
+  amount: number;
+  isGross: boolean;
 }
 
 interface AuthState {
@@ -110,14 +124,19 @@ export const useAuthStore = create<AuthState>((set) => ({
 }));
 
 interface AppState {
-  income: Income;
+  incomeSettings: IncomeSettings; // ✅ Muutettu nimi
+  incomes: Income[]; // ✅ Lisätty incomes array
   expenses: Expense[];
   investments: Investment[];
   goals: Goal[];
   savings: Savings;
   showTimeWindowPicker: boolean;
 
-  setIncome: (income: Income) => void;
+  setIncomeSettings: (incomeSettings: IncomeSettings) => void; // ✅ Muutettu nimi
+  setIncomes: (incomes: Income[]) => void; // ✅ Lisätty incomes setter
+  addIncome: (income: Income) => void; // ✅ Lisätty income CRUD
+  updateIncome: (income: Income) => void;
+  deleteIncome: (id: string) => void;
   setSavingsTarget: (target: number) => void;
   addExpense: (expense: Expense) => void;
   updateExpense: (expense: Expense) => void;
@@ -134,10 +153,11 @@ interface AppState {
 }
 
 const initialState = {
-  income: {
+  incomeSettings: { // ✅ Muutettu nimi
     amount: 0,
     isGross: false,
   },
+  incomes: [], // ✅ Lisätty incomes array
   expenses: [],
   investments: [],
   goals: [],
@@ -152,7 +172,23 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       ...initialState,
 
-      setIncome: (income) => set({ income }),
+      setIncomeSettings: (incomeSettings) => set({ incomeSettings }), // ✅ Muutettu nimi
+      
+      // ✅ Lisätty income CRUD funktiot
+      setIncomes: (incomes) => set({ incomes }),
+      addIncome: (income) =>
+        set((state) => ({
+          incomes: [...state.incomes, income],
+        })),
+      updateIncome: (income) =>
+        set((state) => ({
+          incomes: state.incomes.map((inc) => (inc.id === income.id ? income : inc)),
+        })),
+      deleteIncome: (id) =>
+        set((state) => ({
+          incomes: state.incomes.filter((inc) => inc.id !== id),
+        })),
+
       setSavingsTarget: (target) =>
         set((state) => ({
           savings: { ...state.savings, target },
