@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { ChevronDown, Plus, Clock } from 'lucide-react-native';
+import { Plus, Clock } from 'lucide-react-native';
 import { Expense } from '../../types/expense';
 
 interface TimeWindowOption {
@@ -48,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({
               </Text>
             </Pressable>
             <View className="p-3 pl-3">
-              <Text className="font-bold text-default px-2 text-center min-w-[100px] text-base" numberOfLines={1}>
+              <Text className="font-semibold text-default px-2 text-center min-w-[100px] text-base" numberOfLines={1}>
                 {(
                   filteredExpenses?.reduce((sum: number, e: Expense) => sum + (Number(e.amount) || 0), 0) || 0
                 ).toFixed(2)}{' '}

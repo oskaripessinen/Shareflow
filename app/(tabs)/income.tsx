@@ -11,7 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import { Income, IncomeCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/common/SelectTimeFrame';
-import AddIncome from '@/../components/income/AddIncome';
+import AddIncomeForm from '@/../components/income/AddIncomeForm';
 import { incomeApi } from '../../api/income';
 import { useGroupStore } from '@/../context/AppContext';
 import IncomeBar from 'components/income/IncomeBar';
@@ -32,7 +32,7 @@ export default function IncomeScreen() {
   const [showTimeWindowPicker, setShowTimeWindowPicker] = useState(false);
   const [categories, setCategories] = useState<IncomeCategory[]>([]);
   const [listOpacity] = useState(new Animated.Value(1));
-  const [showAddIncomeModal, setShowAddIncomeModal] = useState(false);
+  const [showAddIncomeForm, setShowAddIncomeForm] = useState(false);
 
   const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
   const [loading, setLoading] = useState(false);
@@ -86,6 +86,11 @@ export default function IncomeScreen() {
         useNativeDriver: true,
       }).start();
     });
+  };
+
+  const handleCloseForm = () => {
+    setShowAddIncomeForm(false);
+    updateIncomes?.();
   };
 
   const scrollViewStyle = useMemo(() => ({ paddingHorizontal: 2 }), []);
@@ -209,7 +214,7 @@ export default function IncomeScreen() {
         showTimeWindowPicker={showTimeWindowPicker}
         filteredIncomes={filteredIncomes}
         setShowTimeWindowPicker={setShowTimeWindowPicker}
-        setShowAddIncomeModal={setShowAddIncomeModal}
+        setShowAddIncomeForm={setShowAddIncomeForm}
         timeWindowOptions={timeWindowOptions}
       />
 
@@ -259,17 +264,18 @@ export default function IncomeScreen() {
       )}
 
       <Modal
-        isVisible={showAddIncomeModal}
-        onSwipeComplete={() => setShowAddIncomeModal(false)}
-        swipeDirection="down"
-        animationIn="fadeIn"
-        animationOut="fadeOut"
-        onBackdropPress={() => setShowAddIncomeModal(false)}
+        isVisible={showAddIncomeForm}
+        animationIn={'fadeIn'}
+        animationOut={'fadeOut'}
+        presentationStyle="overFullScreen"
+        statusBarTranslucent
+        onBackdropPress={() => setShowAddIncomeForm(false)}
         style={{ justifyContent: 'flex-end', margin: 0 }}
-        statusBarTranslucent={true}
-        backdropOpacity={0.5}
       >
-        <AddIncome onClose={() => setShowAddIncomeModal(false)} updateIncomes={updateIncomes} />
+        <AddIncomeForm
+          onClose={handleCloseForm}
+          onIncomeAdded={updateIncomes}
+        />
       </Modal>
 
       <Modal
