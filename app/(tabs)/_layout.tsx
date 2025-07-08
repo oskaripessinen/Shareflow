@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Home, CreditCard, TrendingUp, HandCoins } from 'lucide-react-native';
+import { Home, CreditCard, TrendingUp, Receipt } from 'lucide-react-native';
 import { View } from 'react-native';
 import GroupHeader from '@/../components/common/GroupHeader';
 
@@ -30,7 +30,7 @@ export default function TabLayout() {
           },
           headerTitleStyle: {
             fontWeight: '600',
-            fontSize: 18,
+            fontSize: 10,
             color: '#0f172a',
           },
         }}
@@ -46,7 +46,7 @@ export default function TabLayout() {
           name="income"
           options={{
             title: 'Income',
-            tabBarIcon: ({ color, size, focused }) => <HandCoins strokeWidth={focused ? 2 : 1.5} size={size} color={color} />,
+            tabBarIcon: ({ color, size, focused }) => <Receipt strokeWidth={focused ? 2 : 1.5} size={size} color={color} />,
           }}
         />
         <Tabs.Screen

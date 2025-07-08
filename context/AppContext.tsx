@@ -73,7 +73,6 @@ interface Savings {
   target: number;
 }
 
-// ✅ Uusi interface tulojen hallintaan
 interface IncomeSettings {
   amount: number;
   isGross: boolean;

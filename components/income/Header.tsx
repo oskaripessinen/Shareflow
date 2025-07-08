@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({
                </Pressable>
                <View className="p-3 pl-3">
                  <Text className="font-semibold text-default px-2 text-center min-w-[100px] text-base" numberOfLines={1}>
-                     {(totalIncome || 0).toFixed(2)} €
+                     {(totalIncome || 0)} €
                  </Text>
                </View>
              </View>

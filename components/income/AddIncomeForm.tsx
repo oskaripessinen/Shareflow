@@ -64,6 +64,7 @@ export default function AddIncomeForm({
           amount: Number(amount),
           category: selectedCategory || 'other',
           description: description.trim() || undefined,
+          income_date: incomeDate,
         },
         userId,
       );
