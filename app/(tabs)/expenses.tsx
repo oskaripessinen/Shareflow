@@ -32,6 +32,8 @@ export default function ExpensesScreen() {
   const [showTimeWindowPicker, setShowTimeWindowPicker] = useState(false);
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
   const [listOpacity] = useState(new Animated.Value(1));
+  const [pageOpacity] = useState(new Animated.Value(1));
+
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
 
   const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
@@ -41,7 +43,7 @@ export default function ExpensesScreen() {
 
   const fetchExpenses = async () => {
         setLoading(true);
-        listOpacity.setValue(0);
+        pageOpacity.setValue(0);
         try {
           if (!currentGroupId) {
             console.warn('No current group selected');
@@ -59,7 +61,7 @@ export default function ExpensesScreen() {
           console.error('Failed to fetch expenses:', error);
         } finally {
           setLoading(false);
-          Animated.timing(listOpacity, {
+          Animated.timing(pageOpacity, {
             toValue: 1,
             duration: 200,
             useNativeDriver: true,
@@ -201,7 +203,7 @@ export default function ExpensesScreen() {
             </Text>
             <Text className='text-sm text-muted font-sans text-right'>
               {createdDate.toLocaleDateString('en-GB', {
-                month: 'short',
+                month: 'long',
                 day: 'numeric',
               })}
             </Text>
@@ -218,7 +220,7 @@ export default function ExpensesScreen() {
     <Animated.ScrollView
       className="flex-1 bg-background pt-4" 
       keyboardShouldPersistTaps='always'
-      style={{opacity: listOpacity}}
+      style={{opacity: pageOpacity}}
       refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
               }>
       <Header
@@ -261,7 +263,7 @@ export default function ExpensesScreen() {
             </ScrollView>
           </Animated.View>
 
-          <Animated.View style={{ flex: 1 }}>
+          <Animated.View style={{ flex: 1, opacity: listOpacity }}>
             <ExpenseBar expenses={filteredExpenses} />
             <View className="pb-5">
               {filteredExpenses.map((expense, index) => (

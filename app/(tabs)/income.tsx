@@ -33,6 +33,7 @@ export default function IncomeScreen() {
   const [showTimeWindowPicker, setShowTimeWindowPicker] = useState(false);
   const [categories, setCategories] = useState<IncomeCategory[]>([]);
   const [listOpacity] = useState(new Animated.Value(1));
+  const [pageOpacity] = useState(new Animated.Value(1));
   const [showAddIncomeForm, setShowAddIncomeForm] = useState(false);
 
   const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
@@ -42,7 +43,7 @@ export default function IncomeScreen() {
 
   const fetchIncomes = async () => {
       setLoading(true);
-      listOpacity.setValue(0);
+      pageOpacity.setValue(0);
       try {
         if (!currentGroupId) {
           console.warn('No current group selected');
@@ -60,7 +61,7 @@ export default function IncomeScreen() {
         console.error('Failed to fetch incomes:', error);
       } finally {
         setLoading(false);
-        Animated.timing(listOpacity, {
+        Animated.timing(pageOpacity, {
           toValue: 1,
           duration: 200,
           useNativeDriver: true,
@@ -219,9 +220,9 @@ export default function IncomeScreen() {
     <View className='flex-1'>
       <Animated.ScrollView 
         className="flex-1 bg-background pt-4"
-        bounces={true} // sallii "venymisen"
+        bounces={true}
         alwaysBounceVertical={true}
-        style={{opacity: listOpacity}}
+        style={{opacity: pageOpacity}}
         overScrollMode={Platform.OS === 'android' ? 'always' : undefined}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         keyboardShouldPersistTaps='always'>
@@ -265,14 +266,14 @@ export default function IncomeScreen() {
               </ScrollView>
             </View>
 
-            <View style={{flex: 1 }}>
+            <Animated.View style={{flex: 1, opacity: listOpacity}}>
               <IncomeBar incomes={filteredIncomes} />
               <View className="pb-5">
                 {filteredIncomes.map((income, index) => (
                   <RenderIncomeItem key={index} item={income} />
                 ))}
               </View>
-            </View>
+            </Animated.View>
           </>
 
         <Modal
