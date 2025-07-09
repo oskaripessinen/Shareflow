@@ -81,8 +81,8 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
                 onPress={handleShowAddExpenseForm}
                 className="flex-row items-center p-3.5 rounded-lg active:bg-slate-50 justify-center w-[90%] mx-auto"
               >
-                <Edit3 strokeWidth={1.5} size={22} color="#000000DE" className="mr-0" />
-                <Text className="text-base font-sans text-default ml-2">Manually</Text>
+                <Edit3 strokeWidth={2} size={22} color="#000000b3" className="mr-0" />
+                <Text className="text-base font-semibold text-muted ml-2">Manually</Text>
               </Pressable>
 
               <View className="h-px bg-slate-200 w-[90%] mx-auto my-2" />
@@ -91,8 +91,8 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
                 onPress={addExpensePhoto}
                 className="flex-row items-center p-3.5 rounded-lg justify-center active:bg-slate-50 w-[90%] mx-auto"
               >
-                <Image strokeWidth={1.5} size={22} color="#000000DE" className="mr-3" />
-                <Text className="font-sans text-default text-base ml-2">With Image</Text>
+                <Image strokeWidth={2} size={22} color="#000000b3" className="mr-3" />
+                <Text className="font-semibold text-muted text-base ml-2">With Image</Text>
               </Pressable>
             </View>
           </View>

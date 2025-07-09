@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,9 @@ import {
   ScrollView,
   Animated,
   ActivityIndicator,
+  RefreshControl,
+  Platform
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import { Income, IncomeCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/common/SelectTimeFrame';
@@ -37,39 +38,46 @@ export default function IncomeScreen() {
   const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
   const [loading, setLoading] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchIncomes = async () => {
-        setLoading(true);
-        listOpacity.setValue(0);
-        try {
-          if (!currentGroupId) {
-            console.warn('No current group selected');
-            return;
-          }
-          const incomes = await incomeApi.getIncomesByGroupId(currentGroupId);
-          console.log('Fetched incomes:', incomes);
-          setIncomes(incomes);
-          const categories = Array.from(
-            new Set(incomes.map((income) => income.category).filter(Boolean)),
-          ) as IncomeCategory[];
-          setCategories(categories);
-          console.log('Fetched categories:', categories);
-        } catch (error) {
-          console.error('Failed to fetch incomes:', error);
-        } finally {
-          setLoading(false);
-          Animated.timing(listOpacity, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-          }).start();
-        }
-      };
+   const [refreshing, setRefreshing] = useState(false);
 
-      fetchIncomes();
-    }, []),
-  );
+  const fetchIncomes = async () => {
+      setLoading(true);
+      listOpacity.setValue(0);
+      try {
+        if (!currentGroupId) {
+          console.warn('No current group selected');
+          return;
+        }
+        const incomes = await incomeApi.getIncomesByGroupId(currentGroupId);
+        console.log('Fetched incomes:', incomes);
+        setIncomes(incomes);
+        const categories = Array.from(
+          new Set(incomes.map((income) => income.category).filter(Boolean)),
+        ) as IncomeCategory[];
+        setCategories(categories);
+        console.log('Fetched categories:', categories);
+      } catch (error) {
+        console.error('Failed to fetch incomes:', error);
+      } finally {
+        setLoading(false);
+        Animated.timing(listOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      }
+    };
+  
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await updateIncomes();
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    fetchIncomes();
+  }, []);
 
   const handleTimeWindowChange = (value: string) => {
     Animated.timing(listOpacity, {
@@ -208,94 +216,103 @@ export default function IncomeScreen() {
   );
 
   return (
-    <ScrollView className="flex-1 bg-background pt-4" keyboardShouldPersistTaps='always'>
-      <Header
-        selectedTimeWindow={selectedTimeWindow}
-        showTimeWindowPicker={showTimeWindowPicker}
-        filteredIncomes={filteredIncomes}
-        setShowTimeWindowPicker={setShowTimeWindowPicker}
-        setShowAddIncomeForm={setShowAddIncomeForm}
-        timeWindowOptions={timeWindowOptions}
-      />
-
-      {loading ? (
-        <ActivityIndicator color="grey" />
-      ) : (
-        <>
-          <View className="mt-0 mb-6 pl-4">
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={scrollViewStyle}
-              persistentScrollbar={false}
-              keyboardShouldPersistTaps='always'
-
-            >
-              {categories.map((category) => {
-                const isSelected = selectedCategoryBubbles.includes(category);
-                return (
-                  <Pressable
-                    key={category}
-                    onPress={() => handleCategorySelect(category)}
-                    className={`px-4 py-2 rounded-full mr-2 border
-                    ${isSelected ? 'bg-[#16A34A] border-[#16A34A]' : 'bg-white border-slate-200'}`}
-                  >
-                    <Text
-                      className={`text-sm font-medium font-sans
-                      ${isSelected ? 'text-white' : 'text-muted'}`}
-                    >
-                      {category}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-          </View>
-
-          <Animated.View style={{ opacity: listOpacity, flex: 1 }}>
-            <IncomeBar incomes={filteredIncomes} />
-            <View className="pb-5">
-              {filteredIncomes.map((income, index) => (
-                <RenderIncomeItem key={index} item={income} />
-              ))}
-            </View>
-          </Animated.View>
-        </>
-      )}
-
-      <Modal
-        isVisible={showAddIncomeForm}
-        animationIn={'fadeIn'}
-        animationOut={'fadeOut'}
-        presentationStyle="overFullScreen"
-        statusBarTranslucent
-        onBackdropPress={() => setShowAddIncomeForm(false)}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-      >
-        <AddIncomeForm
-          onClose={handleCloseForm}
-          onIncomeAdded={updateIncomes}
-        />
-      </Modal>
-
-      <Modal
-        isVisible={showTimeWindowPicker}
-        onSwipeComplete={() => setShowTimeWindowPicker(false)}
-        swipeDirection="down"
-        animationIn="fadeIn"
-        animationOut="fadeOut"
-        onBackdropPress={() => setShowTimeWindowPicker(false)}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-        statusBarTranslucent={true}
-        backdropOpacity={0.5}
-      >
-        <SelectTimeFrame
-          setShowTimeWindowPicker={setShowTimeWindowPicker}
+    <View className='flex-1'>
+      <Animated.ScrollView 
+        className="flex-1 bg-background pt-4"
+        bounces={true} // sallii "venymisen"
+        alwaysBounceVertical={true}
+        style={{opacity: listOpacity}}
+        overScrollMode={Platform.OS === 'android' ? 'always' : undefined}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        keyboardShouldPersistTaps='always'>
+        <Header
           selectedTimeWindow={selectedTimeWindow}
-          handleTimeWindowChange={handleTimeWindowChange}
+          showTimeWindowPicker={showTimeWindowPicker}
+          filteredIncomes={filteredIncomes}
+          setShowTimeWindowPicker={setShowTimeWindowPicker}
+          setShowAddIncomeForm={setShowAddIncomeForm}
           timeWindowOptions={timeWindowOptions}
         />
-      </Modal>
-    </ScrollView>
+
+          <>
+            <View className="mt-0 mb-6 pl-4">
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={scrollViewStyle}
+                persistentScrollbar={false}
+                keyboardShouldPersistTaps='always'
+
+              >
+                {categories.map((category) => {
+                  const isSelected = selectedCategoryBubbles.includes(category);
+                  return (
+                    <Pressable
+                      key={category}
+                      onPress={() => handleCategorySelect(category)}
+                      className={`px-4 py-2 rounded-full mr-2 border
+                      ${isSelected ? 'bg-primary border-primary' : 'bg-white border-slate-200'}`}
+                    >
+                      <Text
+                        className={`text-sm font-medium font-sans
+                        ${isSelected ? 'text-white' : 'text-muted'}`}
+                      >
+                        {category}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            <View style={{flex: 1 }}>
+              <IncomeBar incomes={filteredIncomes} />
+              <View className="pb-5">
+                {filteredIncomes.map((income, index) => (
+                  <RenderIncomeItem key={index} item={income} />
+                ))}
+              </View>
+            </View>
+          </>
+
+        <Modal
+          isVisible={showAddIncomeForm}
+          animationIn={'fadeIn'}
+          animationOut={'fadeOut'}
+          presentationStyle="overFullScreen"
+          statusBarTranslucent
+          onBackdropPress={() => setShowAddIncomeForm(false)}
+          style={{ justifyContent: 'flex-end', margin: 0 }}
+        >
+          <AddIncomeForm
+            onClose={handleCloseForm}
+            onIncomeAdded={updateIncomes}
+          />
+        </Modal>
+
+        <Modal
+          isVisible={showTimeWindowPicker}
+          onSwipeComplete={() => setShowTimeWindowPicker(false)}
+          swipeDirection="down"
+          animationIn="fadeIn"
+          animationOut="fadeOut"
+          onBackdropPress={() => setShowTimeWindowPicker(false)}
+          style={{ justifyContent: 'flex-end', margin: 0 }}
+          statusBarTranslucent={true}
+          backdropOpacity={0.5}
+        >
+          <SelectTimeFrame
+            setShowTimeWindowPicker={setShowTimeWindowPicker}
+            selectedTimeWindow={selectedTimeWindow}
+            handleTimeWindowChange={handleTimeWindowChange}
+            timeWindowOptions={timeWindowOptions}
+          />
+        </Modal>
+      </Animated.ScrollView>
+      <View className='absolute w-full mt-5'>
+        {loading && (
+          <ActivityIndicator color="grey" />)}
+      </View>   
+    </View>
   );
 }

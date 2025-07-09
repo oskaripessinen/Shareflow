@@ -47,14 +47,14 @@ const OptionsModal: React.FC<OptionsProps> = ({ onClose, handleOpenInviteModal }
           <View className="w-full">
             <View className="h-px bg-slate-200 w-full my-2" />
             <Pressable onPress={handleOpenInviteModal} className="flex-row items-center p-3.5 rounded-lg w-[90%] mx-auto justify-center active:bg-slate-50">
-              <Text className="font-base font-medium text-slate-700 ml-4">Invite user</Text>
+              <Text className="font-base font-medium text-muted ml-4">Invite user</Text>
             </Pressable>
             <View className="h-px bg-slate-200 w-[90%] my-2 mx-auto" />
             <Pressable
               onPress={() => handleNewGroup()}
               className="flex-row items-center p-3.5 rounded-lg w-[90%] active:bg-slate-50 justify-center mx-auto"
             >
-              <Text className="font-base font-medium text-slate-700 ml-4">New group</Text>
+              <Text className="font-base font-medium text-muted ml-4">New group</Text>
             </Pressable>
             <View className="h-px bg-slate-200 w-[90%] my-2 mx-auto" />
             <Pressable

@@ -132,13 +132,13 @@ export default function AddIncomeForm({
                 }
                 className={`mr-3 p-2 rounded-full border-2 min-w-[80px] items-center ${
                   selectedCategory === category.value
-                    ? 'border-green-500 bg-green-100'
+                    ? 'border-blue-500 bg-blue-100'
                     : 'border-slate-200 bg-white'
                 }`}
               >
                 <Text
                   className={`text-xs font-medium ${
-                    selectedCategory === category.value ? 'text-green-600' : 'text-muted'
+                    selectedCategory === category.value ? 'text-blue-600' : 'text-muted'
                   }`}
                 >
                   {category.label}
@@ -179,23 +179,24 @@ export default function AddIncomeForm({
         </View>
 
         {currentGroup && (
-          <View className="mb-6 p-3 bg-green-50 rounded-lg border border-green-200">
+          <View className="mb-6 px-3 py-4 bg-blue-50 rounded-lg border border-blue-200">
             <View className="flex-row items-center">
-              <User size={16} color="#10B981" />
-              <Text className="ml-2 text-sm text-green-700">Adding to: {currentGroup.name}</Text>
+              <User size={16} color="#3B82F6" />
+              <Text className="ml-2 text-sm text-blue-700">Adding to group: </Text>
+              <Text className='text-sm text-blue-700'>{currentGroup.name}</Text>
             </View>
           </View>
         )}
       </ScrollView>
 
-      <View className="p-4 border-t border-slate-200 bg-white">
+      <View className="p-4 px-5 border-t border-slate-200 bg-white">
         <TouchableOpacity
           onPress={handleSubmit}
           disabled={isLoading || !title.trim() || !amount.trim()}
           className={`p-3 rounded-xl items-center justify-center ${
             isLoading || !title.trim() || !amount.trim()
               ? 'bg-slate-400'
-              : 'bg-green-600 active:bg-green-700'
+              : 'bg-primary active:bg-primaryDark'
           }`}
         >
           {!isLoading && (

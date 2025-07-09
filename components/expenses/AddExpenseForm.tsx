@@ -224,7 +224,6 @@ export default function AddExpenseForm({
             )}
           </View>
 
-          {/* Nappi container - ei ScrollView sisällä */}
           <View className="p-4 px-5 border-t border-slate-200 bg-white">
             <Pressable
               onPress={handleSubmit}

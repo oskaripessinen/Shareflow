@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = ({
   setShowAddIncomeForm,
   timeWindowOptions,
 }) => {
-  const totalIncome = filteredIncomes.reduce((sum, income) => sum + income.amount, 0);
+  const totalIncome = filteredIncomes.reduce((sum, income) => sum + Number(income.amount), 0);
 
   return (
    <View className="p-0 mt-0" style={{ zIndex: 10 }}>

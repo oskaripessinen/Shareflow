@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,8 @@ import {
   ScrollView,
   Animated,
   ActivityIndicator,
+  RefreshControl
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from 'components/common/SelectTimeFrame';
@@ -37,9 +37,9 @@ export default function ExpensesScreen() {
   const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
   const [loading, setLoading] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchExpenses = async () => {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchExpenses = async () => {
         setLoading(true);
         listOpacity.setValue(0);
         try {
@@ -66,10 +66,43 @@ export default function ExpensesScreen() {
           }).start();
         }
       };
+  const updateExpenses = useCallback(async () => {
+    Animated.timing(listOpacity, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
 
-      fetchExpenses();
-    }, []),
-  );
+    if (!currentGroupId) {
+      console.warn('No current group selected');
+      return;
+    }
+    const expenses = await expenseApi.getExpensesByGroupId(currentGroupId);
+
+    setExpenses(expenses);
+    const categories = Array.from(
+      new Set(expenses.map((expense) => expense.category).filter(Boolean)),
+    ) as ExpenseCategory[];
+    setCategories(categories);
+    Animated.timing(listOpacity, {
+      toValue: 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, [currentGroupId, setExpenses]);
+
+
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await updateExpenses();
+    setRefreshing(false);
+  };
 
   const handleTimeWindowChange = (value: string) => {
     Animated.timing(listOpacity, {
@@ -115,30 +148,6 @@ export default function ExpensesScreen() {
     });
   }, [expenses, selectedCategories, selectedTimeWindow]);
 
-  const updateExpenses = useCallback(async () => {
-    Animated.timing(listOpacity, {
-      toValue: 0,
-      duration: 100,
-      useNativeDriver: true,
-    }).start();
-
-    if (!currentGroupId) {
-      console.warn('No current group selected');
-      return;
-    }
-    const expenses = await expenseApi.getExpensesByGroupId(currentGroupId);
-
-    setExpenses(expenses);
-    const categories = Array.from(
-      new Set(expenses.map((expense) => expense.category).filter(Boolean)),
-    ) as ExpenseCategory[];
-    setCategories(categories);
-    Animated.timing(listOpacity, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  }, [currentGroupId, setExpenses]);
 
   const handleCategorySelect = useCallback(
     (category: ExpenseCategory) => {
@@ -205,7 +214,13 @@ export default function ExpensesScreen() {
   );
 
   return (
-    <ScrollView className="flex-1 bg-background pt-4" keyboardShouldPersistTaps='always'>
+    <View className='flex-1 m-0'>
+    <Animated.ScrollView
+      className="flex-1 bg-background pt-4" 
+      keyboardShouldPersistTaps='always'
+      style={{opacity: listOpacity}}
+      refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }>
       <Header
         selectedTimeWindow={selectedTimeWindow}
         showTimeWindowPicker={showTimeWindowPicker}
@@ -215,19 +230,16 @@ export default function ExpensesScreen() {
         timeWindowOptions={timeWindowOptions}
       />
 
-      {loading ? (
-        <ActivityIndicator color="grey" />
-      ) : (
+      
         <>
-          <View className="mt-0 mb-6 pl-4">
+          <Animated.View style={{}} className="mt-0 mb-6 pl-4">
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={scrollViewStyle}
               persistentScrollbar={false}
-              keyboardShouldPersistTaps='always'
-
-            >
+              keyboardShouldPersistTaps='always'>
+              
               {categories.map((category) => {
                 const isSelected = selectedCategoryBubbles.includes(category);
                 return (
@@ -247,9 +259,9 @@ export default function ExpensesScreen() {
                 );
               })}
             </ScrollView>
-          </View>
+          </Animated.View>
 
-          <Animated.View style={{ opacity: listOpacity, flex: 1 }}>
+          <Animated.View style={{ flex: 1 }}>
             <ExpenseBar expenses={filteredExpenses} />
             <View className="pb-5">
               {filteredExpenses.map((expense, index) => (
@@ -258,7 +270,6 @@ export default function ExpensesScreen() {
             </View>
           </Animated.View>
         </>
-      )}
 
       <Modal
         isVisible={showAddExpenseModal}
@@ -292,6 +303,12 @@ export default function ExpensesScreen() {
           timeWindowOptions={timeWindowOptions}
         />
       </Modal>
-    </ScrollView>
+    </Animated.ScrollView>
+    {loading && (
+      <View className='absolute w-full mt-10'>
+        <ActivityIndicator color="grey" />
+      </View>)}
+    </View>
+    
   );
 }
