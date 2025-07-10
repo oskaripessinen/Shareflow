@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { View, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View } from 'react-native';
+import InvestmentSummary from '../../components/investments/InvestmentSummary'
+import ExpenseSummary from 'components/expenses/expensesSummary';
 import MonthSelector from '@/../components/common/MonthSelector';
 import { getCurrentMonth, getCurrentYear } from '@/../utils/dateUtils';
 
@@ -9,21 +10,23 @@ export default function DashboardScreen() {
   const [selectedYear, setSelectedYear] = useState(getCurrentYear());
 
   return (
-    <SafeAreaView edges={['left', 'right', 'bottom']} className="flex-1 bg-slate-50">
-      <View className="flex-1 p-4 mt-3">
-        <View className="mb-1">
-          <MonthSelector
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            onMonthChange={setSelectedMonth}
-            onYearChange={setSelectedYear}
-          />
+    <View className="flex-1 bg-background">
+        <View className='m-4'>
+          <InvestmentSummary portfolioValue={200} investedValue={100} totalGain={100} percentGain={100}/>
         </View>
-
-        <View className="bg-white rounded-xl p-4 mt-4 shadow">
-          <Text className="text-lg font-semibold text-slate-900 mb-4">Expenses by category</Text>
+        <View className='bg-surface border border-slate-300 flex-1 pt-4 rounded-xl m-4 mt-0'>
+          <View className="mb-1 mx-4">
+            <MonthSelector
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              onMonthChange={setSelectedMonth}
+              onYearChange={setSelectedYear}
+            />
+          </View>
+          <View className='m-4'> 
+            <ExpenseSummary totalExpenses={0}/>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+    </View>
   );
 }

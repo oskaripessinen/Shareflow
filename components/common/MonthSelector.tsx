@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { Pressable } from 'react-native';
 import { getMonthName } from '@/../utils/dateUtils';
@@ -35,44 +35,18 @@ export default function MonthSelector({
   };
 
   return (
-    <View style={styles.container}>
-      <Pressable onPress={handlePreviousMonth} style={styles.button}>
+    <View className="flex-row items-center justify-between bg-white rounded-xl py-2 px-3 border border-slate-200">
+      <Pressable onPress={handlePreviousMonth} className="p-1">
         <ChevronLeft size={24} color="#64748b" />
       </Pressable>
 
-      <Text style={styles.dateText}>
+      <Text className="text-base font-semibold text-slate-900">
         {getMonthName(selectedMonth)} {selectedYear}
       </Text>
 
-      <Pressable onPress={handleNextMonth} style={styles.button}>
+      <Pressable onPress={handleNextMonth} className="p-1">
         <ChevronRight size={24} color="#64748b" />
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  dateText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#0f172a', // Slate-900
-  },
-  button: {
-    padding: 4,
-  },
-});

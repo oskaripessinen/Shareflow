@@ -20,13 +20,13 @@ export default function InvestmentSummary({
     <View style={styles.container}>
       <View style={styles.mainValue}>
         <Text style={styles.labelMain}>Portfolio value</Text>
-        <Text style={styles.valueMain}>{portfolioValue.toFixed(2)} €</Text>
+        <Text style={styles.valueMain}>{portfolioValue} €</Text>
       </View>
 
       <View style={styles.detailsContainer}>
         <View style={styles.detailItem}>
           <Text style={styles.detailLabel}>Invested</Text>
-          <Text style={styles.detailValue}>{investedValue.toFixed(2)} €</Text>
+          <Text style={styles.detailValue}>{investedValue} €</Text>
         </View>
 
         <View style={styles.detailItem}>
@@ -39,7 +39,7 @@ export default function InvestmentSummary({
             )}
             <Text style={[styles.gainValue, { color: isProfitable ? '#10b981' : '#ef4444' }]}>
               {isProfitable ? '+' : ''}
-              {totalGain.toFixed(2)} €
+              {totalGain} €
             </Text>
           </View>
         </View>
@@ -48,7 +48,7 @@ export default function InvestmentSummary({
           <Text style={styles.detailLabel}>Yield-%</Text>
           <Text style={[styles.gainValue, { color: isProfitable ? '#10b981' : '#ef4444' }]}>
             {isProfitable ? '+' : ''}
-            {percentGain.toFixed(2)}%
+            {percentGain}%
           </Text>
         </View>
       </View>
@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 12,
     padding: 16,
-    marginTop: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -73,7 +72,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0', // Slate-200
+    borderBottomColor: '#e2e8f0',
   },
   labelMain: {
     fontSize: 16,
