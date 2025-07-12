@@ -1,100 +1,91 @@
-import { Tabs } from 'expo-router';
+import { useState, useRef } from 'react';
+import { View, Pressable, Text } from 'react-native';
+import PagerView, { PagerViewOnPageSelectedEvent } from 'react-native-pager-view';
 import { Home, CreditCard, TrendingUp, Receipt } from 'lucide-react-native';
-import { View, Pressable } from 'react-native';
 import GroupHeader from '@/../components/common/GroupHeader';
 
+import DashboardScreen from './index';
+import IncomeScreen from './income';
+import ExpensesScreen from './expenses';
+import InvestmentsScreen from './investments';
+
+
+const tabs = [
+  { name: 'Home', icon: Home, component: DashboardScreen },
+  { name: 'Income', icon: Receipt, component: IncomeScreen },
+  { name: 'Expenses', icon: CreditCard, component: ExpensesScreen },
+  { name: 'Savings', icon: TrendingUp, component: InvestmentsScreen },
+];
+
 export default function TabLayout() {
+  const [activeTab, setActiveTab] = useState(0);
+  const pagerRef = useRef<PagerView>(null);
+
+  const handleTabPress = (index: number) => {
+    setActiveTab(index);
+    pagerRef.current?.setPage(index);
+  };
+
+  const handlePageSelected = (event: PagerViewOnPageSelectedEvent) => {
+    setActiveTab(event.nativeEvent.position);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <GroupHeader />
-      <Tabs
-        screenOptions={{
-          headerShown: false,
+      
+      <PagerView
+        ref={pagerRef}
+        style={{ flex: 1 }}
+        initialPage={0}
+        onPageSelected={handlePageSelected}
+        scrollEnabled={true}
+      >
+        {tabs.map((tab, index) => {
+          const Component = tab.component;
+          return (
+            <View key={index} style={{ flex: 1 }}>
+              <Component />
+            </View>
+          );
+        })}
+      </PagerView>
 
-          tabBarStyle: {
-            backgroundColor: 'white',
-            borderTopWidth: 1,
-            borderTopColor: '#e2e8f0',
-            paddingTop: 8,
-            paddingBottom: 5,
-            height: 65,
-          },
-          tabBarItemStyle: {
-            borderRadius: 8,
-            marginHorizontal: 8,
-          },
-          tabBarLabelStyle: {
-            fontSize: 10,
-            fontWeight: '500',
-            fontFamily: 'Poppins_600SemiBold',
-          },
-          tabBarButton: (props) => {
-            const { 
-              children, 
-              onPress, 
-              onLongPress, 
-              style, 
-              accessibilityLabel,
-              accessibilityRole,
-              accessibilityState,
-              testID,
-            } = props;
+      <View className="bg-white border-t border-slate-200 px-2 py-2">
+        <View className="flex-row justify-around">
+          {tabs.map((tab, index) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === index;
             
             return (
-              <Pressable 
-                
-                onPress={onPress}
-                onLongPress={onLongPress}
-                style={style}
-                accessibilityLabel={accessibilityLabel}
-                accessibilityRole={accessibilityRole}
-                accessibilityState={accessibilityState}
-                testID={testID}
-                className='bg-slate-700 active:bg-slate-800'
+              <Pressable
+                key={index}
+                onPress={() => handleTabPress(index)}
+                className="flex-1 items-center justify-center py-2 mx-2 rounded-lg"
+                style={({ pressed }) => ({
+                  opacity: pressed ? 0.7 : 1,
+                  backgroundColor: pressed ? '#e0e7ff' : 'transparent',
+                  transform: [{ scale: pressed ? 0.95 : 1 }],
+                })}
               >
-                {children}
+                <Icon
+                  size={24}
+                  color={isActive ? '#3b82f6' : '#64748b'}
+                  strokeWidth={isActive ? 2 : 1.5}
+                />
+                <Text 
+                  className={`text-xs font-medium mt-1 ${
+                    isActive ? 'text-blue-600' : 'text-slate-600'
+                  }`}
+                  style={{ fontFamily: 'Poppins_600SemiBold' }}
+                >
+                  {tab.name}
+                </Text>
               </Pressable>
             );
-          },
-        }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Home',
-            tabBarIcon: ({ color, size, focused }) => (
-              <Home strokeWidth={focused ? 2 : 1.5} size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="income"
-          options={{
-            title: 'Income',
-            tabBarIcon: ({ color, size, focused }) => (
-              <Receipt strokeWidth={focused ? 2 : 1.5} size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="expenses"
-          options={{
-            title: 'Expenses',
-            tabBarIcon: ({ color, size, focused }) => (
-              <CreditCard strokeWidth={focused ? 2 : 1.5} size={size} color={color} />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name="investments"
-          options={{
-            title: 'Savings',
-            tabBarIcon: ({ color, size, focused }) => (
-              <TrendingUp strokeWidth={focused ? 2 : 1.5} size={size} color={color} />
-            ),
-          }}
-        />
-      </Tabs>
+          })}
+        </View>
+      </View>
     </View>
   );
 }
