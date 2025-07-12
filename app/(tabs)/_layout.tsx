@@ -9,12 +9,11 @@ import IncomeScreen from './income';
 import ExpensesScreen from './expenses';
 import InvestmentsScreen from './investments';
 
-
 const tabs = [
-  { name: 'Home', icon: Home, component: DashboardScreen },
-  { name: 'Income', icon: Receipt, component: IncomeScreen },
-  { name: 'Expenses', icon: CreditCard, component: ExpensesScreen },
-  { name: 'Savings', icon: TrendingUp, component: InvestmentsScreen },
+  { name: 'Home', icon: Home, component: DashboardScreen, key: 'home' },
+  { name: 'Income', icon: Receipt, component: IncomeScreen, key: 'income' },
+  { name: 'Expenses', icon: CreditCard, component: ExpensesScreen, key: 'expenses' },
+  { name: 'Savings', icon: TrendingUp, component: InvestmentsScreen, key: 'investments' },
 ];
 
 export default function TabLayout() {
@@ -24,6 +23,14 @@ export default function TabLayout() {
   const handleTabPress = (index: number) => {
     setActiveTab(index);
     pagerRef.current?.setPage(index);
+  };
+
+  // Funktio navigoimaan tabiin nimen perusteella
+  const navigateToTab = (tabKey: string) => {
+    const tabIndex = tabs.findIndex(tab => tab.key === tabKey);
+    if (tabIndex !== -1) {
+      handleTabPress(tabIndex);
+    }
   };
 
   const handlePageSelected = (event: PagerViewOnPageSelectedEvent) => {
@@ -45,7 +52,7 @@ export default function TabLayout() {
           const Component = tab.component;
           return (
             <View key={index} style={{ flex: 1 }}>
-              <Component />
+              <Component navigateToTab={navigateToTab} />
             </View>
           );
         })}

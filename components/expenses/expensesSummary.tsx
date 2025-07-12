@@ -1,96 +1,93 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { TrendingDown, AlertCircle, Calendar } from 'lucide-react-native';
+import { View, Text, Pressable } from 'react-native';
+import { TrendingDown, Calendar, Receipt } from 'lucide-react-native';
 
 interface ExpenseSummaryProps {
   totalExpenses: number;
-  monthlyBudget?: number;
   previousMonthExpenses?: number;
+  percentChange: number;
+  latestExpense?: {
+    title: string;
+    amount: number;
+    created_at: string;
+  };
+  handleExpensePress: () => void;
   currency?: string;
 }
 
-export default function ExpenseSummary({ 
-  totalExpenses, 
-  monthlyBudget = 0, 
+
+const ExpenseSummary = ({ 
+  totalExpenses,
   previousMonthExpenses = 0,
+  percentChange,
+  latestExpense,
+  handleExpensePress,
   currency = "€"
-}: ExpenseSummaryProps) {
-  const percentageChange = previousMonthExpenses > 0 
-    ? ((totalExpenses - previousMonthExpenses) / previousMonthExpenses) * 100 
-    : 0;
-  
-  const budgetUsed = monthlyBudget > 0 ? (totalExpenses / monthlyBudget) * 100 : 0;
-  const isOverBudget = budgetUsed > 100;
-  
+}: ExpenseSummaryProps) => {
+
   return (
     <View className="bg-surface rounded-xl p-4 border border-slate-200">
-      <View className="flex-row items-center justify-between mb-4">
+      <View className="flex-row items-center justify-between mb-2">
         <Text className="text-lg font-semibold text-default">
           Expenses Overview
         </Text>
         <View className="bg-red-100 rounded-full p-2">
-          <TrendingDown size={20} color="#ef4444" />
+          <TrendingDown size={18} color="#ef4444" />
         </View>
       </View>
 
-      <View className="mb-4">
-        <Text className="text-2xl font-bold text-slate-900">
-          {totalExpenses.toFixed(2)} {currency}
-        </Text>
-        <Text className="text-sm text-slate-600">
-          Total expenses this month
-        </Text>
-      </View>
-
-      <View className="flex-row justify-between">
-        {monthlyBudget > 0 && (
-          <View className="flex-1 mr-2">
-            <View className="flex-row items-center mb-1">
-              <AlertCircle 
-                size={16} 
-                color={isOverBudget ? "#ef4444" : "#10b981"} 
-              />
-              <Text className="text-xs text-slate-600 ml-1">
-                Budget
+      <View className="flex-row justify-between items-start mb-1 mt-3">
+        <View className="flex-1">
+          <Text className="text-2xl font-bold text-slate-900 mb-1">
+            {totalExpenses} {currency}
+          </Text>
+          {previousMonthExpenses > 0 && (
+            <View>
+              <View className="flex-row items-center mb-1">
+                <Calendar size={16} color="#64748b" />
+                <Text className="text-xs text-slate-600 ml-1">
+                  vs Last Month
+                </Text>
+              </View>
+              <Text className={`text-sm font-semibold ${percentChange > 0 ? 'text-danger' : 'text-accent'}`}>
+                {percentChange > 0 ? '+' : ''}{percentChange.toFixed(0)}%
               </Text>
             </View>
-            <Text className={`text-sm font-semibold ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
-              {budgetUsed.toFixed(0)}% used
-            </Text>
-            <Text className="text-xs text-slate-500">
-              {monthlyBudget.toFixed(0)} {currency} budget
-            </Text>
-          </View>
-        )}
-
-        {previousMonthExpenses > 0 && (
-          <View className="flex-1 ml-2">
-            <View className="flex-row items-center mb-1">
-              <Calendar size={16} color="#64748b" />
-              <Text className="text-xs text-slate-600 ml-1">
-                vs Last Month
-              </Text>
-            </View>
-            <Text className={`text-sm font-semibold ${percentageChange > 0 ? 'text-red-600' : 'text-green-600'}`}>
-              {percentageChange > 0 ? '+' : ''}{percentageChange.toFixed(1)}%
-            </Text>
-            <Text className="text-xs text-slate-500">
-              {previousMonthExpenses.toFixed(0)} {currency} last month
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {monthlyBudget > 0 && (
-        <View className="mt-4">
-          <View className="bg-gray-200 rounded-full h-2">
-            <View 
-              className={`h-2 rounded-full ${isOverBudget ? 'bg-red-500' : 'bg-green-500'}`}
-              style={{ width: `${Math.min(budgetUsed, 100)}%` }}
-            />
-          </View>
+          )}
         </View>
-      )}
+
+        {latestExpense && (
+          <Pressable onPress={handleExpensePress} className="flex-1 ml-4 justify-center p-4 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
+            <View className="flex-row items-center gap-1">
+              <Receipt size={16} color="#64748b" />
+              <Text className="text-xs text-slate-600 ml-1">
+                Latest Expense
+              </Text>
+              <Text className="text-xs text-slate-400 ml-1">
+              {new Date(latestExpense.created_at).toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long'
+              })}
+            </Text>
+            </View>
+            <View className='flex-row gap-2 align-center items-center'>
+              <Text className="text-sm font-semibold text-default" numberOfLines={1}>
+                {latestExpense.title} 
+              </Text>
+              <View className='py-1 px-2 mt-1 justify-center items-center bg-danger/15 rounded-xl'>
+                <Text className="text-xs font-sans mt-0 text-danger">
+                  {Number(latestExpense.amount).toFixed(0)} {currency}
+                </Text>
+              </View>
+            </View>
+            
+          </Pressable>
+        )}
+      </View>
+
+    
     </View>
   );
 }
+
+export default ExpenseSummary;

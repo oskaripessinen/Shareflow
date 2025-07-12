@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Text, Pressable, View, Modal } from 'react-native';
+import { Text, Pressable, View } from 'react-native';
 import { Edit3, X } from 'lucide-react-native';
 import AddIncomeForm from './AddIncomeForm';
+import Modal from 'react-native-modal'
 
 interface AddIncomeProps {
   onClose: () => void;
@@ -45,11 +46,11 @@ export default function AddIncome({ onClose, updateIncomes }: AddIncomeProps) {
       </Pressable>
 
       <Modal
-        visible={showForm}
-        animationType="fade"
+        isVisible={showForm}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
         presentationStyle="overFullScreen"
         statusBarTranslucent
-        onRequestClose={() => setShowForm(false)}
       >
         <AddIncomeForm
           onClose={handleCloseForm}

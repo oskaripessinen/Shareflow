@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { Pressable } from 'react-native';
-import { getMonthName } from '@/../utils/dateUtils';
+import { getMonthName, getCurrentMonth, getCurrentYear } from '@/../utils/dateUtils';
 
 interface MonthSelectorProps {
   selectedMonth: number;
@@ -16,6 +16,9 @@ export default function MonthSelector({
   onMonthChange,
   onYearChange,
 }: MonthSelectorProps) {
+  const currentMonth = getCurrentMonth();
+  const currentYear = getCurrentYear();
+
   const handlePreviousMonth = () => {
     if (selectedMonth === 1) {
       onMonthChange(12);
@@ -34,6 +37,12 @@ export default function MonthSelector({
     }
   };
 
+  const isNextMonthAllowed = () => {
+    if (selectedYear < currentYear) return true;
+    if (selectedYear > currentYear) return false;
+    return selectedMonth < currentMonth;
+  };
+
   return (
     <View className="flex-row items-center justify-between bg-white rounded-xl py-2 px-3 border border-slate-200">
       <Pressable onPress={handlePreviousMonth} className="p-1">
@@ -44,8 +53,15 @@ export default function MonthSelector({
         {getMonthName(selectedMonth)} {selectedYear}
       </Text>
 
-      <Pressable onPress={handleNextMonth} className="p-1">
-        <ChevronRight size={24} color="#64748b" />
+      <Pressable 
+        onPress={handleNextMonth} 
+        className="p-1"
+        disabled={!isNextMonthAllowed()}
+      >
+        <ChevronRight 
+          size={24} 
+          color={isNextMonthAllowed() ? "#64748b" : "#cbd5e1"} 
+        />
       </Pressable>
     </View>
   );

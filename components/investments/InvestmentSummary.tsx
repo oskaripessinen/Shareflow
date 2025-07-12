@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { TrendingUp, TrendingDown } from 'lucide-react-native';
 
 interface InvestmentSummaryProps {
@@ -17,36 +17,36 @@ export default function InvestmentSummary({
   const isProfitable = totalGain >= 0;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.mainValue}>
-        <Text style={styles.labelMain}>Portfolio value</Text>
-        <Text style={styles.valueMain}>{portfolioValue} €</Text>
+    <View className="bg-white rounded-xl p-4 border border-slate-300">
+      <View className="items-center mb-4 pb-4 border-b border-slate-200">
+        <Text className="text-base text-slate-500 mb-1">Portfolio value</Text>
+        <Text className="text-3xl font-bold text-slate-900">{portfolioValue} €</Text>
       </View>
 
-      <View style={styles.detailsContainer}>
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Invested</Text>
-          <Text style={styles.detailValue}>{investedValue} €</Text>
+      <View className="flex-row justify-between">
+        <View className="flex-1 items-center">
+          <Text className="text-sm text-slate-500 mb-1">Invested</Text>
+          <Text className="text-base font-semibold text-slate-900">{investedValue} €</Text>
         </View>
 
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Yield</Text>
-          <View style={styles.gainContainer}>
+        <View className="flex-1 items-center">
+          <Text className="text-sm text-slate-500 mb-1">Yield</Text>
+          <View className="flex-row items-center">
             {isProfitable ? (
-              <TrendingUp size={16} color="#10b981" style={styles.gainIcon} />
+              <TrendingUp size={16} color="#10b981" className="mr-1" />
             ) : (
-              <TrendingDown size={16} color="#ef4444" style={styles.gainIcon} />
+              <TrendingDown size={16} color="#ef4444" className="mr-1" />
             )}
-            <Text style={[styles.gainValue, { color: isProfitable ? '#10b981' : '#ef4444' }]}>
+            <Text className={`text-base font-semibold ${isProfitable ? 'text-green-500' : 'text-red-500'}`}>
               {isProfitable ? '+' : ''}
               {totalGain} €
             </Text>
           </View>
         </View>
 
-        <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Yield-%</Text>
-          <Text style={[styles.gainValue, { color: isProfitable ? '#10b981' : '#ef4444' }]}>
+        <View className="flex-1 items-center">
+          <Text className="text-sm text-slate-500 mb-1">Yield-%</Text>
+          <Text className={`text-base font-semibold ${isProfitable ? 'text-green-500' : 'text-red-500'}`}>
             {isProfitable ? '+' : ''}
             {percentGain}%
           </Text>
@@ -55,62 +55,3 @@ export default function InvestmentSummary({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  mainValue: {
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  labelMain: {
-    fontSize: 16,
-    color: '#64748b', // Slate-500
-    marginBottom: 4,
-  },
-  valueMain: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#0f172a', // Slate-900
-  },
-  detailsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  detailItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: '#64748b', // Slate-500
-    marginBottom: 4,
-  },
-  detailValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#0f172a', // Slate-900
-  },
-  gainContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  gainIcon: {
-    marginRight: 4,
-  },
-  gainValue: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});
