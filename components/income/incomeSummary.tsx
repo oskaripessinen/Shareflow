@@ -1,48 +1,47 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { TrendingDown, TrendingUp, Calendar, CreditCard } from 'lucide-react-native';
+import { TrendingDown, TrendingUp, Calendar, Receipt } from 'lucide-react-native';
 
-interface ExpenseSummaryProps {
-  totalExpenses: number;
-  previousMonthExpenses?: number;
+interface IncomeSummaryProps {
+  totalIncome: number;
+  previousMonthIncome?: number;
   percentChange: number;
-  latestExpense?: {
+  latestIncome?: {
     title: string;
     amount: number;
     created_at: string;
   };
-  handleExpensePress: () => void;
+  handleIncomePress: () => void;
   currency?: string;
 }
 
 
-const ExpenseSummary = ({ 
-  totalExpenses,
-  previousMonthExpenses = 0,
+const IncomeSummary = ({ 
+  totalIncome,
+  previousMonthIncome = 0,
   percentChange,
-  latestExpense,
-  handleExpensePress,
+  latestIncome,
+  handleIncomePress,
   currency = "€"
-}: ExpenseSummaryProps) => {
+}: IncomeSummaryProps) => {
 
   return (
     <View className="bg-surface rounded-xl p-6 border border-slate-200">
       <View className="flex-row items-center justify-between mb-2">
         <Text className="text-lg font-semibold text-default">
-          Expenses Overview
+          Income Overview
         </Text>
-        <View className={`rounded-full p-2 ${percentChange > 0 ? 'bg-red-100' : 'bg-green-100'}`}>
-          {percentChange > 0 ? (<TrendingUp size={18} color="#ef4444" />) : <TrendingDown size={18} color="#10B981" />}
-          
+        <View className={`rounded-full p-2 ${percentChange > 0 ? 'bg-green-100' : 'bg-red-100'}`}>
+            {percentChange > 0 ? (<TrendingUp size={18} color="#10B981" />) : <TrendingDown size={18} color="#ef4444" />}
         </View>
       </View>
 
       <View className="flex-row justify-between items-start mb-1 mt-3">
         <View className="flex-1">
           <Text className="text-2xl font-bold text-slate-900 mb-1">
-            {totalExpenses} {currency}
+            {totalIncome} {currency}
           </Text>
-          {previousMonthExpenses > 0 && (
+          {previousMonthIncome > 0 && (
             <View>
               <View className="flex-row items-center mb-1">
                 <Calendar size={16} color="#64748b" />
@@ -50,22 +49,22 @@ const ExpenseSummary = ({
                   vs Last Month
                 </Text>
               </View>
-              <Text className={`text-sm font-semibold ${percentChange > 0 ? 'text-danger' : 'text-accent'}`}>
+              <Text className={`text-sm font-semibold ${percentChange > 0 ? 'text-accent' : 'text-danger'}`}>
                 {percentChange > 0 ? '+' : ''}{percentChange.toFixed(0)}%
               </Text>
             </View>
           )}
         </View>
 
-        {latestExpense && (
-          <Pressable onPress={handleExpensePress} className="flex-1 ml-4 justify-center p-4 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
+        {latestIncome && (
+          <Pressable onPress={handleIncomePress} className="flex-1 ml-4 justify-center p-4 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
             <View className="flex-row items-center gap-1">
-              <CreditCard size={16} color="#64748b" />
+              <Receipt size={16} color="#64748b" />
               <Text className="text-xs text-slate-600 ml-1">
-                Latest Expense
+                Latest Income
               </Text>
               <Text className="text-xs text-slate-400 ml-1">
-              {new Date(latestExpense.created_at).toLocaleDateString('en-GB', {
+              {new Date(latestIncome.created_at).toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'long'
               })}
@@ -73,11 +72,11 @@ const ExpenseSummary = ({
             </View>
             <View className='flex-row gap-2 align-center items-center'>
               <Text className="text-sm font-semibold text-default" numberOfLines={1}>
-                {latestExpense.title} 
+                {latestIncome.title} 
               </Text>
-              <View className='py-1 px-2 mt-1 justify-center items-center bg-danger/15 rounded-xl'>
-                <Text className="text-xs font-sans mt-0 text-danger">
-                  {Number(latestExpense.amount).toFixed(0)} {currency}
+              <View className='py-1 px-2 mt-1 justify-center items-center bg-accent/20 rounded-xl'>
+                <Text className="text-xs font-sans mt-0 text-accent">
+                  {Number(latestIncome.amount).toFixed(0)} {currency}
                 </Text>
               </View>
             </View>
@@ -91,4 +90,4 @@ const ExpenseSummary = ({
   );
 }
 
-export default ExpenseSummary;
+export default IncomeSummary;
