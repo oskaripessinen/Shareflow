@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { TrendingDown, TrendingUp, Calendar, Receipt } from 'lucide-react-native';
+import { Calendar, Receipt } from 'lucide-react-native';
 
 interface IncomeSummaryProps {
   totalIncome: number;
@@ -26,14 +26,11 @@ const IncomeSummary = ({
 }: IncomeSummaryProps) => {
 
   return (
-    <View className="bg-surface rounded-xl p-6 border border-slate-200">
+    <View className="bg-surface rounded-xl p-4 px-5 border border-slate-200">
       <View className="flex-row items-center justify-between mb-2">
         <Text className="text-lg font-semibold text-default">
           Income Overview
         </Text>
-        <View className={`rounded-full p-2 ${percentChange > 0 ? 'bg-green-100' : 'bg-red-100'}`}>
-            {percentChange > 0 ? (<TrendingUp size={18} color="#10B981" />) : <TrendingDown size={18} color="#ef4444" />}
-        </View>
       </View>
 
       <View className="flex-row justify-between items-start mb-1 mt-3">

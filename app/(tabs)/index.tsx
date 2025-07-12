@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { View, Animated, ActivityIndicator } from 'react-native';
+import { View, Animated, ActivityIndicator, RefreshControl, ScrollView } from 'react-native';
 import InvestmentSummary from '../../components/investments/InvestmentSummary'
 import ExpenseSummary from 'components/expenses/expensesSummary';
 import IncomeSummary from 'components/income/incomeSummary';
@@ -21,8 +21,9 @@ const DashboardScreen = ({ navigateToTab }: DashboardScreenProps) => {
   const [allExpenses, setAllExpenses] = useState<Expense[]>([]);
   const [allIncome, setAllIncome] = useState<Income[]>([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const { currentGroup } = useGroups();
-  const [pageOpacity] = useState(new Animated.Value(1));
+  const [pageOpacity] = useState(new Animated.Value(0));
 
   const filterExpensesByMonth = (expenses: Expense[], month: number, year: number) => {
     return expenses.filter(expense => {
@@ -52,22 +53,18 @@ const DashboardScreen = ({ navigateToTab }: DashboardScreenProps) => {
     }
   };
 
-  useEffect(() => {
-    const fetchExpenses = async () => {
+  const fetchExpenses = async () => {
       if (!currentGroup?.id) {
         setAllExpenses([]);
         return;
       }
 
-      setLoading(true);
       try {
         const allData = await expenseApi.getExpensesByGroupId(currentGroup.id);
         setAllExpenses(allData);
       } catch (error) {
         console.error('Failed to fetch expenses:', error);
         setAllExpenses([]);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -85,12 +82,47 @@ const DashboardScreen = ({ navigateToTab }: DashboardScreenProps) => {
         setAllIncome([]);
       } finally {
       }
-    }
+    };
 
-    fetchExpenses();
-    fetchIncome();
+  useEffect(() => {
+    const initialState = async () => {
+      pageOpacity.setValue(0);
+      setLoading(true);
+      await fetchExpenses();
+      await fetchIncome();
+      setLoading(false);
+      setTimeout(() => {
+        Animated.timing(pageOpacity, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }).start();
+      }, 75);
+    };
+    
+    initialState();
+    
 
   }, [currentGroup?.id]); 
+
+
+  const onRefresh = async () => {
+    Animated.timing(pageOpacity, {
+      toValue: 0,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+
+    setRefreshing(true);
+    await fetchExpenses();
+    await fetchIncome();
+    setRefreshing(false)
+    Animated.timing(pageOpacity, {
+      toValue: 1,
+      duration: 100,
+      useNativeDriver: true,
+    }).start();
+  }
 
   const currentMonthExpenses = useMemo(() => {
     return filterExpensesByMonth(allExpenses, selectedMonth, selectedYear);
@@ -161,7 +193,8 @@ const DashboardScreen = ({ navigateToTab }: DashboardScreenProps) => {
   }, [allIncome]);
 
   return (
-    <View className='flex-1'>
+    <ScrollView className='flex-1 bg-background' refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }>
       <Animated.View className="flex-1 bg-background" style={{opacity: pageOpacity}}>
           <View className='m-4 mb-8'>
             <InvestmentSummary portfolioValue={200} investedValue={100} totalGain={100} percentGain={100}/>
@@ -197,9 +230,10 @@ const DashboardScreen = ({ navigateToTab }: DashboardScreenProps) => {
             </View>
           </View>
       </Animated.View>
-      {loading && (<ActivityIndicator />)}
-      
-    </View>
+      <View className='absolute w-full mt-5'>
+        {loading && (<ActivityIndicator />)}
+      </View>
+    </ScrollView>
   );
 }
 
