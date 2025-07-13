@@ -46,9 +46,11 @@ const IncomeSummary = ({
                   vs Last Month
                 </Text>
               </View>
-              <Text className={`text-sm font-semibold ${percentChange > 0 ? 'text-accent' : 'text-danger'}`}>
-                {percentChange > 0 ? '+' : ''}{percentChange.toFixed(0)}%
-              </Text>
+              <View className={`py-1 px-2.5 mt-1 rounded-2xl self-start ${percentChange > 0 ? 'bg-accent/20' : 'bg-danger/15'}`}>
+                <Text className={`text-sm font-semibold ${percentChange > 0 ? 'text-accent' : 'text-danger'}`}>
+                  {percentChange > 0 ? '+' : ''}{percentChange.toFixed(0)}%
+                </Text>
+              </View>
             </View>
           )}
         </View>

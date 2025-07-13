@@ -35,27 +35,31 @@ const ExpenseSummary = ({
       </View>
 
       <View className="flex-row justify-between items-start mb-1 mt-3">
-        <View className="flex-1">
+        <View className="flex">
+          <View className=''>
           <Text className="text-2xl font-bold text-slate-900 mb-1">
             {totalExpenses} {currency}
           </Text>
           {previousMonthExpenses > 0 && (
-            <View>
+            <View className='flex-column flex'>
               <View className="flex-row items-center mb-1">
                 <Calendar size={16} color="#64748b" />
                 <Text className="text-xs text-slate-600 ml-1">
                   vs Last Month
                 </Text>
               </View>
-              <Text className={`text-sm font-semibold ${percentChange > 0 ? 'text-danger' : 'text-accent'}`}>
-                {percentChange > 0 ? '+' : ''}{percentChange.toFixed(0)}%
-              </Text>
+              <View className={`py-1 px-2.5 mt-1 rounded-2xl self-start ${percentChange > 0 ? 'bg-danger/15' : 'bg-accent/20'}`}>
+                <Text className={`text-sm font-semibold ${percentChange > 0 ? 'text-danger' : 'text-accent'}`}>
+                  {percentChange > 0 ? '+' : ''}{percentChange.toFixed(0)}%
+                </Text>
+              </View>
             </View>
           )}
+          </View>
         </View>
 
         {latestExpense && (
-          <Pressable onPress={handleExpensePress} className="flex-1 ml-4 justify-center p-4 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
+          <Pressable onPress={handleExpensePress} className="ml-4 justify-center p-4 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
             <View className="flex-row items-center gap-1">
               <CreditCard size={16} color="#64748b" />
               <Text className="text-xs text-slate-600 ml-1">

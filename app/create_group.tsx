@@ -83,7 +83,7 @@ export default function CreateGroupScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="px-5 pt-16 pb-2 bg-background">
+      <View className="px-5 pb-2 bg-background">
         <TouchableOpacity onPress={() => router.back()} className="p-1">
           <ChevronLeft size={28} color="#475569" />
         </TouchableOpacity>
