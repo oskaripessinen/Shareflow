@@ -13,7 +13,7 @@ import { Expense, ExpenseCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from 'components/common/SelectTimeFrame';
 import AddExpense from '@/../components/expenses/AddExpense';
 import { expenseApi } from '../../api/expenses';
-import { useGroupStore } from '@/../context/AppContext';
+import { useGroups } from '@/../context/AppContext';
 import ExpenseBar from 'components/expenses/ExpenseBar';
 import Header from 'components/expenses/Header';
 
@@ -36,7 +36,8 @@ export default function ExpensesScreen() {
 
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
 
-  const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
+  const { currentGroup } = useGroups();
+  const currentGroupId = currentGroup?.id;
   const [loading, setLoading] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -97,7 +98,7 @@ export default function ExpensesScreen() {
 
   useEffect(() => {
     fetchExpenses();
-  }, []);
+  }, [currentGroupId]);
 
 
   const onRefresh = async () => {

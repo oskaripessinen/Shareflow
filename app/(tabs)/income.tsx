@@ -14,7 +14,7 @@ import { Income, IncomeCategory, useAppStore } from '@/../context/AppContext';
 import SelectTimeFrame from '@/../components/common/SelectTimeFrame';
 import AddIncomeForm from '@/../components/income/AddIncomeForm';
 import { incomeApi } from '../../api/income';
-import { useGroupStore } from '@/../context/AppContext';
+import { useGroups } from '@/../context/AppContext';
 import IncomeBar from 'components/income/IncomeBar';
 import Header from 'components/income/Header';
 
@@ -36,7 +36,9 @@ export default function IncomeScreen() {
   const [pageOpacity] = useState(new Animated.Value(1));
   const [showAddIncomeForm, setShowAddIncomeForm] = useState(false);
 
-  const currentGroupId = useGroupStore((state) => state.currentGroup?.id);
+  const { currentGroup } = useGroups();
+
+  const currentGroupId = currentGroup?.id;
   const [loading, setLoading] = useState(false);
 
    const [refreshing, setRefreshing] = useState(false);
@@ -78,7 +80,7 @@ export default function IncomeScreen() {
 
   useEffect(() => {
     fetchIncomes();
-  }, []);
+  }, [currentGroupId]);
 
   const handleTimeWindowChange = (value: string) => {
     Animated.timing(listOpacity, {
