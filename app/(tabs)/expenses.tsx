@@ -308,8 +308,8 @@ export default function ExpensesScreen() {
       </Modal>
     </Animated.ScrollView>
     {loading && (
-      <View className='absolute w-full mt-10'>
-        <ActivityIndicator color="grey" />
+      <View className='absolute w-full mt-8'>
+        <ActivityIndicator color={'#3B82F6'} />
       </View>)}
     </View>
     

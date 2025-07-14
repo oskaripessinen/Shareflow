@@ -312,9 +312,9 @@ export default function IncomeScreen() {
           />
         </Modal>
       </Animated.ScrollView>
-      <View className='absolute w-full mt-5'>
+      <View className='absolute w-full mt-8'>
         {loading && (
-          <ActivityIndicator color="grey" />)}
+          <ActivityIndicator color={'#3B82F6'} />)}
       </View>   
     </View>
   );

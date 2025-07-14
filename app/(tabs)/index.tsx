@@ -230,8 +230,8 @@ const DashboardScreen = ({ navigateToTab }: DashboardScreenProps) => {
             </View>
           </View>
       </Animated.View>
-      <View className='absolute w-full mt-5'>
-        {loading && (<ActivityIndicator />)}
+      <View className='absolute w-full mt-8'>
+        {loading && (<ActivityIndicator color={'#3B82F6'}/>)}
       </View>
     </ScrollView>
   );
