@@ -16,7 +16,7 @@ import {
   useCameraPermission,
   PhotoFile,
 } from 'react-native-vision-camera';
-import { X } from 'lucide-react-native';
+import { X, ArrowLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface CameraViewProps {
@@ -107,25 +107,23 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
 
   if (hasPermission === false) {
     return (
-      <View className="flex-1 bg-black">
-        <View className="flex-1 items-center justify-center bg-black px-6">
-          <Text className="text-white text-lg mb-5 text-center">
-            We need your permission to show the camera
+      <SafeAreaView className="flex-1 bg-background">
+        <Pressable className='ml-6 active:opacity-50' onPress={onClose}>
+          <ArrowLeft color={'black'}/>
+        </Pressable>
+        <View className="items-center justify-center px-6 flex-1">
+          
+          <Text className="text-default text-lg mb-5 text-center">
+            We need your permission to use the camera
           </Text>
           <Pressable
             onPress={requestPermission}
-            className="bg-primary px-5 py-2.5 rounded-lg active:bg-primaryDark mb-4"
+            className="bg-primary px-5 py-2 rounded-xl active:bg-primaryDark mb-4"
           >
             <Text className="text-white text-base font-semibold">Grant Permission</Text>
           </Pressable>
-          <Pressable
-            onPress={onClose}
-            className="bg-gray-600 px-5 py-2.5 rounded-lg active:bg-gray-700"
-          >
-            <Text className="text-white text-base font-semibold">Close</Text>
-          </Pressable>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
