@@ -1,21 +1,17 @@
 import { useState } from 'react';
-import { View, Text, Modal, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
+import Modal from 'react-native-modal'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppStore } from '@/../context/AppContext';
 import InvestmentList from '@/../components/investments/InvestmentList';
-import AddInvestmentForm from '@/../components/investments/AddInvestmentForm';
 import InvestmentChart from '@/../components/investments/InvestmentChart';
+import AddInvestmentModal from '@/../components/investments/AddInvestmentModal'
 import { Header } from '@/../components/investments/Header'
 
 export default function InvestmentsScreen() {
   const { investments } = useAppStore();
-  const [showAddInvestment, setShowAddInvestment] = useState(false);
+  const [showAddInvestmentModal, setShowAddInvestmentModal] = useState(false);
   const [chartActive, setChartActive] = useState(false);
-
-  const portfolioValue = investments.reduce((sum, inv) => sum + inv.quantity * inv.currentPrice, 0);
-  const investedValue = investments.reduce((sum, inv) => sum + inv.quantity * inv.purchasePrice, 0);
-  const totalGain = portfolioValue - investedValue;
-  const percentGain = investedValue > 0 ? (totalGain / investedValue) * 100 : 0;
 
   const investmentsByType = investments.reduce(
     (groups, inv) => {
@@ -61,7 +57,7 @@ export default function InvestmentsScreen() {
         }}
       >
       <View className='gap-3'>
-        <Header chartActive={chartActive} setChartActive={setChartActive} />
+        <Header chartActive={chartActive} setShowAddInvestmentModal={setShowAddInvestmentModal} />
 
         <InvestmentChart data={chartData} />
         
@@ -76,12 +72,17 @@ export default function InvestmentsScreen() {
       </ScrollView>
 
       <Modal
-        visible={showAddInvestment}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setShowAddInvestment(false)}
+        isVisible={showAddInvestmentModal}
+        onSwipeComplete={() => setShowAddInvestmentModal(false)}
+        swipeDirection="down"
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+        onBackdropPress={() => setShowAddInvestmentModal(false)}
+        style={{ justifyContent: 'flex-end', margin: 0 }}
+        statusBarTranslucent={true}
+        backdropOpacity={0.5}
       >
-        <AddInvestmentForm onClose={() => setShowAddInvestment(false)} />
+        <AddInvestmentModal onClose={() => setShowAddInvestmentModal(false)}/>
       </Modal>
     </SafeAreaView>
   );

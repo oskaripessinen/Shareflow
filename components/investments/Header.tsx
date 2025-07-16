@@ -5,11 +5,10 @@ import { Plus } from "lucide-react-native";
 
 interface HeaderProps {
     chartActive: boolean;
-    setChartActive: (show: boolean) => void;
-
+    setShowAddInvestmentModal: (show: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({chartActive, setChartActive}) => {
+const Header: React.FC<HeaderProps> = ({chartActive, setShowAddInvestmentModal}) => {
 
     return (
         <View className="justify-between flex-row">
@@ -22,7 +21,7 @@ const Header: React.FC<HeaderProps> = ({chartActive, setChartActive}) => {
                 </Pressable>
             </View>
 
-            <Pressable className="flex-row items-center bg-primary pr-4 pl-2.5 py-2 rounded-xl active:bg-primaryDark shadow gap-1">
+            <Pressable onPress={(() => setShowAddInvestmentModal(true))} className="flex-row items-center bg-primary pr-4 pl-2.5 py-2 rounded-xl active:bg-primaryDark shadow gap-1">
                 <Plus size={18} strokeWidth={2.2} color={'#fff'}/>
                 <Text className="text-white font-sans text-base">
                     Investment
