@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { View, Text, Modal, FlatList } from 'react-native';
+import { View, Text, Modal, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppStore } from '@/../context/AppContext';
 import InvestmentList from '@/../components/investments/InvestmentList';
 import AddInvestmentForm from '@/../components/investments/AddInvestmentForm';
-import InvestmentSummary from '@/../components/investments/InvestmentSummary';
 import InvestmentChart from '@/../components/investments/InvestmentChart';
+import { Header } from '@/../components/investments/Header'
 
 export default function InvestmentsScreen() {
   const { investments } = useAppStore();
   const [showAddInvestment, setShowAddInvestment] = useState(false);
+  const [chartActive, setChartActive] = useState(false);
 
   const portfolioValue = investments.reduce((sum, inv) => sum + inv.quantity * inv.currentPrice, 0);
   const investedValue = investments.reduce((sum, inv) => sum + inv.quantity * inv.purchasePrice, 0);
@@ -50,37 +51,29 @@ export default function InvestmentsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50" edges={['left', 'right']}>
-      <FlatList
+      <ScrollView 
+        className="flex-1 mt-5"
         showsVerticalScrollIndicator={false}
-        data={investments}
-        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingTop: 0,
-          paddingBottom: 0,
+          paddingBottom: 20,
         }}
-        ListHeaderComponent={() => (
-          <>
-            <View className="mt-5" />
-            <InvestmentSummary
-              portfolioValue={portfolioValue}
-              investedValue={investedValue}
-              totalGain={totalGain}
-              percentGain={percentGain}
-            />
+      >
+      <View className='gap-3'>
+        <Header chartActive={chartActive} setChartActive={setChartActive} />
 
-            <View className="bg-white rounded-xl p-4 mt-4 shadow">
-              <Text className="text-lg font-semibold text-slate-900 mb-4">
-                Portfolio distribution
-              </Text>
-              <InvestmentChart data={chartData} />
-            </View>
-
-            <Text className="text-lg font-semibold text-slate-900 mt-4 mb-2">Investments</Text>
-          </>
-        )}
-        renderItem={({ item }) => <InvestmentList investments={[item]} />}
-      />
+        <InvestmentChart data={chartData} />
+        
+        <Text className="text-lg font-semibold text-slate-900 mt-4 mb-2">Investments</Text>
+        
+        <View className="space-y-2">
+          {investments.map((item) => (
+            <InvestmentList key={item.id.toString()} investments={[item]} />
+          ))}
+        </View>
+      </View>
+      </ScrollView>
 
       <Modal
         visible={showAddInvestment}

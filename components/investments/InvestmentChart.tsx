@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
 interface ChartData {
   type: string;
@@ -59,139 +59,47 @@ export default function InvestmentChart({}: InvestmentChartProps) {
   const sortedData = [...TEST_DATA].sort((a, b) => b.value - a.value);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Investment Portfolio</Text>
-        <Text style={styles.totalValue}>Total: {totalValue.toLocaleString()} €</Text>
+    <View className="my-2 bg-white rounded-xl p-5 border border-slate-300">
+      <View className="mb-2">
+        <Text className="text-lg font-semibold text-default">
+          Distribution
+        </Text>
       </View>
 
-      <>
-        <View style={styles.chartContainer}>
-          <View style={styles.barChart}>
-            {sortedData.map((item, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.barSegment,
-                  {
-                    backgroundColor: item.color,
-                    width: `${Math.max(5, (item.value / totalValue) * 100)}%`,
-                  },
-                ]}
-              />
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.legend}>
+      <View className="h-12 justify-center items-center mb-4">
+        <View className="flex-row h-6 w-full rounded overflow-hidden">
           {sortedData.map((item, index) => (
-            <View key={index} style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-              <Text style={styles.legendText}>
-                {typeLabels[item.type as keyof typeof typeLabels] || 'Other'}
-              </Text>
-              <Text style={styles.legendAmount}>{item.value.toLocaleString()} €</Text>
-              <Text style={styles.legendPercentage}>
-                {((item.value / totalValue) * 100).toFixed(1)}%
-              </Text>
-            </View>
+            <View
+              key={index}
+              className="h-6"
+              style={{
+                backgroundColor: item.color,
+                width: `${Math.max(5, (item.value / totalValue) * 100)}%`,
+              }}
+            />
           ))}
         </View>
-      </>
+      </View>
+
+      <View className="mt-2">
+        {sortedData.map((item, index) => (
+          <View key={index} className="flex-row items-center mb-2">
+            <View
+              className="w-3 h-3 rounded-full mr-2"
+              style={{ backgroundColor: item.color }}
+            />
+            <Text className="flex-1 text-sm text-slate-900">
+              {typeLabels[item.type as keyof typeof typeLabels] || 'Other'}
+            </Text>
+            <Text className="text-sm font-medium text-slate-900 mr-2 w-20 text-right">
+              {item.value.toLocaleString()} €
+            </Text>
+            <Text className="text-sm text-slate-600 w-12 text-right">
+              {((item.value / totalValue) * 100).toFixed(1)}%
+            </Text>
+          </View>
+        ))}
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginVertical: 8,
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    marginHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  header: {
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0f172a',
-    marginBottom: 4,
-  },
-  totalValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#3B82F6',
-  },
-  chartContainer: {
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  barChart: {
-    flexDirection: 'row',
-    height: 24,
-    width: '100%',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  barSegment: {
-    height: 24,
-  },
-  emptyChart: {
-    height: 24,
-    width: '100%',
-    backgroundColor: '#e2e8f0',
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#64748b',
-  },
-  legend: {
-    marginTop: 8,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  legendColor: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 8,
-  },
-  legendText: {
-    flex: 1,
-    fontSize: 14,
-    color: '#0f172a',
-  },
-  legendAmount: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#0f172a',
-    marginRight: 8,
-    width: 80,
-    textAlign: 'right',
-  },
-  legendPercentage: {
-    fontSize: 14,
-    color: '#64748b',
-    width: 50,
-    textAlign: 'right',
-  },
-});
