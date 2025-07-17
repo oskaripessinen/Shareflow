@@ -1,6 +1,7 @@
-import { View, TextInput, Pressable, ActivityIndicator } from "react-native"
+import { View, TextInput, Pressable, ActivityIndicator, ScrollView, Text } from "react-native"
 import { ArrowLeft, Search } from "lucide-react-native";
 import { useState, useEffect } from "react";
+import { investmentsApi, StockResult } from "api/investments";
 
 interface SearchModalProps {
     onClose: () => void;
@@ -10,7 +11,12 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
 
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const [searchResult, setSearchResult] = useState<StockResult[]>([]);
 
+    const handleSearch = async () => {
+        const data = await investmentsApi.searchStock(searchText);
+        return data;
+    }
 
     useEffect(() => {
         if (searchText.trim() === "") {
@@ -18,10 +24,13 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
             return;
         }
 
-        const timer = setTimeout(() => {
+        const timer = setTimeout(async() => {
             setLoading(true);
-            console.log("Hakutermi:", searchText);
-        }, 600); 
+            const res = await handleSearch();
+            console.log(res.ResultSet.Result)
+            setSearchResult(res.ResultSet.Result)
+            setLoading(false);
+        }, 400); 
 
         return () => {
             clearTimeout(timer);
@@ -46,9 +55,24 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                     />
                 </View>
             </View>
-            <View className="mt-10">
-                {loading ? <ActivityIndicator color={'#3B82F6'}/> : <View />}
-                
+            <View className="mt-5 flex-1 px-5">
+                {loading ? (
+                    <ActivityIndicator color={'#3B82F6'} className="mt-4"/>
+                ) : (
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {searchResult.map((stock, index) => (
+                            <Pressable 
+                                key={index} 
+                                className="bg-white border border-gray-200 rounded-lg p-4 mb-3"
+                                onPress={() => console.log('Selected stock:', stock.symbol)}
+                            >
+                                <Text className="text-lg font-semibold text-gray-800 mb-2">
+                                    {stock.symbol}
+                                </Text>
+                            </Pressable>
+                        ))}
+                    </ScrollView>
+                )}
             </View>
         </View>
     )

@@ -11,19 +11,19 @@ export interface StockResult {
 }
 
 export interface StockSearchResponse {
-  finance: {
-    error: string | null;
-    result: StockResult[];
+  ResultSet: {
+    Query: string;
+    Result: StockResult[];
   };
 }
 
 export const investmentsApi = {
   searchStock: async (searchWord: string): Promise<StockSearchResponse> => {
     try {
-      const response = await apiClient.get<StockSearchResponse>(`/investments/search?q=${encodeURIComponent(searchWord)}`);
+      const response = await apiClient.get(`/api/investments/search?query=${encodeURIComponent(searchWord)}`) as { data: StockSearchResponse };
 
-      return response;
-      
+      return response.data;
+
     } catch (error) {
       console.error('Error searching stocks:', error);
       throw error;
