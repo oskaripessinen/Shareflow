@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, Pressable, View, Modal } from 'react-native';
-import { Image, Edit3, X } from 'lucide-react-native';
+import { Image, Edit3, X, ChevronRight } from 'lucide-react-native';
 import CameraView from './CameraView';
 import { expenseApi } from 'api/expenses';
 import AddExpenseForm from 'components/expenses/AddExpenseForm';
@@ -79,20 +79,27 @@ const AddExpense: React.FC<AddExpenseProps> = ({ onClose, updateExpenses }) => {
               <View className="h-px bg-slate-200 w-full mb-2 mt-1" />
               <Pressable
                 onPress={handleShowAddExpenseForm}
-                className="flex-row items-center p-3.5 rounded-lg active:bg-slate-50 justify-center w-[90%] mx-auto"
+                className="flex-row p-3.5 rounded-lg items-center active:bg-slate-50 w-[90%] mx-auto justify-between"
               >
-                <Edit3 strokeWidth={2} size={22} color="#000000b3" className="mr-0" />
-                <Text className="text-base font-semibold text-muted ml-2">Manually</Text>
+                <View className='flex-row'>
+                  <Edit3 strokeWidth={2} size={22} color="#000000b3" className="mr-0" />
+                  <Text className="text-base font-semibold text-muted ml-4">Manually</Text>
+                </View>
+                <ChevronRight strokeWidth={1.8} color="#000000b3"/>
               </Pressable>
 
               <View className="h-px bg-slate-200 w-[90%] mx-auto my-2" />
 
               <Pressable
                 onPress={addExpensePhoto}
-                className="flex-row items-center p-3.5 rounded-lg justify-center active:bg-slate-50 w-[90%] mx-auto"
+                className="flex-row p-3.5 rounded-lg items-center active:bg-slate-50 w-[90%] mx-auto justify-between"
               >
-                <Image strokeWidth={2} size={22} color="#000000b3" className="mr-3" />
-                <Text className="font-semibold text-muted text-base ml-2">With Image</Text>
+                <View className='flex-row'>
+                  <Image strokeWidth={2} size={22} color="#000000b3" className="mr-3" />
+                  <Text className="font-semibold text-muted text-base ml-4">With Image</Text>
+                </View>
+                <ChevronRight strokeWidth={1.8} color="#000000b3"/>
+                
               </Pressable>
             </View>
           </View>

@@ -5,18 +5,19 @@ import { Plus } from "lucide-react-native";
 
 interface HeaderProps {
     chartActive: boolean;
+    setChartActive: (show: boolean) => void;
     setShowAddInvestmentModal: (show: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({chartActive, setShowAddInvestmentModal}) => {
+const Header: React.FC<HeaderProps> = ({chartActive, setShowAddInvestmentModal, setChartActive}) => {
 
     return (
         <View className="justify-between flex-row">
             <View className="flex-row" style={{width: '55%'}}>
-                <Pressable className={`flex-1 p-2 py-2.5 rounded-l-xl border border-slate-300 justify-center items-center active:bg-slate-100 ${!chartActive ? "bg-slate-100" : "bg-surface"}`}>
+                <Pressable onPress={() => setChartActive(false)} className={`flex-1 p-2 py-2.5 rounded-l-xl border border-slate-300 justify-center items-center active:bg-slate-100 ${!chartActive ? "bg-slate-100" : "bg-surface"}`}>
                     <Text className="font-semibold text-default text-sm">Distribution</Text>
                 </Pressable>
-                <Pressable className={`flex-1 p-2 py-2.5 rounded-r-xl border-r items-center border-y border-slate-300 justify-center active:bg-slate-100 ${chartActive ? "bg-slate-200" : "bg-surface"}`}>
+                <Pressable onPress={() => setChartActive(true)} className={`flex-1 p-2 py-2.5 rounded-r-xl border-r items-center border-y border-slate-300 justify-center active:bg-slate-100 ${chartActive ? "bg-slate-200" : "bg-surface"}`}>
                     <Text className="font-semibold text-default text-sm">Chart</Text>
                 </Pressable>
             </View>

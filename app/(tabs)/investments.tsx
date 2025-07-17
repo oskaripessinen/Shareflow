@@ -4,7 +4,8 @@ import Modal from 'react-native-modal'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppStore } from '@/../context/AppContext';
 import InvestmentList from '@/../components/investments/InvestmentList';
-import InvestmentChart from '@/../components/investments/InvestmentChart';
+import InvestmentDistribution from 'components/investments/InvestmentDistribution';
+import InvestmentChart from 'components/investments/InvestmentChart';
 import AddInvestmentModal from '@/../components/investments/AddInvestmentModal'
 import { Header } from '@/../components/investments/Header'
 
@@ -12,6 +13,7 @@ export default function InvestmentsScreen() {
   const { investments } = useAppStore();
   const [showAddInvestmentModal, setShowAddInvestmentModal] = useState(false);
   const [chartActive, setChartActive] = useState(false);
+
 
   const investmentsByType = investments.reduce(
     (groups, inv) => {
@@ -57,9 +59,9 @@ export default function InvestmentsScreen() {
         }}
       >
       <View className='gap-3'>
-        <Header chartActive={chartActive} setShowAddInvestmentModal={setShowAddInvestmentModal} />
-
-        <InvestmentChart data={chartData} />
+        <Header chartActive={chartActive} setShowAddInvestmentModal={setShowAddInvestmentModal} setChartActive={setChartActive} />
+        {!chartActive ? <InvestmentDistribution data={chartData} /> : <InvestmentChart />}
+        
         
         <Text className="text-lg font-semibold text-slate-900 mt-4 mb-2">Investments</Text>
         
