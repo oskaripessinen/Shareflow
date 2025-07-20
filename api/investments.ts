@@ -8,6 +8,7 @@ export interface RecommendedSymbol {
 export interface StockResult {
   recommendedSymbols: RecommendedSymbol[];
   symbol: string;
+  name: string;
 }
 
 export interface StockSearchResponse {

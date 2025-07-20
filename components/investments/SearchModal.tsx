@@ -1,4 +1,4 @@
-import { View, TextInput, Pressable, ActivityIndicator, ScrollView, Text } from "react-native"
+import { View, TextInput, Pressable, ActivityIndicator, Text, Animated } from "react-native"
 import { ArrowLeft, Search } from "lucide-react-native";
 import { useState, useEffect } from "react";
 import { investmentsApi, StockResult } from "api/investments";
@@ -12,6 +12,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [searchResult, setSearchResult] = useState<StockResult[]>([]);
+    const [listOpacity] = useState(new Animated.Value(0));
 
     const handleSearch = async () => {
         const data = await investmentsApi.searchStock(searchText);
@@ -19,18 +20,27 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     }
 
     useEffect(() => {
+        setLoading(true);
         if (searchText.trim() === "") {
             setLoading(false);
+            setSearchResult([]);
             return;
         }
 
         const timer = setTimeout(async() => {
-            setLoading(true);
+            listOpacity.setValue(0);
             const res = await handleSearch();
             console.log(res.ResultSet.Result)
             setSearchResult(res.ResultSet.Result)
             setLoading(false);
-        }, 400); 
+
+            Animated.timing(listOpacity, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true,
+            }).start();
+
+        }, 500); 
 
         return () => {
             clearTimeout(timer);
@@ -59,19 +69,24 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                 {loading ? (
                     <ActivityIndicator color={'#3B82F6'} className="mt-4"/>
                 ) : (
-                    <ScrollView showsVerticalScrollIndicator={false}>
+                    <Animated.ScrollView style={{opacity: listOpacity}} showsVerticalScrollIndicator={false}>
                         {searchResult.map((stock, index) => (
                             <Pressable 
                                 key={index} 
-                                className="bg-white border border-gray-200 rounded-lg p-4 mb-3"
+                                className="bg-surface border border-gray-300 rounded-xl px-4 py-3 mb-3 justify-center"
                                 onPress={() => console.log('Selected stock:', stock.symbol)}
                             >
-                                <Text className="text-lg font-semibold text-gray-800 mb-2">
-                                    {stock.symbol}
-                                </Text>
+                                <View className="flex-col">
+                                    <Text className="text-base font-semibold text-default">
+                                        {stock.symbol}
+                                    </Text>
+                                    <Text className="text-default font-sans text-sm">
+                                        {stock.name}
+                                    </Text>
+                                </View>
                             </Pressable>
                         ))}
-                    </ScrollView>
+                    </Animated.ScrollView>
                 )}
             </View>
         </View>
