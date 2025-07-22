@@ -75,8 +75,6 @@ export default function InvestmentsScreen() {
 
       <Modal
         isVisible={showAddInvestmentModal}
-        onSwipeComplete={() => setShowAddInvestmentModal(false)}
-        swipeDirection="down"
         animationIn="fadeIn"
         animationOut="fadeOut"
         onBackdropPress={() => setShowAddInvestmentModal(false)}

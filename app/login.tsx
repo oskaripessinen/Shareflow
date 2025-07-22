@@ -161,7 +161,6 @@ export default function LoginScreen() {
         {loading && (
           <>
             <ActivityIndicator size="small" color="#3B82F6" />
-            <Text className="text-sm text-slate-500 mt-2">Authenticating...</Text>
           </>
         )}
       </View>

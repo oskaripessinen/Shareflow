@@ -71,7 +71,7 @@ const OptionsModal: React.FC<OptionsProps> = ({ onClose, handleOpenInviteModal }
           className="absolute w-full h-full bg-black/50 justify-center items-center"
           style={{ zIndex: 10 }}
         >
-          <ActivityIndicator color={'gray'} size={'large'} />
+          <ActivityIndicator color={'#3B82F6'} size={'large'} />
         </View>
       )}
     </Pressable>
