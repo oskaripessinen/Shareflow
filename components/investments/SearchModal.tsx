@@ -1,7 +1,9 @@
 import { View, TextInput, Pressable, ActivityIndicator, Text, Animated } from "react-native"
-import { ArrowLeft, Search, Plus, X } from "lucide-react-native";
+import { ArrowLeft, Search, Plus, X, Calendar } from "lucide-react-native";
 import { useState, useEffect } from "react";
 import { investmentsApi, StockResult } from "api/investments";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Modal from 'react-native-modal';
 
 interface SearchModalProps {
     onClose: () => void;
@@ -14,7 +16,9 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     const [searchResult, setSearchResult] = useState<StockResult[]>([]);
     const [listOpacity] = useState(new Animated.Value(0));
     const [selectedStock, setSelectedStock] = useState<StockResult | null>(null);
-    const [dropdownOpacity] = useState(new Animated.Value(0));
+    const [showInvestmentModal, setShowInvestmentModal] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
 
     const handleSearch = async () => {
         const data = await investmentsApi.searchStock(searchText);
@@ -23,22 +27,28 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
 
     const handleStockSelect = (stock: StockResult) => {
         setSelectedStock(stock);
-        Animated.timing(dropdownOpacity, {
-            toValue: 1,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
+        setShowInvestmentModal(true);
     }
 
-    const handleCloseDropdown = () => {
-        Animated.timing(dropdownOpacity, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: true,
-        }).start(() => {
-            setSelectedStock(null);
-        });
+    const handleCloseInvestmentModal = () => {
+        setShowInvestmentModal(false);
+        setSelectedStock(null);
     }
+
+    const handleDateChange = (event: any, date?: Date) => {
+        setShowDatePicker(false);
+        if (date) {
+            setSelectedDate(date);
+        }
+    };
+
+    const formatDate = (date: Date) => {
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
 
     useEffect(() => {
         setLoading(true);
@@ -93,7 +103,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                 ) : (
                     <Animated.ScrollView style={{opacity: listOpacity}} showsVerticalScrollIndicator={false}>
                         {searchResult.map((stock, index) => (
-                            <View key={index} className="relative">
+                            <View key={index}>
                                 <Pressable 
                                     className="bg-surface border border-gray-300 rounded-xl px-4 py-3 mb-3 justify-center"
                                     onPress={() => console.log('Selected stock:', stock.symbol)}
@@ -115,61 +125,92 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                                         </Pressable>
                                     </View>
                                 </Pressable>
-
-                                {selectedStock?.symbol === stock.symbol && (
-                                    <Pressable onPress={handleCloseDropdown} className="w-full h-full z-10">
-                                        <Animated.View 
-                                            style={{opacity: dropdownOpacity}}
-                                            className="absolute top-full right-4 -mt-2 bg-white border border-gray-300 rounded-xl shadow-lg p-4 z-10 w-80"
-                                        >
-                                            <View className="flex-row justify-between items-center mb-3">
-                                                <Text className="font-semibold text-default">Add {stock.symbol}</Text>
-                                                <Pressable onPress={handleCloseDropdown}>
-                                                    <X size={18} color="#666"/>
-                                                </Pressable>
-                                            </View>
-                                            
-                                            <View className="gap-2">
-                                                <View>
-                                                    <Text className="text-xs font-sans text-gray-600 mb-1">Quantity</Text>
-                                                    <TextInput 
-                                                        className="border border-gray-300 rounded-lg px-3 py-0 text-default text-xs"
-                                                        placeholder="Enter quantity"
-                                                        placeholderTextColor={'grey'}
-                                                        keyboardType="numeric"
-                                                    />
-                                                </View>
-                                                
-                                                <View>
-                                                    <Text className="text-xs font-sans text-gray-600 mb-1">Price per share</Text>
-                                                    <TextInput 
-                                                        className="border border-gray-300 rounded-lg px-3 py-0 text-default text-xs"
-                                                        placeholder="Enter price"
-                                                        placeholderTextColor={'grey'}
-                                                        keyboardType="numeric"
-                                                    />
-                                                </View>
-                                                
-                                                <View className="flex-row space-x-2 mt-4">
-                                                    <Pressable 
-                                                        className="flex-1 bg-primary py-2 rounded-lg justify-center items-center text-xs"
-                                                        onPress={() => {
-                                                            console.log('Add investment for', stock.symbol);
-                                                            handleCloseDropdown();
-                                                        }}
-                                                    >
-                                                        <Text className="text-white text-center text-sm font-semibold">Add Investment</Text>
-                                                    </Pressable>
-                                                </View>
-                                            </View>
-                                        </Animated.View>
-                                    </Pressable>
-                                )}
                             </View>
                         ))}
                     </Animated.ScrollView>
                 )}
             </View>
+
+            <Modal
+                isVisible={showInvestmentModal}
+                animationIn='fadeIn'
+                animationOut='fadeOut'
+                backdropOpacity={0.5}
+                statusBarTranslucent={true}
+                onBackdropPress={handleCloseInvestmentModal}
+                swipeDirection={'down'}
+                onSwipeComplete={handleCloseInvestmentModal}
+                style={{ justifyContent: 'flex-end', alignItems: 'center', margin: 0 }}
+            >
+                <View className="bg-white rounded-2xl border border-slate-200 p-5 w-full justify-center">
+                    <View className="w-20 mx-4 h-1 rounded-2xl mb-2 bg-slate-300 self-center"/>
+                    <View className="flex-row justify-between items-center mb-4">
+                        <Text className="font-semibold text-default text-lg">
+                            Add {selectedStock?.symbol}
+                        </Text>
+
+                    </View>
+                    
+                    <View className="gap-4">
+                        <View>
+                            <Text className="text-sm font-medium text-gray-600 mb-2">Quantity</Text>
+                            <TextInput 
+                                className="border border-gray-300 rounded-xl px-3 py-2 text-default text-sm"
+                                placeholder="Enter quantity"
+                                placeholderTextColor={'#9CA3AF'}
+                                keyboardType="numeric"
+                            />
+                        </View>
+
+                        <View>
+                            <Text className="text-sm font-medium text-gray-600 mb-2">Purchase Date</Text>
+                            <Pressable 
+                                onPress={() => setShowDatePicker(true)}
+                                className="border border-gray-300 rounded-xl px-3 py-3 flex-row items-center justify-between"
+                            >
+                                <Text className="text-default text-sm">
+                                    {formatDate(selectedDate)}
+                                </Text>
+                                <Calendar size={16} color="#9CA3AF"/>
+                            </Pressable>
+                        </View>
+                        
+                        <View>
+                            <Text className="text-sm font-medium text-gray-600 mb-2">Price per share</Text>
+                            <TextInput 
+                                className="border border-gray-300 rounded-xl px-3 py-2 text-default text-sm"
+                                placeholder="Enter price"
+                                placeholderTextColor={'#9CA3AF'}
+                                keyboardType="numeric"
+                            />
+                        </View>
+                        
+                        <View className="flex-row gap-3 mt-2">
+                            <Pressable 
+                                className="flex-1 bg-primary py-2.5 rounded-lg justify-center items-center"
+                                onPress={() => {
+                                    console.log('Add investment for', selectedStock?.symbol, {
+                                        date: selectedDate,
+                                    });
+                                    handleCloseInvestmentModal();
+                                }}
+                            >
+                                <Text className="text-white text-center text-sm font-semibold">Add Investment</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+
+                    {showDatePicker && (
+                        <DateTimePicker
+                            value={selectedDate}
+                            mode="date"
+                            display="default"
+                            onChange={handleDateChange}
+                            maximumDate={new Date()}
+                        />
+                    )}
+                </View>
+            </Modal>
         </View>
     )
 }
