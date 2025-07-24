@@ -19,26 +19,14 @@ export interface StockSearchResponse {
 }
 
 export interface StockPriceResponse {
-  chart: {
-    result: [{
-      meta: {
-        currency: string;
-        symbol: string;
-        regularMarketPrice: number;
-        previousClose: number;
-      };
-      timestamp: number[];
-      indicators: {
-        quote: [{
-          close: number[];
-          high: number[];
-          low: number[];
-          open: number[];
-          volume: number[];
-        }];
-      };
-    }];
-  };
+  currency: string;
+  date: string;
+  high: number;
+  low: number;
+  open: number;
+  price: number;
+  ticker: string;
+  volume: number;
 }
 
 export const investmentsApi = {
@@ -56,7 +44,7 @@ export const investmentsApi = {
 
   getStockPrice: async (ticker: string, date: Date): Promise<StockPriceResponse> => {
     try {
-      const dateString = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      const dateString = date.toISOString().split('T')[0]; 
       const response = await apiClient.get(`/api/investments/stockPrice?ticker=${encodeURIComponent(ticker)}&date=${dateString}`) as { data: StockPriceResponse };
 
       return response.data;

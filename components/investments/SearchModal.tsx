@@ -20,9 +20,11 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [loadingStockPrice, setLoadingStockPrice] = useState(false);
+    const [stockPrice, setStockPrice] = useState<string>("")
 
     const handleSearch = async () => {
         const data = await investmentsApi.searchStock(searchText);
+        console.log(data.ResultSet.Result)
         return data;
     }
 
@@ -35,6 +37,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
         setShowInvestmentModal(false);
         setSelectedStock(null);
         setSelectedDate(null);
+        setStockPrice("");
     }
 
     const handleDateChange = async (event: any, date?: Date) => {
@@ -42,11 +45,19 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
         if (date) {
             setSelectedDate(date);
         }
-        if (!selectedStock || !selectedDate) {
+        if (!selectedStock || !date) {
             return;
         }
-        const stockPrice = await investmentsApi.getStockPrice(selectedStock?.symbol, selectedDate)
-        console.log(stockPrice);
+        setLoadingStockPrice(true);
+        try {
+            const stockPriceData = await investmentsApi.getStockPrice(selectedStock?.symbol, date);
+            console.log("data",stockPriceData.price.toFixed(2));
+            setStockPrice(stockPriceData.price.toFixed(2).toString());
+        } catch (error) {
+            console.error('Error fetching stock price:', error);
+            setStockPrice("");
+        }
+        setLoadingStockPrice(false);
     };
 
     const formatDate = (date: Date | null) => {
@@ -191,7 +202,9 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                                     placeholder="Enter price"
                                     placeholderTextColor={'#9CA3AF'}
                                     keyboardType="numeric"
-                                    editable={!loadingStockPrice && selectedDate !== null}
+                                    editable={!loadingStockPrice}
+                                    value={stockPrice}
+                                    onChangeText={setStockPrice}
                                 />
                                 {loadingStockPrice && (
                                     <ActivityIndicator size="small" color={'#3B82F6'} className="ml-2"/>
