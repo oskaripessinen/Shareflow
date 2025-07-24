@@ -18,6 +18,29 @@ export interface StockSearchResponse {
   };
 }
 
+export interface StockPriceResponse {
+  chart: {
+    result: [{
+      meta: {
+        currency: string;
+        symbol: string;
+        regularMarketPrice: number;
+        previousClose: number;
+      };
+      timestamp: number[];
+      indicators: {
+        quote: [{
+          close: number[];
+          high: number[];
+          low: number[];
+          open: number[];
+          volume: number[];
+        }];
+      };
+    }];
+  };
+}
+
 export const investmentsApi = {
   searchStock: async (searchWord: string): Promise<StockSearchResponse> => {
     try {
@@ -30,5 +53,18 @@ export const investmentsApi = {
       throw error;
     }
   },
+
+  getStockPrice: async (ticker: string, date: Date): Promise<StockPriceResponse> => {
+    try {
+      const dateString = date.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      const response = await apiClient.get(`/api/investments/stockPrice?ticker=${encodeURIComponent(ticker)}&date=${dateString}`) as { data: StockPriceResponse };
+
+      return response.data;
+
+    } catch (error) {
+      console.error('Error fetching stock price:', error);
+      throw error;
+    }
+  }
 
 };

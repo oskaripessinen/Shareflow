@@ -1,5 +1,5 @@
 import { View, TextInput, Pressable, ActivityIndicator, Text, Animated } from "react-native"
-import { ArrowLeft, Search, Plus, X, Calendar } from "lucide-react-native";
+import { ArrowLeft, Search, Plus, Calendar } from "lucide-react-native";
 import { useState, useEffect } from "react";
 import { investmentsApi, StockResult } from "api/investments";
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -17,8 +17,9 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     const [listOpacity] = useState(new Animated.Value(0));
     const [selectedStock, setSelectedStock] = useState<StockResult | null>(null);
     const [showInvestmentModal, setShowInvestmentModal] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const [loadingStockPrice, setLoadingStockPrice] = useState(false);
 
     const handleSearch = async () => {
         const data = await investmentsApi.searchStock(searchText);
@@ -33,16 +34,23 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     const handleCloseInvestmentModal = () => {
         setShowInvestmentModal(false);
         setSelectedStock(null);
+        setSelectedDate(null);
     }
 
-    const handleDateChange = (event: any, date?: Date) => {
+    const handleDateChange = async (event: any, date?: Date) => {
         setShowDatePicker(false);
         if (date) {
             setSelectedDate(date);
         }
+        if (!selectedStock || !selectedDate) {
+            return;
+        }
+        const stockPrice = await investmentsApi.getStockPrice(selectedStock?.symbol, selectedDate)
+        console.log(stockPrice);
     };
 
-    const formatDate = (date: Date) => {
+    const formatDate = (date: Date | null) => {
+        if (!date) return "Select date";
         return date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
@@ -142,7 +150,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                 onSwipeComplete={handleCloseInvestmentModal}
                 style={{ justifyContent: 'flex-end', alignItems: 'center', margin: 0 }}
             >
-                <View className="bg-white rounded-2xl border border-slate-200 p-5 w-full justify-center">
+                <View className="bg-white rounded-t-2xl border border-slate-200 p-5 w-full justify-center">
                     <View className="w-20 mx-4 h-1 rounded-2xl mb-2 bg-slate-300 self-center"/>
                     <View className="flex-row justify-between items-center mb-4">
                         <Text className="font-semibold text-default text-lg">
@@ -153,9 +161,9 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                     
                     <View className="gap-4">
                         <View>
-                            <Text className="text-sm font-medium text-gray-600 mb-2">Quantity</Text>
+                            <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Quantity</Text>
                             <TextInput 
-                                className="border border-gray-300 rounded-xl px-3 py-2 text-default text-sm"
+                                className="border border-gray-300 rounded-xl px-3 py-1.5 text-default text-sm"
                                 placeholder="Enter quantity"
                                 placeholderTextColor={'#9CA3AF'}
                                 keyboardType="numeric"
@@ -163,31 +171,37 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                         </View>
 
                         <View>
-                            <Text className="text-sm font-medium text-gray-600 mb-2">Purchase Date</Text>
+                            <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Purchase Date</Text>
                             <Pressable 
                                 onPress={() => setShowDatePicker(true)}
                                 className="border border-gray-300 rounded-xl px-3 py-3 flex-row items-center justify-between"
                             >
-                                <Text className="text-default text-sm">
+                                <Text className={`text-sm ${selectedDate ? 'text-default' : 'text-gray-400'}`}>
                                     {formatDate(selectedDate)}
                                 </Text>
                                 <Calendar size={16} color="#9CA3AF"/>
                             </Pressable>
                         </View>
-                        
+
                         <View>
-                            <Text className="text-sm font-medium text-gray-600 mb-2">Price per share</Text>
-                            <TextInput 
-                                className="border border-gray-300 rounded-xl px-3 py-2 text-default text-sm"
-                                placeholder="Enter price"
-                                placeholderTextColor={'#9CA3AF'}
-                                keyboardType="numeric"
-                            />
+                            <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Price per share</Text>
+                            <View className="flex-row items-center border border-gray-300 rounded-xl px-3 py-0">
+                                <TextInput 
+                                    className="flex-1 text-default py-1.5 text-sm"
+                                    placeholder="Enter price"
+                                    placeholderTextColor={'#9CA3AF'}
+                                    keyboardType="numeric"
+                                    editable={!loadingStockPrice && selectedDate !== null}
+                                />
+                                {loadingStockPrice && (
+                                    <ActivityIndicator size="small" color={'#3B82F6'} className="ml-2"/>
+                                )}
+                            </View>
                         </View>
                         
                         <View className="flex-row gap-3 mt-2">
                             <Pressable 
-                                className="flex-1 bg-primary py-2.5 rounded-lg justify-center items-center"
+                                className="flex-1 bg-primary py-3 rounded-xl justify-center items-center"
                                 onPress={() => {
                                     console.log('Add investment for', selectedStock?.symbol, {
                                         date: selectedDate,
@@ -202,7 +216,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
 
                     {showDatePicker && (
                         <DateTimePicker
-                            value={selectedDate}
+                            value={selectedDate || new Date()}
                             mode="date"
                             display="default"
                             onChange={handleDateChange}
