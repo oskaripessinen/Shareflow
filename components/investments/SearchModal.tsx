@@ -22,6 +22,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     const [loadingStockPrice, setLoadingStockPrice] = useState(false);
     const [stockPrice, setStockPrice] = useState<string>("")
     const [stockCurrency, setStockCurrency] = useState<string>("");
+    const [quantity, setQuantity] = useState<string | undefined>()
 
     const handleSearch = async () => {
         const data = await investmentsApi.searchStock(searchText);
@@ -40,6 +41,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
         setSelectedDate(null);
         setStockPrice("");
         setStockCurrency("");
+        setQuantity(undefined);
     };
 
     const handleDateChange = async (event: DateTimePickerEvent, date?: Date) => {
@@ -163,16 +165,18 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                 animationOut='fadeOut'
                 backdropOpacity={0.5}
                 statusBarTranslucent={true}
-                onBackdropPress={handleCloseInvestmentModal}
                 swipeDirection={'down'}
                 onSwipeComplete={handleCloseInvestmentModal}
                 style={{ justifyContent: 'flex-end', alignItems: 'center', margin: 0 }}
             >
                 <View className="bg-white rounded-t-2xl border border-slate-200 p-5 w-full justify-center">
                     <View className="w-20 mx-4 h-1 rounded-2xl mb-2 bg-slate-300 self-center"/>
-                    <View className="flex-row justify-between items-center mb-4">
+                    <View className="flex-row items-center mb-4 gap-1.5">
                         <Text className="font-semibold text-default text-lg">
-                            Add {selectedStock?.symbol}
+                            Add 
+                        </Text>
+                        <Text className="font-semibold text-default text-lg text-primary">
+                            {selectedStock?.symbol}
                         </Text>
 
                     </View>
@@ -185,6 +189,9 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                                 placeholder="Enter quantity"
                                 placeholderTextColor={'#9CA3AF'}
                                 keyboardType="numeric"
+                                value={quantity}
+                                onChangeText={setQuantity}
+                                
                             />
                         </View>
 
@@ -203,7 +210,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
 
                         <View>
                             <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Purchase price</Text>
-                            <View className="flex-row items-center border border-gray-300 rounded-xl px-3 py-0">
+                            <View className={`flex-row items-center border border-slate-300 rounded-xl px-3 py-0 ${!loadingStockPrice && selectedDate !== null ? 'opacity-100' : 'opacity-40'}`}>
                                 {stockCurrency == 'USD' && <DollarSign size={16} color="#000000CC"/> }
                                 {stockCurrency == 'EUR' && <Euro size={16} color="#000000CC"/> }
                                 <TextInput 
@@ -211,7 +218,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                                     placeholder="Enter price"
                                     placeholderTextColor={'#9CA3AF'}
                                     keyboardType="numeric"
-                                    editable={!loadingStockPrice}
+                                    editable={!loadingStockPrice && selectedDate !== null}
                                     value={stockPrice}
                                     onChangeText={setStockPrice}
                                 />
@@ -223,13 +230,13 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                         
                         <View className="flex-row gap-3 mt-2">
                             <Pressable 
-                                className="flex-1 bg-primary py-3 rounded-xl justify-center items-center"
-                                onPress={() => {
-                                    console.log('Add investment for', selectedStock?.symbol, {
-                                        date: selectedDate,
-                                    });
-                                    handleCloseInvestmentModal();
-                                }}
+                                className={`flex-1 bg-primary py-3 rounded-xl justify-center items-center ${
+                                     !selectedDate || !stockPrice.trim() || !quantity
+                                    ? 'bg-slate-400'
+                                    : 'bg-primary active:bg-primaryDark'
+                                }`}
+                                onPress={handleCloseInvestmentModal}
+                                disabled={!selectedDate || !stockPrice || !quantity}
                             >
                                 <Text className="text-white text-center text-sm font-semibold">Add Investment</Text>
                             </Pressable>
