@@ -1,8 +1,8 @@
 import { View, TextInput, Pressable, ActivityIndicator, Text, Animated } from "react-native"
-import { ArrowLeft, Search, Plus, Calendar } from "lucide-react-native";
+import { ArrowLeft, Search, Plus, Calendar, DollarSign, Euro, X } from "lucide-react-native";
 import { useState, useEffect } from "react";
 import { investmentsApi, StockResult } from "api/investments";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 
 interface SearchModalProps {
@@ -21,26 +21,28 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [loadingStockPrice, setLoadingStockPrice] = useState(false);
     const [stockPrice, setStockPrice] = useState<string>("")
+    const [stockCurrency, setStockCurrency] = useState<string>("");
 
     const handleSearch = async () => {
         const data = await investmentsApi.searchStock(searchText);
         console.log(data.ResultSet.Result)
         return data;
-    }
+    };
 
     const handleStockSelect = (stock: StockResult) => {
         setSelectedStock(stock);
         setShowInvestmentModal(true);
-    }
+    };
 
     const handleCloseInvestmentModal = () => {
         setShowInvestmentModal(false);
         setSelectedStock(null);
         setSelectedDate(null);
         setStockPrice("");
-    }
+        setStockCurrency("");
+    };
 
-    const handleDateChange = async (event: any, date?: Date) => {
+    const handleDateChange = async (event: DateTimePickerEvent, date?: Date) => {
         setShowDatePicker(false);
         if (date) {
             setSelectedDate(date);
@@ -53,6 +55,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
             const stockPriceData = await investmentsApi.getStockPrice(selectedStock?.symbol, date);
             console.log("data",stockPriceData.price.toFixed(2));
             setStockPrice(stockPriceData.price.toFixed(2).toString());
+            setStockCurrency(stockPriceData.currency);
         } catch (error) {
             console.error('Error fetching stock price:', error);
             setStockPrice("");
@@ -114,6 +117,10 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                         onChangeText={setSearchText}
                         autoFocus={true}
                     />
+                    {searchText !== "" && (
+                    <Pressable className="p-1" onPress={() => setSearchText("")}>
+                        <X size={16}/>
+                    </Pressable>)}
                 </View>
             </View>
             <View className="mt-5 flex-1 px-5">
@@ -195,8 +202,10 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                         </View>
 
                         <View>
-                            <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Price per share</Text>
+                            <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Purchase price</Text>
                             <View className="flex-row items-center border border-gray-300 rounded-xl px-3 py-0">
+                                {stockCurrency == 'USD' && <DollarSign size={16} color="#000000CC"/> }
+                                {stockCurrency == 'EUR' && <Euro size={16} color="#000000CC"/> }
                                 <TextInput 
                                     className="flex-1 text-default py-1.5 text-sm"
                                     placeholder="Enter price"
