@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Income } from '@/../context/AppContext';
+import { Layers2 } from 'lucide-react-native';
+
 
 interface IncomeBarProps {
   incomes: Income[];
@@ -53,7 +55,7 @@ const IncomeBar: React.FC<IncomeBarProps> = ({ incomes }) => {
   if (total === 0 || isNaN(total)) {
     return (
       <View className="bg-white rounded-xl p-4 m-4">
-        <Text className="text-lg font-bold text-center mb-4">Income by Category</Text>
+        <Text className="text-lg font-bold text-center mb-4">Income breakdown</Text>
         <View className="h-12 bg-gray-200 rounded-lg items-center justify-center">
           <Text className="text-gray-500">No incomes to display</Text>
         </View>
@@ -74,23 +76,27 @@ const IncomeBar: React.FC<IncomeBarProps> = ({ incomes }) => {
   };
 
   return (
-    <View className="bg-white rounded-xl px-4 mx-4 py-3 mb-5 border border-slate-200">
-      <Text className="text-lg font-semibold text-center mb-6 mt-1 text-slate-800">
-        Income by Category
-      </Text>
-      <View className="flex-row h-8 rounded-lg overflow-hidden mb-4 bg-gray-200">
+    <View className="bg-white rounded-xl px-4 mx-4 py-3 mb-5 border justify-center border-slate-200">
+      <View className='flex-row gap-2 mb-6 mt-1 items-center'>
+        <Layers2 size={18} strokeWidth={2.2} color='#3B82F6'/>
+        <Text className="text-lg font-semibold text-slate-800">
+          Income breakdown
+        </Text>
+      </View>
+      <View className="flex-row h-8 bg-white mb-4 bg-gray-200 gap-1 mx-1 justify-center">
         {categories.map((category) => {
           const value = sortedCategoryData[category];
           const percentage = (value / total) * 100;
 
-          if (isNaN(percentage) || percentage <= 0) {
+          if (isNaN(percentage) || percentage <= 3) {
             return null;
           }
+          
 
           return (
             <View
               key={category}
-              className="h-full"
+              className="h-full rounded-lg"
               style={{
                 backgroundColor: getCategoryColor(category),
                 width: `${Math.min(100, Math.max(0, percentage))}%`,
