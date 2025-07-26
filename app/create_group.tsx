@@ -82,104 +82,107 @@ export default function CreateGroupScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="px-5 pb-2 bg-background">
+    <SafeAreaView className="flex-1 bg-background">
+      <View className="px-3 pt-12 pb-2 bg-background">
         <TouchableOpacity onPress={() => router.back()} className="p-1">
           <ChevronLeft size={28} color="#475569" />
         </TouchableOpacity>
       </View>
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingTop: 250,
-          paddingBottom: 20,
-        }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={true}
-      >
-        <View className="px-5 items-center">
-          <View className="mb-5 flex items-center justify-center">
-            <Users size={60} color="#3B82F6" />
-          </View>
-          <View className="flex-row items-center justify-center mb-2">
-            <Text className="text-3xl text-slate-800 text-center mr-4 font-semibold">
+      
+      <View className="flex-1 justify-center px-5">
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: 'center',
+            
+          }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="items-center">
+            <View className="mb-8 flex items-center justify-center">
+              <Users size={60} color="#3B82F6" />
+            </View>
+            
+            <Text className="text-3xl text-slate-800 text-center font-semibold mb-2">
               Create a New Group
             </Text>
-          </View>
-          <Text className="text-sm text-slate-600 text-center mb-14">
-            Enter the group name and optionally invite members.
-          </Text>
+            
+            <Text className="text-sm text-slate-600 text-center mb-12">
+              Enter the group name and optionally invite members.
+            </Text>
 
-          <View className="mb-6 w-full max-w-md">
-            <TextInput
-              className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-slate-500"
-              placeholder="Group Name"
-              value={groupName}
-              onChangeText={setGroupName}
-              autoCapitalize="sentences"
-            />
-          </View>
-
-          <View className="mb-6 w-full max-w-md">
-            <View className="relative">
+            <View className="mb-6 w-full">
               <TextInput
                 className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-slate-500"
-                placeholder="Invite with email (optional)"
-                value={inviteEmail}
-                onChangeText={setInviteEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                onSubmitEditing={handleAddInvitee}
-                onFocus={() => setIsEmailInputFocused(true)}
-                onBlur={() => setIsEmailInputFocused(false)}
+                placeholder="Group Name"
+                value={groupName}
+                onChangeText={setGroupName}
+                autoCapitalize="sentences"
               />
-
-              <TouchableOpacity
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
-                onPress={handleAddInvitee}
-                disabled={loading || !inviteEmail.trim()}
-              >
-                {isEmailInputFocused && (
-                  <View className="p-1">
-                    <Text
-                      className={`p-1 text-base ${
-                        loading || !inviteEmail.trim()
-                          ? 'text-slate-300 font-sans'
-                          : 'text-primary font-semibold'
-                      }`}
-                    >
-                      Add
-                    </Text>
-                  </View>
-                )}
-              </TouchableOpacity>
             </View>
-          </View>
 
-          {invitees.length > 0 && (
-            <View className="mb-6 w-full max-w-md">
-              {invitees.map((email, index) => (
-                <View
-                  key={index}
-                  className="flex-row items-center justify-between bg-white p-3 rounded-xl border border-slate-200 mb-2"
+            <View className="mb-6 w-full">
+              <View className="relative">
+                <TextInput
+                  className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-slate-500"
+                  placeholder="Invite with email (optional)"
+                  value={inviteEmail}
+                  onChangeText={setInviteEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  onSubmitEditing={handleAddInvitee}
+                  onFocus={() => setIsEmailInputFocused(true)}
+                  onBlur={() => setIsEmailInputFocused(false)}
+                />
+
+                <TouchableOpacity
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
+                  onPress={handleAddInvitee}
+                  disabled={loading || !inviteEmail.trim()}
                 >
-                  <Text className="text-slate-700">{email}</Text>
-                  <TouchableOpacity
-                    onPress={() => handleRemoveInvitee(email)}
-                    disabled={loading}
-                    className="p-1"
-                  >
-                    <X size={15} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
-              ))}
+                  {isEmailInputFocused && (
+                    <View className="p-1">
+                      <Text
+                        className={`p-1 text-base ${
+                          loading || !inviteEmail.trim()
+                            ? 'text-slate-300 font-sans'
+                            : 'text-primary font-semibold'
+                        }`}
+                      >
+                        Add
+                      </Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
-          )}
-        </View>
-      </ScrollView>
 
-      <View className="px-5 py-4 border-slate-200 bg-background static bottom-0 left-0 right-0">
-        <View className="w-full max-w-md mx-auto">
+            {invitees.length > 0 && (
+              <View className="mb-6 w-full">
+                {invitees.map((email, index) => (
+                  <View
+                    key={index}
+                    className="flex-row items-center justify-between bg-white p-3 rounded-xl border border-slate-200 mb-2"
+                  >
+                    <Text className="text-slate-700">{email}</Text>
+                    <TouchableOpacity
+                      onPress={() => handleRemoveInvitee(email)}
+                      disabled={loading}
+                      className="p-1"
+                    >
+                      <X size={15} color="#EF4444" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      </View>
+
+      <View className="px-5 py-4 border-slate-200 bg-background">
+        <View className="w-full mx-auto">
           <TouchableOpacity
             className={`py-4 rounded-xl items-center justify-center shadow-md ${
               loading || !groupName.trim() ? 'bg-slate-400' : 'bg-primary active:bg-cyan-700'

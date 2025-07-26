@@ -27,11 +27,11 @@ const ExpenseSummary = ({
 
   return (
     <View className="bg-surface rounded-xl py-4 px-5 border border-slate-200">
-      <View className="flex-row items-center justify-between mb-2">
+      <View className="flex-row items-center mb-2 gap-2">
+        <CreditCard size={22} color='#3B82F6'/>
         <Text className="text-lg font-semibold text-default">
           Expenses Overview
         </Text>
-        
       </View>
 
       <View className="flex-row justify-between items-start mb-1 mt-3">
@@ -61,8 +61,7 @@ const ExpenseSummary = ({
         {latestExpense && (
           <Pressable onPress={handleExpensePress} className="ml-4 justify-center p-4 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
             <View className="flex-row items-center gap-1">
-              <CreditCard size={16} color="#64748b" />
-              <Text className="text-xs text-slate-600 ml-1">
+              <Text className="text-xs text-slate-600">
                 Latest Expense
               </Text>
               <Text className="text-xs text-slate-400 ml-1">

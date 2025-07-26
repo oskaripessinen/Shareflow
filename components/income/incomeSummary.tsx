@@ -27,7 +27,8 @@ const IncomeSummary = ({
 
   return (
     <View className="bg-surface rounded-xl p-4 px-5 border border-slate-200">
-      <View className="flex-row items-center justify-between mb-2">
+      <View className="flex-row items-center mb-2 gap-2">
+        <Receipt size={22} color='#3B82F6'/>
         <Text className="text-lg font-semibold text-default">
           Income Overview
         </Text>

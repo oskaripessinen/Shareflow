@@ -12,6 +12,7 @@ module.exports = {
         secondary: '#60A5FA ',
         accent: '#10B981',
         danger: '#EF4444',
+        danger2: '#ef444477',
         muted: '#000000b3',
         default: '#000000DE',
         text: {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, Pressable, View, ActivityIndicator } from 'react-native';
-import { X } from 'lucide-react-native';
+import { X, ChevronRight, UserPlus, Users, LogOut } from 'lucide-react-native';
 import { signOut } from 'utils/auth';
 import { router } from 'expo-router';
 
@@ -45,23 +45,41 @@ const OptionsModal: React.FC<OptionsProps> = ({ onClose, handleOpenInviteModal }
 
         <View className="w-full items-center">
           <View className="w-full">
+
             <View className="h-px bg-slate-200 w-full my-2" />
-            <Pressable onPress={handleOpenInviteModal} className="flex-row items-center p-3.5 rounded-lg w-[90%] mx-auto justify-center active:bg-slate-50">
-              <Text className="font-base font-medium text-muted ml-4">Invite user</Text>
+
+            <Pressable onPress={handleOpenInviteModal} className="flex-row items-center justify-between p-3.5 rounded-lg active:bg-slate-50 w-[90%] mx-auto">
+              <View className='flex-row'>
+                <UserPlus strokeWidth={1.8} size={22} color="#000000b3"/>
+                <Text className="font-base font-medium text-muted ml-3">Invite user</Text>
+              </View>
+              <ChevronRight strokeWidth={1.8} color="#000000b3"/>
             </Pressable>
+
             <View className="h-px bg-slate-200 w-[90%] my-2 mx-auto" />
+
             <Pressable
               onPress={() => handleNewGroup()}
-              className="flex-row items-center p-3.5 rounded-lg w-[90%] active:bg-slate-50 justify-center mx-auto"
+              className="flex-row items-center justify-between p-3.5 rounded-lg active:bg-slate-50 w-[90%] mx-auto"
             >
-              <Text className="font-base font-medium text-muted ml-4">New group</Text>
+              <View className='flex-row'>
+                <Users strokeWidth={1.8} size={22} color="#000000b3"/>
+                <Text className="font-base font-medium text-muted ml-3">New group</Text>
+              </View>
+              <ChevronRight strokeWidth={1.8} color="#000000b3"/>
             </Pressable>
+
             <View className="h-px bg-slate-200 w-[90%] my-2 mx-auto" />
+
             <Pressable
               onPress={() => handleLogout()}
-              className="flex-row items-center p-3.5 rounded-lg w-[90%] mx-auto justify-center active:bg-slate-50"
+              className="flex-row items-center p-3.5 rounded-lg w-[90%] mx-auto justify-between bg-danger2/5 active:bg-slate-50"
             >
-              <Text className="font-base font-medium ml-4 text-danger">Log out</Text>
+              <View className='flex-row'>
+                <LogOut strokeWidth={1.8} size={22} color="#EF4444"/>
+                <Text className="font-base font-medium ml-3 text-danger">Log out</Text>
+              </View>
+              <ChevronRight strokeWidth={1.8} color="#EF4444"/>
             </Pressable>
           </View>
         </View>
