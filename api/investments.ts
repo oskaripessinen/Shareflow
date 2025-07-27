@@ -29,6 +29,25 @@ export interface StockPriceResponse {
   volume: number;
 }
 
+export interface Investment {
+  id: number;
+  group_id: number;
+  ticker: string;
+  name: string;
+  quantity: number;
+  purchase_price: number;
+  purchase_date: Date;
+  paid_by: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AddInvestmentResponse {
+  success: boolean;
+  message: string;
+  data: Investment;
+}
+
 export const investmentsApi = {
   searchStock: async (searchWord: string): Promise<StockSearchResponse> => {
     try {
@@ -53,6 +72,24 @@ export const investmentsApi = {
       console.error('Error fetching stock price:', error);
       throw error;
     }
-  }
+  },
 
+  AddInvestment: async (group_id: number, ticker: string, name: string, quantity: number, purchasePrice: number, purchaseDate: Date, googleId: string): Promise<AddInvestmentResponse> => {
+    try {
+      const response = await apiClient.post('/api/investments', {
+        group_id,
+        ticker,
+        name,
+        quantity,
+        purchase_price: purchasePrice,
+        purchase_date: purchaseDate.toISOString().split('T')[0],
+        added_by: googleId
+      }) as { data: AddInvestmentResponse };
+
+      return response.data;
+    } catch (error) {
+      console.error('Error adding investment:', error);
+      throw error;
+    }
+  }
 };

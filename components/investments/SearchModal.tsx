@@ -2,6 +2,7 @@ import { View, TextInput, Pressable, ActivityIndicator, Text, Animated } from "r
 import { ArrowLeft, Search, Plus, Calendar, DollarSign, Euro, X } from "lucide-react-native";
 import { useState, useEffect } from "react";
 import { investmentsApi, StockResult } from "api/investments";
+import { useGroupStore, useAuthStore } from "context/AppContext";
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 
@@ -12,6 +13,7 @@ interface SearchModalProps {
 const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
 
     const [loading, setLoading] = useState(false);
+    const [onAddLoading, setOnAddLoading] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [searchResult, setSearchResult] = useState<StockResult[]>([]);
     const [listOpacity] = useState(new Animated.Value(0));
@@ -24,6 +26,9 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
     const [stockCurrency, setStockCurrency] = useState<string>("");
     const [quantity, setQuantity] = useState<string | undefined>()
 
+    const currentGroup = useGroupStore((state) => state.currentGroup);
+    const userId = useAuthStore((state) => state.googleId);
+
     const handleSearch = async () => {
         const data = await investmentsApi.searchStock(searchText);
         console.log(data.ResultSet.Result)
@@ -35,7 +40,24 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
         setShowInvestmentModal(true);
     };
 
+    const handleAddInvestment = async () => {
+        if(!currentGroup || !selectedStock?.symbol || !quantity || !selectedDate || !userId) {
+            return
+        }
+        setOnAddLoading(true);
+        const investment = await investmentsApi.AddInvestment(currentGroup?.id, selectedStock?.symbol, selectedStock?.name, parseFloat(quantity), parseFloat(stockPrice), selectedDate, userId);
+        setOnAddLoading(false);
+        console.log(investment);
+        setShowInvestmentModal(false);
+        setSelectedStock(null);
+        setSelectedDate(null);
+        setStockPrice("");
+        setStockCurrency("");
+        setQuantity(undefined);
+    };
+
     const handleCloseInvestmentModal = () => {
+
         setShowInvestmentModal(false);
         setSelectedStock(null);
         setSelectedDate(null);
@@ -230,15 +252,18 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                         
                         <View className="flex-row gap-3 mt-2">
                             <Pressable 
-                                className={`flex-1 bg-primary py-3 rounded-xl justify-center items-center ${
+                                className={`flex-1 bg-primary py-3 rounded-xl flex-row gap-2 justify-center items-center ${
                                      !selectedDate || !stockPrice.trim() || !quantity
                                     ? 'bg-slate-400'
                                     : 'bg-primary active:bg-primaryDark'
                                 }`}
-                                onPress={handleCloseInvestmentModal}
+                                onPress={handleAddInvestment}
                                 disabled={!selectedDate || !stockPrice || !quantity}
                             >
-                                <Text className="text-white text-center text-sm font-semibold">Add Investment</Text>
+                                {onAddLoading ? <ActivityIndicator color='white'/> 
+                                    : <Text className="text-white text-center text-sm font-semibold">Add Investment</Text>
+}
+                    
                             </Pressable>
                         </View>
                     </View>
