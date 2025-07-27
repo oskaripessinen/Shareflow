@@ -77,13 +77,13 @@ const IncomeBar: React.FC<IncomeBarProps> = ({ incomes }) => {
 
   return (
     <View className="bg-white rounded-xl px-4 mx-4 py-3 mb-5 border justify-center border-slate-200">
-      <View className='flex-row gap-2 mb-6 mt-1 items-center'>
+      <View className='flex-row gap-2 mb-4 mt-1 items-center'>
         <Layers2 size={18} strokeWidth={2.2} color='#3B82F6'/>
         <Text className="text-lg font-semibold text-slate-800">
           Income breakdown
         </Text>
       </View>
-      <View className="flex-row h-8 bg-white mb-4 bg-gray-200 gap-1 mx-1 justify-center">
+      <View className="flex-row h-7 bg-white mb-2 bg-gray-200 gap-1 mx-1 justify-center">
         {categories.map((category) => {
           const value = sortedCategoryData[category];
           const percentage = (value / total) * 100;
