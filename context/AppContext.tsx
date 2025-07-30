@@ -40,13 +40,17 @@ export interface Expense {
 }
 
 export interface Investment {
-  id: string;
+  id: number;
+  group_id: number;
+  ticker: string;
   name: string;
-  type: InvestmentType;
+  type: string;
   quantity: number;
-  purchasePrice: number;
-  currentPrice: number;
-  purchaseDate: string;
+  purchase_price: number;
+  purchase_date: Date;
+  paid_by: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Goal {
@@ -123,17 +127,17 @@ export const useAuthStore = create<AuthState>((set) => ({
 }));
 
 interface AppState {
-  incomeSettings: IncomeSettings; // ✅ Muutettu nimi
-  incomes: Income[]; // ✅ Lisätty incomes array
+  incomeSettings: IncomeSettings;
+  incomes: Income[];
   expenses: Expense[];
   investments: Investment[];
   goals: Goal[];
   savings: Savings;
   showTimeWindowPicker: boolean;
 
-  setIncomeSettings: (incomeSettings: IncomeSettings) => void; // ✅ Muutettu nimi
-  setIncomes: (incomes: Income[]) => void; // ✅ Lisätty incomes setter
-  addIncome: (income: Income) => void; // ✅ Lisätty income CRUD
+  setIncomeSettings: (incomeSettings: IncomeSettings) => void;
+  setIncomes: (incomes: Income[]) => void;
+  addIncome: (income: Income) => void;
   updateIncome: (income: Income) => void;
   deleteIncome: (id: string) => void;
   setSavingsTarget: (target: number) => void;
@@ -143,7 +147,7 @@ interface AppState {
   setExpenses: (expenses: Expense[]) => void;
   addInvestment: (investment: Investment) => void;
   updateInvestment: (investment: Investment) => void;
-  deleteInvestment: (id: string) => void;
+  deleteInvestment: (id: number) => void;
   addGoal: (goal: Goal) => void;
   updateGoal: (goal: Goal) => void;
   deleteGoal: (id: string) => void;
@@ -152,11 +156,11 @@ interface AppState {
 }
 
 const initialState = {
-  incomeSettings: { // ✅ Muutettu nimi
+  incomeSettings: { 
     amount: 0,
     isGross: false,
   },
-  incomes: [], // ✅ Lisätty incomes array
+  incomes: [], 
   expenses: [],
   investments: [],
   goals: [],
@@ -171,9 +175,8 @@ export const useAppStore = create<AppState>()(
     (set) => ({
       ...initialState,
 
-      setIncomeSettings: (incomeSettings) => set({ incomeSettings }), // ✅ Muutettu nimi
+      setIncomeSettings: (incomeSettings) => set({ incomeSettings }), 
       
-      // ✅ Lisätty income CRUD funktiot
       setIncomes: (incomes) => set({ incomes }),
       addIncome: (income) =>
         set((state) => ({

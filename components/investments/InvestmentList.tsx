@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
-import { Investment } from '@/../context/AppContext';
+import { View, Text, FlatList } from 'react-native';
+import { Investment } from '../../api/investments';
 import { formatDate } from '@/../utils/dateUtils';
-import { TrendingUp, TrendingDown, Edit, Trash } from 'lucide-react-native';
+import { TrendingUp, TrendingDown } from 'lucide-react-native';
 import { useAppStore } from '@/../context/AppContext';
 
 interface InvestmentListProps {
@@ -12,180 +12,101 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
   const { deleteInvestment } = useAppStore();
 
   const typeInfo = {
-    stock: { color: '#0891b2', label: 'Stock' }, // Cyan-600
-    fund: { color: '#0ea5e9', label: 'Fund' }, // Sky-500
-    crypto: { color: '#06b6d4', label: 'Cryptocurrency' }, // Cyan-500
-    etf: { color: '#0284c7', label: 'ETF' }, // Sky-600
-    bond: { color: '#38bdf8', label: 'Bond' }, // Sky-400
-    other: { color: '#7dd3fc', label: 'Other' }, // Sky-300
+    stock: { color: '#0891b2', label: 'Stock' },
+    fund: { color: '#0ea5e9', label: 'Fund' },
+    crypto: { color: '#06b6d4', label: 'Cryptocurrency' },
+    etf: { color: '#0284c7', label: 'ETF' },
+    bond: { color: '#38bdf8', label: 'Bond' },
+    other: { color: '#7dd3fc', label: 'Other' },
   };
 
   const handleEdit = (investment: Investment) => {
     console.log('Edit investment:', investment);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: number) => {
     deleteInvestment(id);
   };
 
   const renderInvestmentItem = ({ item }: { item: Investment }) => {
     const typeColor = typeInfo[item.type as keyof typeof typeInfo]?.color || '#7dd3fc';
-    const typeLabel = typeInfo[item.type as keyof typeof typeInfo]?.label || 'Muu';
+    const typeLabel = typeInfo[item.type as keyof typeof typeInfo]?.label || 'Other';
 
-    const currentValue = item.quantity * item.currentPrice;
-    const purchaseValue = item.quantity * item.purchasePrice;
+    const currentPrice = item.purchase_price * 1.1;
+    const currentValue = item.quantity * currentPrice;
+    const purchaseValue = item.quantity * item.purchase_price;
     const profit = currentValue - purchaseValue;
     const profitPercent = ((profit / purchaseValue) * 100).toFixed(2);
     const isProfitable = profit >= 0;
 
     return (
-      <View style={styles.investmentItem}>
-        <View style={styles.investmentMain}>
-          <View style={[styles.typeIndicator, { backgroundColor: typeColor }]} />
-          <View style={styles.investmentDetails}>
-            <Text style={styles.name}>{item.name}</Text>
-            <View style={styles.investmentMeta}>
-              <Text style={styles.type}>{typeLabel}</Text>
-              <Text style={styles.quantity}>{item.quantity} kpl</Text>
-              <Text style={styles.date}>{formatDate(item.purchaseDate)}</Text>
+      <View className="mb-3 bg-surface rounded-xl p-4 border border-slate-200 justify-between">
+        <View className="flex-row items-center justify-center">
+          <View 
+            className="w-3 h-3 rounded-full mr-3"
+            style={{ backgroundColor: typeColor }}
+          />
+          <View className="flex-1">
+            <View className='flex-row items-center gap-2'>
+              <Text className="text-base font-semibold text-slate-900">
+                {item.name}
+              </Text>
+              <Text className="text-sm text-slate-500 mr-2">
+                  {typeLabel}
+              </Text>
+            </View>
+            <View className="flex-row items-center">
+              
+              <Text className="text-sm text-muted mr-2">{item.quantity} kpl</Text>
+              <Text className="text-sm text-slate-400">
+                {formatDate(new Date(item.purchase_date))}
+              </Text>
+            </View>
+          </View>
+          <View className="gap-1 justify-center">
+            <Text className="text-base font-semibold self-center text-default mb-0.5">
+              {currentValue.toFixed(2)} €
+            </Text>
+            <View className="flex-row items-center gap-2 justify-between">
+              <View className='flex-row items-center gap-2'>
+                {isProfitable ? (
+                  <TrendingUp size={14} color="#10b981" className="mr-1" />
+                ) : (
+                  <TrendingDown size={14} color="#ef4444" className="mr-1" />
+                )}
+                <Text 
+                  className="text-sm font-sans"
+                  style={{ color: isProfitable ? '#10b981' : '#ef4444' }}
+                >
+                  {isProfitable ? '+' : ''}
+                  {profit.toFixed(2)} € ({profitPercent}%)
+                </Text>
+              </View>
             </View>
           </View>
         </View>
 
-        <View style={styles.valueSection}>
-          <Text style={styles.currentValue}>{currentValue.toFixed(2)} €</Text>
-          <View style={styles.profitSection}>
-            {isProfitable ? (
-              <TrendingUp size={14} color="#10b981" style={styles.profitIcon} />
-            ) : (
-              <TrendingDown size={14} color="#ef4444" style={styles.profitIcon} />
-            )}
-            <Text style={[styles.profitText, { color: isProfitable ? '#10b981' : '#ef4444' }]}>
-              {isProfitable ? '+' : ''}
-              {profit.toFixed(2)} € ({profitPercent}%)
-            </Text>
-          </View>
-        </View>
+        
 
-        <View style={styles.actionButtons}>
-          <Pressable style={styles.editButton} onPress={() => handleEdit(item)}>
-            <Edit size={16} color="#0891b2" />
-          </Pressable>
-          <Pressable style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
-            <Trash size={16} color="#ef4444" />
-          </Pressable>
-        </View>
+        
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       {investments.length > 0 ? (
         <FlatList
           data={investments}
           renderItem={renderInvestmentItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
         />
       ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No investments</Text>
+        <View className="p-6 items-center justify-center">
+          <Text className="text-base text-slate-500">No investments</Text>
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  investmentItem: {
-    marginBottom: 12,
-    backgroundColor: '#f8fafc', // Slate-50
-    borderRadius: 8,
-    padding: 12,
-  },
-  investmentMain: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  typeIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
-  },
-  investmentDetails: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#0f172a', // Slate-900
-    marginBottom: 4,
-  },
-  investmentMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  type: {
-    fontSize: 14,
-    color: '#64748b', // Slate-500
-    marginRight: 8,
-  },
-  quantity: {
-    fontSize: 14,
-    color: '#64748b', // Slate-500
-    marginRight: 8,
-  },
-  date: {
-    fontSize: 14,
-    color: '#94a3b8', // Slate-400
-  },
-  valueSection: {
-    marginBottom: 8,
-  },
-  currentValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#0f172a', // Slate-900
-    marginBottom: 2,
-  },
-  profitSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  profitIcon: {
-    marginRight: 4,
-  },
-  profitText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  editButton: {
-    padding: 6,
-    backgroundColor: '#e0f2fe', // Cyan-100
-    borderRadius: 4,
-    marginRight: 8,
-  },
-  deleteButton: {
-    padding: 6,
-    backgroundColor: '#fee2e2', // Red-100
-    borderRadius: 4,
-  },
-  emptyContainer: {
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#64748b', // Slate-500
-  },
-});

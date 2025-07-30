@@ -1,23 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import Modal from 'react-native-modal'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAppStore } from '@/../context/AppContext';
+import { Investment, useAppStore, useGroupStore } from '@/../context/AppContext';
 import InvestmentList from '@/../components/investments/InvestmentList';
 import InvestmentDistribution from 'components/investments/InvestmentDistribution';
 import InvestmentChart from 'components/investments/InvestmentChart';
 import AddInvestmentModal from '@/../components/investments/AddInvestmentModal'
 import { Header } from '@/../components/investments/Header'
+import  { investmentsApi } from '../../api/investments'
 
 export default function InvestmentsScreen() {
-  const { investments } = useAppStore();
+  const [investments, setInvestments] = useState<Investment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { currentGroup } = useGroupStore();
   const [showAddInvestmentModal, setShowAddInvestmentModal] = useState(false);
   const [chartActive, setChartActive] = useState(false);
+
+  const fetchInvestments = async () => {
+    if (!useAppStore) {
+      console.log('No current group selected');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      if(!currentGroup) {
+        return;
+      }
+      const investmentData = await investmentsApi.GetInvestmentsByGroupId(currentGroup.id);
+      if(!investmentData) {
+        return;
+      }
+      setInvestments(investmentData);
+      console.log('Investments fetched:', investmentData);
+    } catch (error) {
+      console.error('Error fetching investments:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchInvestments();
+  }, [currentGroup?.id]);
 
 
   const investmentsByType = investments.reduce(
     (groups, inv) => {
-      const value = inv.quantity * inv.currentPrice;
+      const value = inv.quantity * 2;
       groups[inv.type] = (groups[inv.type] || 0) + value;
       return groups;
     },
@@ -63,7 +94,6 @@ export default function InvestmentsScreen() {
         {!chartActive ? <InvestmentDistribution data={chartData} /> : <InvestmentChart />}
         
         
-        <Text className="text-lg font-semibold text-slate-900 mt-4 mb-2">Investments</Text>
         
         <View className="space-y-2">
           {investments.map((item) => (

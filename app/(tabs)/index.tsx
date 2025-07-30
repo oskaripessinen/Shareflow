@@ -88,8 +88,9 @@ const DashboardScreen = ({ navigateToTab }: DashboardScreenProps) => {
     const initialState = async () => {
       pageOpacity.setValue(0);
       setLoading(true);
-      await fetchExpenses();
       await fetchIncome();
+      await fetchExpenses();
+      
       setLoading(false);
       setTimeout(() => {
         Animated.timing(pageOpacity, {

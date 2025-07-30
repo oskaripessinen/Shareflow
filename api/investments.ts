@@ -8,6 +8,7 @@ export interface RecommendedSymbol {
 export interface StockResult {
   recommendedSymbols: RecommendedSymbol[];
   symbol: string;
+  type: string;
   name: string;
 }
 
@@ -34,6 +35,7 @@ export interface Investment {
   group_id: number;
   ticker: string;
   name: string;
+  type: string;
   quantity: number;
   purchase_price: number;
   purchase_date: Date;
@@ -46,6 +48,12 @@ export interface AddInvestmentResponse {
   success: boolean;
   message: string;
   data: Investment;
+}
+
+export interface InvestmentResponse {
+  success: boolean;
+  message?: string;
+  data: Investment[];
 }
 
 export const investmentsApi = {
@@ -74,12 +82,13 @@ export const investmentsApi = {
     }
   },
 
-  AddInvestment: async (group_id: number, ticker: string, name: string, quantity: number, purchasePrice: number, purchaseDate: Date, googleId: string): Promise<AddInvestmentResponse> => {
+  AddInvestment: async (group_id: number, ticker: string, name: string, type: string, quantity: number, purchasePrice: number, purchaseDate: Date, googleId: string): Promise<AddInvestmentResponse> => {
     try {
       const response = await apiClient.post('/api/investments', {
         group_id,
         ticker,
         name,
+        type,
         quantity,
         purchase_price: purchasePrice,
         purchase_date: purchaseDate.toISOString().split('T')[0],
@@ -90,6 +99,16 @@ export const investmentsApi = {
     } catch (error) {
       console.error('Error adding investment:', error);
       throw error;
+    }
+  },
+
+  GetInvestmentsByGroupId: async(group_id: number): Promise<Investment[]> => {
+    try {
+      const response = await apiClient.get<InvestmentResponse>(`/api/investments/${group_id}`);
+      return response.data;
+
+    } catch(error) {
+        throw error;
     }
   }
 };

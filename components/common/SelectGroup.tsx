@@ -254,6 +254,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
     });
 
     const animatedStyle = {
+      padding: 0,
       opacity: opacityValue,
       height: animValue.interpolate({
         inputRange: [0, 1],
