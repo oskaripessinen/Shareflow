@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { getCategoryColor } from '../../utils/categoryColors';
+import { getExpenseCategoryColor } from '../../utils/categoryColors';
 import { ExpenseCategory } from '../../types/expense';
 import { Expense } from '../../types/expense';
 import { Layers2 } from 'lucide-react-native';
@@ -88,7 +88,7 @@ const ExpenseBar: React.FC<ExpenseBarProps> = ({ expenses }) => {
               key={category}
               className="h-full rounded-lg"
               style={{
-                backgroundColor: getCategoryColor(category as ExpenseCategory),
+                backgroundColor: getExpenseCategoryColor(category as ExpenseCategory),
                 width: `${Math.min(100, Math.max(0, percentage))}%`,
                 minWidth: '1.5%'
               }}
@@ -110,7 +110,7 @@ const ExpenseBar: React.FC<ExpenseBarProps> = ({ expenses }) => {
             <View key={category} className="flex-row items-center mb-2">
               <View
                 className="w-4 h-4 rounded mr-3"
-                style={{ backgroundColor: getCategoryColor(category as ExpenseCategory) }}
+                style={{ backgroundColor: getExpenseCategoryColor(category as ExpenseCategory) }}
               />
               <Text className="flex-1 text-default capitalize font-semibold text-base">{category}</Text>
               <Text className="text-default font-semibold text-sm">{value.toFixed(2)} €</Text>

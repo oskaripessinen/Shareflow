@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { Income } from '@/../context/AppContext';
 import { Layers2 } from 'lucide-react-native';
+import { getIncomeCategoryColor } from 'utils/categoryColors';
 
 
 interface IncomeBarProps {
@@ -63,17 +64,6 @@ const IncomeBar: React.FC<IncomeBarProps> = ({ incomes }) => {
     );
   }
 
-  const getCategoryColor = (category: string): string => {
-    const colors: Record<string, string> = {
-      salary: '#10B981',
-      freelance: '#06B6D4',
-      investments: '#8B5CF6',
-      business: '#F59E0B',
-      gifts: '#EF4444',
-      other: '#6B7280',
-    };
-    return colors[category] || '#6B7280';
-  };
 
   return (
     <View className="bg-white rounded-xl px-4 mx-4 py-3 mb-5 border justify-center border-slate-200">
@@ -98,7 +88,7 @@ const IncomeBar: React.FC<IncomeBarProps> = ({ incomes }) => {
               key={category}
               className="h-full rounded-lg"
               style={{
-                backgroundColor: getCategoryColor(category),
+                backgroundColor: getIncomeCategoryColor(category),
                 width: `${Math.min(100, Math.max(0, percentage))}%`,
               }}
             />
@@ -119,7 +109,7 @@ const IncomeBar: React.FC<IncomeBarProps> = ({ incomes }) => {
             <View key={category} className="flex-row items-center mb-2">
               <View
                 className="w-4 h-4 rounded mr-3"
-                style={{ backgroundColor: getCategoryColor(category) }}
+                style={{ backgroundColor: getIncomeCategoryColor(category) }}
               />
               <Text className="flex-1 text-default capitalize font-semibold text-base">
                 {category}

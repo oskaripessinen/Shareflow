@@ -16,6 +16,7 @@ import { expenseApi } from '../../api/expenses';
 import { useGroups } from '@/../context/AppContext';
 import ExpenseBar from 'components/expenses/ExpenseBar';
 import Header from 'components/expenses/Header';
+import { getExpenseCategoryColor } from 'utils/categoryColors';
 
 const timeWindowOptions = [
   { label: 'Today', value: 'today' },
@@ -188,17 +189,20 @@ export default function ExpensesScreen() {
       : new Date(item.created_at);
 
       return (
-      <View className="bg-surface rounded-xl py-3 px-4 my-2 mx-4 mt-0 border border-slate-200">
+      <View className="bg-surface rounded-xl p-4 my-2 mx-4 mt-0 border border-slate-200">
         <View className="flex-row justify-between items-center">
-          <View className='flex-col gap-2'>
-            <Text className="text-lg font-medium font-semibold text-default">
-              {item.title || item.description}
-            </Text>
+          <View className='flex-row justify-center items-center'>
+            <View className='w-3 h-3 rounded-full mr-3' style={{backgroundColor: getExpenseCategoryColor(item.category as ExpenseCategory)}}/>
+            <View className='flex-col gap-0'>
+              <Text className="text-lg font-medium font-semibold text-default">
+                {item.title || item.description}
+              </Text>
+              
+              <Text className="text-sm text-muted capitalize font-sans">{item.category || 'other'}</Text>
             
-            <Text className="text-sm text-muted capitalize font-sans">{item.category || 'other'}</Text>
-           
+            </View>
           </View>
-          <View className="flex-col gap-2">
+          <View className="flex-col gap-0">
             <Text className="text-lg font-bold text-danger">
               {(Number(item.amount) || 0).toFixed(2)} €
             </Text>

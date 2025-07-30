@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import Modal from 'react-native-modal'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Investment, useAppStore, useGroupStore } from '@/../context/AppContext';
@@ -18,7 +18,7 @@ export default function InvestmentsScreen() {
   const [chartActive, setChartActive] = useState(false);
 
   const fetchInvestments = async () => {
-    if (!useAppStore) {
+    if (!useAppStore) { 
       console.log('No current group selected');
       return;
     }

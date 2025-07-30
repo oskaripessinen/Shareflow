@@ -17,6 +17,7 @@ import { incomeApi } from '../../api/income';
 import { useGroups } from '@/../context/AppContext';
 import IncomeBar from 'components/income/IncomeBar';
 import Header from 'components/income/Header';
+import { getIncomeCategoryColor } from 'utils/categoryColors';
 
 const timeWindowOptions = [
   { label: 'Today', value: 'today' },
@@ -190,17 +191,20 @@ export default function IncomeScreen() {
       : new Date(item.created_at);
 
       return (
-      <View className="bg-surface rounded-xl py-3 px-4 my-2 mx-4 mt-0 border border-slate-200">
+      <View className="bg-surface rounded-xl p-4 my-2 mx-4 mt-0 border border-slate-200">
         <View className="flex-row justify-between items-center">
-          <View className='flex-col gap-2'>
-            <Text className="text-lg font-medium font-semibold text-default">
-              {item.title || item.description}
-            </Text>
+          <View className='flex-row items-center'>
+            <View className='h-3 w-3 rounded-full mr-3' style={{backgroundColor: getIncomeCategoryColor(item.category)}}/>
+            <View className='flex-col'>
+              <Text className="text-lg font-medium font-semibold text-default">
+                {item.title || item.description}
+              </Text>
+              
+              <Text className="text-sm text-muted capitalize font-sans">{item.category || 'other'}</Text>
             
-            <Text className="text-sm text-muted capitalize font-sans">{item.category || 'other'}</Text>
-           
+            </View>
           </View>
-          <View className="flex-col gap-2">
+          <View className="flex-col">
             <Text className="text-lg font-bold text-green-600">
               +{(Number(item.amount) || 0)} €
             </Text>

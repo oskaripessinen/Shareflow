@@ -1,6 +1,6 @@
 import { ExpenseCategory } from '../types/expense';
 
-export const categoryColors: Record<ExpenseCategory, string> = {
+export const expenseCategoryColors: Record<ExpenseCategory, string> = {
   food: '#3B82F6',
   transportation: '#10B981',
   health: '#F59E0B',
@@ -11,14 +11,21 @@ export const categoryColors: Record<ExpenseCategory, string> = {
   other: '#6B7280',
 };
 
-export const getCategoryColor = (category: ExpenseCategory | null): string => {
-  if (!category) return categoryColors.other;
-  return categoryColors[category] || categoryColors.other;
+const incomeCategoryColors: Record<string, string> = {
+      salary: '#3B82F6',
+      freelance: '#10B981',
+      investments: '#F59E0B',
+      business: '#8B5CF6',
+      gifts: '#EF4444',
+      other: '#6B7280',
+    };
+
+export const getExpenseCategoryColor = (category: ExpenseCategory | null): string => {
+  if (!category) return expenseCategoryColors.other;
+  return expenseCategoryColors[category] || expenseCategoryColors.other;
 };
 
-export const getAllCategoryColors = (): Array<{ category: ExpenseCategory; color: string }> => {
-  return Object.entries(categoryColors).map(([category, color]) => ({
-    category: category as ExpenseCategory,
-    color,
-  }));
-};
+export const getIncomeCategoryColor = (category: string): string => {
+    if (!category) return expenseCategoryColors.other;
+    return incomeCategoryColors[category] || incomeCategoryColors.other;
+  };
