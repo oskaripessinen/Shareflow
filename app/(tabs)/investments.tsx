@@ -9,6 +9,7 @@ import InvestmentChart from 'components/investments/InvestmentChart';
 import AddInvestmentModal from '@/../components/investments/AddInvestmentModal'
 import { Header } from '@/../components/investments/Header'
 import  { investmentsApi } from '../../api/investments'
+import { getSavingCategoryColor } from 'utils/categoryColors';
 
 export default function InvestmentsScreen() {
   const [investments, setInvestments] = useState<Investment[]>([]);
@@ -58,25 +59,10 @@ export default function InvestmentsScreen() {
   const chartData = Object.keys(investmentsByType).map((type) => ({
     type,
     value: investmentsByType[type],
-    color: getColorForType(type),
+    color: getSavingCategoryColor(type),
   }));
 
-  function getColorForType(type: string) {
-    switch (type) {
-      case 'stock':
-        return '#0891b2';
-      case 'fund':
-        return '#0ea5e9';
-      case 'crypto':
-        return '#06b6d4';
-      case 'etf':
-        return '#0284c7';
-      case 'bond':
-        return '#38bdf8';
-      default:
-        return '#7dd3fc';
-    }
-  }
+
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50" edges={['left', 'right']}>

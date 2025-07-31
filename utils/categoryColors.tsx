@@ -20,12 +20,25 @@ const incomeCategoryColors: Record<string, string> = {
       other: '#6B7280',
     };
 
+const savingCategoryColors: Record<string, string> = {
+      Equity: '#3B82F6',
+      Fund: '#10B981',
+      Etf: '#F59E0B',
+      Currency: '#8B5CF6',
+      other: '#6B7280',
+    };
+
 export const getExpenseCategoryColor = (category: ExpenseCategory | null): string => {
   if (!category) return expenseCategoryColors.other;
   return expenseCategoryColors[category] || expenseCategoryColors.other;
 };
 
 export const getIncomeCategoryColor = (category: string): string => {
-    if (!category) return expenseCategoryColors.other;
-    return incomeCategoryColors[category] || incomeCategoryColors.other;
-  };
+  if (!category) return expenseCategoryColors.other;
+  return incomeCategoryColors[category] || incomeCategoryColors.other;
+};
+
+export const getSavingCategoryColor = (category: string): string => {
+  if (!category) return savingCategoryColors.other;
+  return savingCategoryColors[category] || savingCategoryColors.other;
+};
