@@ -67,7 +67,7 @@ export default function InvestmentsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-slate-50" edges={['left', 'right']}>
       <ScrollView 
-        className="flex-1 mt-5"
+        className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: 16,
@@ -75,16 +75,14 @@ export default function InvestmentsScreen() {
           paddingBottom: 20,
         }}
       >
-      <View className='gap-3'>
+      <View className='gap-5 mt-5'>
         <Header chartActive={chartActive} setShowAddInvestmentModal={setShowAddInvestmentModal} setChartActive={setChartActive} />
         {!chartActive ? <InvestmentDistribution data={chartData} /> : <InvestmentChart />}
         
         
         
         <View className="space-y-2">
-          {investments.map((item) => (
-            <InvestmentList key={item.id.toString()} investments={[item]} />
-          ))}
+            <InvestmentList investments={investments} />
         </View>
       </View>
       </ScrollView>

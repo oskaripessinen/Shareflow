@@ -45,7 +45,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
             return
         }
         setOnAddLoading(true);
-        const investment = await investmentsApi.AddInvestment(currentGroup?.id, selectedStock?.symbol, selectedStock?.name, selectedStock.type, parseFloat(quantity), parseFloat(stockPrice), selectedDate, userId);
+        const investment = await investmentsApi.AddInvestment(currentGroup?.id, selectedStock?.symbol, selectedStock?.name, selectedStock.typeDisp, parseFloat(quantity), parseFloat(stockPrice), selectedDate, userId);
         setOnAddLoading(false);
         console.log(investment);
         setShowInvestmentModal(false);
