@@ -25,7 +25,6 @@ export default function TabLayout() {
     pagerRef.current?.setPage(index);
   };
 
-  // Funktio navigoimaan tabiin nimen perusteella
   const navigateToTab = (tabKey: string) => {
     const tabIndex = tabs.findIndex(tab => tab.key === tabKey);
     if (tabIndex !== -1) {

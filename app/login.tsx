@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+const isExpoGo = process.env.EXPO_PUBLIC_IS_EXPO_GO === 'true';
 import { supabase } from '../utils/supabase';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
@@ -7,12 +7,38 @@ import { validateToken } from '../api/validateToken';
 import { useAuth, useGroups } from '../context/AppContext';
 import { groupApi } from 'api/groups';
 import logo from '../assets/images/logo.png';
-
 import GoogleLogo from '../assets/images/google.png';
 import AppleLogo from '../assets/images/apple.png';
 
 export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
+
+let GoogleSignin: any = null;
+
+const initializeGoogleSignin = async () => {
+  console.log(process.env.EXPO_PUBLIC_IS_EXPO_GO);
+
+  if (isExpoGo) {
+    console.warn('Google Sign-In not available in Expo Go');
+    return false;
+  }
+  
+  if (!GoogleSignin) {
+    const module = await import('@react-native-google-signin/google-signin');
+    GoogleSignin = module.GoogleSignin;
+    
+    GoogleSignin.configure({
+      webClientId: WEB_CLIENT_ID,
+      offlineAccess: true,
+      forceCodeForRefreshToken: true,
+      profileImageSize: 120,
+      iosClientId: IOS_CLIENT_ID,
+    });
+    console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
+  }
+  
+  return true;
+};
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -23,14 +49,7 @@ export default function LoginScreen() {
 
   useEffect(() => {
     const initializeApp = async () => {
-      GoogleSignin.configure({
-        webClientId: WEB_CLIENT_ID,
-        offlineAccess: true,
-        forceCodeForRefreshToken: true,
-        profileImageSize: 120,
-        iosClientId: IOS_CLIENT_ID,
-      });
-      console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
+      await initializeGoogleSignin();
 
       const checkSession = async () => {
         try {
@@ -85,8 +104,19 @@ export default function LoginScreen() {
   }, [router]);
 
   async function signInAsync() {
+    if (isExpoGo) {
+      console.warn('Google Sign-In not available in Expo Go');
+      return;
+    }
+
     setLoading(true);
     try {
+      const isInitialized = await initializeGoogleSignin();
+      if (!isInitialized) {
+        console.error('Google Sign-In not available');
+        return;
+      }
+
       await GoogleSignin.hasPlayServices();
       await GoogleSignin.signIn();
       const { idToken } = await GoogleSignin.getTokens();
@@ -145,12 +175,16 @@ export default function LoginScreen() {
         log in
       </Text>
       <TouchableOpacity
-        disabled={loading}
+        disabled={loading || isExpoGo}
         onPress={signInAsync}
-        className="flex-row items-center bg-white px-6 py-3 rounded-full shadow w-[90%] justify-center active:bg-slate-100 border border-slate-200"
+        className={`flex-row items-center px-6 py-3 rounded-full shadow w-[90%] justify-center border border-slate-200 ${
+          isExpoGo ? 'bg-gray-200' : 'bg-white active:bg-slate-100'
+        }`}
       >
         <Image source={GoogleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
-        <Text className="text-base text-default font-semibold">Continue with Google</Text>
+        <Text className={`text-base font-semibold ${isExpoGo ? 'text-gray-500' : 'text-default'}`}>
+          {'Continue with Google'}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity className="flex-row items-center bg-white px-6 py-3 rounded-full shadow w-[90%] justify-center mt-4 active:bg-slate-100 border border-slate-200">
         <Image source={AppleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />

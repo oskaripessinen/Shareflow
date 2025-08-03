@@ -10,14 +10,10 @@ import {
   StyleSheet,
   Animated,
 } from 'react-native';
-import {
-  Camera,
-  useCameraDevices,
-  useCameraPermission,
-  PhotoFile,
-} from 'react-native-vision-camera';
 import { X, ArrowLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const isExpoGo = process.env.EXPO_PUBLIC_IS_EXPO_GO === 'true';
 
 interface CameraViewProps {
   onClose: () => void;
@@ -26,25 +22,78 @@ interface CameraViewProps {
 
 const { width, height } = Dimensions.get('window');
 
+type CameraType = {
+  takeSnapshot: (options: any) => Promise<{ path: string }>;
+} | null;
+
+type CameraModuleType = {
+  Camera: any;
+  useCameraDevices: () => any[];
+  useCameraPermission: () => {
+    hasPermission: boolean | null;
+    requestPermission: () => Promise<boolean>;
+  };
+};
+
+let CameraModule: CameraModuleType | null = null;
+
+const initializeCamera = async (): Promise<boolean> => {
+  if (isExpoGo) {
+    console.warn('Camera not available in Expo Go');
+    return false;
+  }
+  
+  if (!CameraModule) {
+    try {
+      CameraModule = await import('react-native-vision-camera');
+      console.log('Camera module loaded successfully');
+    } catch (error) {
+      console.error('Failed to import Camera module:', error);
+      return false;
+    }
+  }
+  
+  return true;
+};
+
 export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
-  const { hasPermission, requestPermission } = useCameraPermission();
   const [isCapturing, setIsCapturing] = useState(false);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [animatedOpacity] = useState(new Animated.Value(0));
   const [isActive, setIsActive] = useState(true);
+  const [cameraInitialized, setCameraInitialized] = useState(false);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [devices, setDevices] = useState<any[]>([]);
 
-  const cameraRef = useRef<Camera>(null);
-  const devices = useCameraDevices();
-  const device = devices.find((d) => d.position === 'back');
-
-  useEffect(() => {
-    if (hasPermission === null) {
-      requestPermission();
-    }
-  }, [hasPermission, requestPermission]);
+  const cameraRef = useRef<CameraType>(null);
 
   useEffect(() => {
+    const initApp = async () => {
+      if (isExpoGo) {
+        return;
+      }
+
+      const success = await initializeCamera();
+      if (success && CameraModule) {
+        setCameraInitialized(true);
+        
+        const { useCameraPermission, useCameraDevices } = CameraModule;
+        const permission = useCameraPermission();
+        const cameraDevices = useCameraDevices();
+        
+        setHasPermission(permission.hasPermission);
+        setDevices(cameraDevices);
+        
+        if (permission.hasPermission === null) {
+          const granted = await permission.requestPermission();
+          setHasPermission(granted);
+        }
+      }
+    };
+
+    initApp();
+
     return () => {
       setIsActive(false);
     };
@@ -78,7 +127,7 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
       setIsCapturing(true);
       setIsLoading(true);
 
-      const photo: PhotoFile = await cameraRef.current.takeSnapshot({
+      const photo = await cameraRef.current.takeSnapshot({
         quality: 0.8,
       });
 
@@ -96,7 +145,40 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
     }
   };
 
-  if (hasPermission == null) {
+  const requestCameraPermission = async () => {
+    if (CameraModule) {
+      const { useCameraPermission } = CameraModule;
+      const permission = useCameraPermission();
+      const granted = await permission.requestPermission();
+      setHasPermission(granted);
+    }
+  };
+
+  if (isExpoGo) {
+    return (
+      <SafeAreaView className="flex-1 bg-background">
+        <Pressable className='ml-6 active:opacity-50' onPress={onClose}>
+          <ArrowLeft color={'black'} />
+        </Pressable>
+        <View className="items-center justify-center px-6 flex-1">
+          <Text className="text-default text-lg mb-5 text-center">
+            Camera functionality is not available in Expo Go
+          </Text>
+          <Text className="text-muted text-sm mb-5 text-center">
+            Please use a development build to access camera features
+          </Text>
+          <Pressable
+            onPress={onClose}
+            className="bg-primary px-5 py-2 rounded-xl active:bg-primaryDark"
+          >
+            <Text className="text-white text-base font-semibold">Go Back</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!cameraInitialized) {
     return (
       <View className="flex-1 bg-black items-center justify-center">
         <ActivityIndicator size="large" color="#fff" />
@@ -105,19 +187,27 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
     );
   }
 
+  if (hasPermission === null) {
+    return (
+      <View className="flex-1 bg-black items-center justify-center">
+        <ActivityIndicator size="large" color="#fff" />
+        <Text className="text-white text-lg mt-4">Checking camera permissions...</Text>
+      </View>
+    );
+  }
+
   if (hasPermission === false) {
     return (
       <SafeAreaView className="flex-1 bg-background">
         <Pressable className='ml-6 active:opacity-50' onPress={onClose}>
-          <ArrowLeft color={'black'}/>
+          <ArrowLeft color={'black'} />
         </Pressable>
         <View className="items-center justify-center px-6 flex-1">
-          
           <Text className="text-default text-lg mb-5 text-center">
             We need your permission to use the camera
           </Text>
           <Pressable
-            onPress={requestPermission}
+            onPress={requestCameraPermission}
             className="bg-primary px-5 py-2 rounded-xl active:bg-primaryDark mb-4"
           >
             <Text className="text-white text-base font-semibold">Grant Permission</Text>
@@ -126,6 +216,8 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
       </SafeAreaView>
     );
   }
+
+  const device = devices.find((d) => d.position === 'back');
 
   if (!device) {
     return (
@@ -141,71 +233,77 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
     );
   }
 
-  return (
-    <View style={styles.container}>
-      <Camera
-        ref={cameraRef}
-        style={styles.camera}
-        device={device}
-        isActive={isActive && isCameraReady}
-        photo={true}
-        preview={true}
-        enableZoomGesture={true}
-        onInitialized={() => {
-          console.log('Camera is ready');
-          setIsCameraReady(true);
-        }}
-        onError={(error) => {
-          console.error('Camera error:', error);
-          Alert.alert('Camera Error', 'Failed to initialize camera');
-        }}
-      />
+  if (CameraModule) {
+    const { Camera } = CameraModule;
 
-      {!isCameraReady && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#fff" />
-          <Text className="text-white text-lg mt-4">Initializing camera...</Text>
-        </View>
-      )}
+    return (
+      <View style={styles.container}>
+        <Camera
+          ref={cameraRef}
+          style={styles.camera}
+          device={device}
+          isActive={isActive && isCameraReady}
+          photo={true}
+          preview={true}
+          enableZoomGesture={true}
+          onInitialized={() => {
+            console.log('Camera is ready');
+            setIsCameraReady(true);
+          }}
+          onError={(error: any) => {
+            console.error('Camera error:', error);
+            Alert.alert('Camera Error', 'Failed to initialize camera');
+          }}
+        />
 
-      <SafeAreaView
-        className={`absolute left-0 right-0 h-15 flex-row items-center justify-between px-5 ${
-          Platform.OS === 'ios' ? 'top-15' : 'top-8'
-        }`}
-      >
-        <Pressable onPress={onClose} className="w-11 h-11 rounded-full items-center justify-center">
-          <X size={24} color="#fff" />
-        </Pressable>
-      </SafeAreaView>
+        {!isCameraReady && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#fff" />
+            <Text className="text-white text-lg mt-4">Initializing camera...</Text>
+          </View>
+        )}
 
-      {isCameraReady && (
-        <View
-          className={`absolute left-0 right-0 h-30 justify-center items-center ${
-            Platform.OS === 'ios' ? 'bottom-10' : 'bottom-5'
+        <SafeAreaView
+          className={`absolute left-0 right-0 h-15 flex-row items-center justify-between px-5 ${
+            Platform.OS === 'ios' ? 'top-15' : 'top-8'
           }`}
         >
-          <View className="flex-row items-center justify-center px-5" style={{ width: width - 40 }}>
-            <Pressable
-              onPress={takePhoto}
-              className={`w-20 h-20 rounded-full bg-white items-center justify-center shadow-lg ${
-                isCapturing ? 'opacity-50' : ''
-              }`}
-              disabled={isCapturing}
-            >
-              <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center"></View>
-            </Pressable>
-          </View>
-        </View>
-      )}
+          <Pressable onPress={onClose} className="w-11 h-11 rounded-full items-center justify-center">
+            <X size={24} color="#fff" />
+          </Pressable>
+        </SafeAreaView>
 
-      {isLoading && (
-        <Animated.View style={[styles.loadingOverlay, { opacity: animatedOpacity }]}>
-          <ActivityIndicator size="large" color="grey" />
-          <Text className="text-gray-700 text-lg mt-4">Processing photo...</Text>
-        </Animated.View>
-      )}
-    </View>
-  );
+        {isCameraReady && (
+          <View
+            className={`absolute left-0 right-0 h-30 justify-center items-center ${
+              Platform.OS === 'ios' ? 'bottom-10' : 'bottom-5'
+            }`}
+          >
+            <View className="flex-row items-center justify-center px-5" style={{ width: width - 40 }}>
+              <Pressable
+                onPress={takePhoto}
+                className={`w-20 h-20 rounded-full bg-white items-center justify-center shadow-lg ${
+                  isCapturing ? 'opacity-50' : ''
+                }`}
+                disabled={isCapturing}
+              >
+                <View className="w-16 h-16 rounded-full bg-gray-100 items-center justify-center"></View>
+              </Pressable>
+            </View>
+          </View>
+        )}
+
+        {isLoading && (
+          <Animated.View style={[styles.loadingOverlay, { opacity: animatedOpacity }]}>
+            <ActivityIndicator size="large" color="grey" />
+            <Text className="text-gray-700 text-lg mt-4">Processing photo...</Text>
+          </Animated.View>
+        )}
+      </View>
+    );
+  }
+
+  return null;
 }
 
 const styles = StyleSheet.create({
