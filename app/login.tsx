@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 const isExpoGo = process.env.EXPO_PUBLIC_IS_EXPO_GO === 'true';
 import { supabase } from '../utils/supabase';
 import { useRouter } from 'expo-router';
-import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator, TextInput } from 'react-native';
 import { validateToken } from '../api/validateToken';
 import { useAuth, useGroups } from '../context/AppContext';
 import { groupApi } from 'api/groups';
@@ -171,13 +171,26 @@ export default function LoginScreen() {
           <Text className='text-4xl font-semibold text-primary'>Flow</Text>
         </View>
       </View>
-      <Text className="text-sm font-semibold text-muted mt-4 mb-4">
+      <Text className="text-sm font-semibold text-slate-500 my-4">
         log in
       </Text>
+      <TextInput className='rounded-full bg-white w-[90%] py-3 px-4 mb-4 text-default border border-slate-200' placeholderTextColor={'grey'} placeholder='Email'/>
+      <TouchableOpacity className='flex-row items-center px-6 py-3 rounded-full bg-primary w-[90%] justify-center border border-slate-200'>
+        <Text className='text-base text-white font-semibold'>
+          Send one time password
+        </Text>
+      </TouchableOpacity>
+      <View className='flex-row justify-center items-center gap-2 my-5 mx-5'>
+        <View className='flex-1 h-px bg-slate-300'/>
+          <Text className="text-slate-500 font-semibold px-2">
+            or
+          </Text>
+        <View className='flex-1 h-px bg-slate-300'/>
+    </View>
       <TouchableOpacity
         disabled={loading || isExpoGo}
         onPress={signInAsync}
-        className={`flex-row items-center px-6 py-3 rounded-full shadow w-[90%] justify-center border border-slate-200 ${
+        className={`flex-row items-center px-6 py-3 rounded-full w-[90%] justify-center border border-slate-200 ${
           isExpoGo ? 'bg-gray-200' : 'bg-white active:bg-slate-100'
         }`}
       >
@@ -186,7 +199,7 @@ export default function LoginScreen() {
           {'Continue with Google'}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity className="flex-row items-center bg-white px-6 py-3 rounded-full shadow w-[90%] justify-center mt-4 active:bg-slate-100 border border-slate-200">
+      <TouchableOpacity className="flex-row items-center bg-white px-6 py-3 rounded-full w-[90%] justify-center mt-4 active:bg-slate-100 border border-slate-200">
         <Image source={AppleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
         <Text className="text-base text-default font-semibold">Continue with Apple</Text>
       </TouchableOpacity>
