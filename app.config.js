@@ -33,7 +33,7 @@ export default ({ config }) => {
       version: "1.0.0",
       orientation: "portrait",
       icon: "./assets/images/icon.png",
-      scheme: "myapp",
+      scheme: "shareflow",
       userInterfaceStyle: "automatic",
       newArchEnabled: false,
       backgroundColor: "#FFFFFF",
@@ -58,7 +58,13 @@ export default ({ config }) => {
         eas: {
           projectId: "b019a141-f600-44cd-9963-3f690bd267a5"
         }
-      }
+      },
+      linking: {
+        prefixes: [
+          "shareflow://",
+          "https://shareflow.app",
+        ],
+      },
     }
   };
 };

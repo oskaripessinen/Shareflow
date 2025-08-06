@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 const isExpoGo = process.env.EXPO_PUBLIC_IS_EXPO_GO === 'true';
 import { supabase } from '../utils/supabase';
 import { useRouter } from 'expo-router';
-import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator, TextInput } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator, TextInput, Alert } from 'react-native';
 import { validateToken } from '../api/validateToken';
 import { useAuth, useGroups } from '../context/AppContext';
 import { groupApi } from 'api/groups';
@@ -16,8 +16,6 @@ export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
 let GoogleSignin: any = null;
 
 const initializeGoogleSignin = async () => {
-  console.log(process.env.EXPO_PUBLIC_IS_EXPO_GO);
-
   if (isExpoGo) {
     console.warn('Google Sign-In not available in Expo Go');
     return false;
@@ -44,12 +42,17 @@ export default function LoginScreen() {
   const router = useRouter();
   const [initializing, setInitializing] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [email, setEmail] = useState('');
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const { setGoogleId } = useAuth();
   const { setUserGroups } = useGroups();
 
   useEffect(() => {
     const initializeApp = async () => {
-      await initializeGoogleSignin();
+      if (!isExpoGo) {
+        await initializeGoogleSignin();
+      }
 
       const checkSession = async () => {
         try {
@@ -66,7 +69,6 @@ export default function LoginScreen() {
             } else {
               router.replace('/create_group');
             }
-
             return;
           } else {
             console.log('No active session found');
@@ -92,7 +94,24 @@ export default function LoginScreen() {
         const userGroups = await groupApi.getUserGroups();
         console.log('usergroups length:', userGroups.length);
         setUserGroups(userGroups);
-        router.replace('/(tabs)');
+        
+        await supabase.from('users').upsert(
+          {
+            google_id: session.user.id,
+            email: session.user.email,
+            full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
+            avatar_url: session.user.user_metadata?.avatar_url,
+          },
+          {
+            onConflict: 'google_id',
+          },
+        );
+        
+        if (userGroups.length > 0) {
+          router.replace('/(tabs)');
+        } else {
+          router.replace('/create_group');
+        }
       } else if (event === 'SIGNED_OUT') {
         setInitializing(false);
       }
@@ -102,6 +121,47 @@ export default function LoginScreen() {
       subscription?.unsubscribe();
     };
   }, [router]);
+
+  const sendMagicLink = async () => {
+    if (!email) {
+      Alert.alert('Error', 'Please enter your email address');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    setSending(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email,
+        options: {
+          emailRedirectTo: 'exp://192.168.68.118:8081/--/auth/callback',
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setMagicLinkSent(true);
+      Alert.alert(
+        'Link Sent', 
+        `We've sent a magic link to ${email}. Please check your email and click the link to sign in.`
+      );
+    } catch (error) {
+      console.error('Magic link send error:', error);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const resetMagicLink = () => {
+    setMagicLinkSent(false);
+    setEmail('');
+  };
 
   async function signInAsync() {
     if (isExpoGo) {
@@ -134,17 +194,6 @@ export default function LoginScreen() {
 
       if (user) {
         setGoogleId(user.id);
-        await supabase.from('users').upsert(
-          {
-            google_id: user.id,
-            email: user.email,
-            full_name: user.user_metadata.full_name,
-            avatar_url: user.user_metadata.avatar_url,
-          },
-          {
-            onConflict: 'google_id',
-          },
-        );
       }
     } catch (e: unknown) {
       console.error('Login error:', e);
@@ -174,19 +223,64 @@ export default function LoginScreen() {
       <Text className="text-sm font-semibold text-slate-500 my-4">
         log in
       </Text>
-      <TextInput className='rounded-full bg-white w-[90%] py-3 px-4 mb-4 text-default border border-slate-200' placeholderTextColor={'grey'} placeholder='Email'/>
-      <TouchableOpacity className='flex-row items-center px-6 py-3 rounded-full bg-primary w-[90%] justify-center border border-slate-200'>
-        <Text className='text-base text-white font-semibold'>
-          Send one time password
-        </Text>
-      </TouchableOpacity>
+
+      {!magicLinkSent ? (
+        <>
+          <TextInput 
+            className='rounded-full bg-white w-[90%] py-3 px-4 mb-4 text-default border border-slate-200' 
+            placeholderTextColor={'grey'} 
+            placeholder='Email'
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            editable={!sending}
+          />
+          <TouchableOpacity 
+            className={`flex-row items-center px-6 py-3 rounded-full bg-primary w-[90%] justify-center border border-slate-200 ${
+              sending ? 'opacity-50' : ''
+            }`}
+            onPress={sendMagicLink}
+            disabled={sending}
+          >
+            {sending ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Text className='text-base text-white font-semibold'>
+                Send login link
+              </Text>
+            )}
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <View className="bg-blue-50 p-4 rounded-xl w-[90%] mb-4">
+            <Text className="text-blue-800 text-center font-semibold mb-2">
+              Link Sent!
+            </Text>
+            <Text className="text-blue-600 text-center text-sm">
+              We've sent one time login link to {email}. Check your email and click the link to sign in.
+            </Text>
+          </View>
+          <TouchableOpacity 
+            className="px-6 py-2"
+            onPress={resetMagicLink}
+          >
+            <Text className="text-slate-500 text-sm">
+              Use different email
+            </Text>
+          </TouchableOpacity>
+        </>
+      )}
+
       <View className='flex-row justify-center items-center gap-2 my-5 mx-5'>
         <View className='flex-1 h-px bg-slate-300'/>
-          <Text className="text-slate-500 font-semibold px-2">
-            or
-          </Text>
+        <Text className="text-slate-500 font-semibold px-2">
+          or
+        </Text>
         <View className='flex-1 h-px bg-slate-300'/>
-    </View>
+      </View>
+
       <TouchableOpacity
         disabled={loading || isExpoGo}
         onPress={signInAsync}
@@ -196,9 +290,10 @@ export default function LoginScreen() {
       >
         <Image source={GoogleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
         <Text className={`text-base font-semibold ${isExpoGo ? 'text-gray-500' : 'text-default'}`}>
-          {'Continue with Google'}
+          Continue with Google
         </Text>
       </TouchableOpacity>
+
       <TouchableOpacity className="flex-row items-center bg-white px-6 py-3 rounded-full w-[90%] justify-center mt-4 active:bg-slate-100 border border-slate-200">
         <Image source={AppleLogo} style={{ width: 24, height: 24, marginRight: 12 }} />
         <Text className="text-base text-default font-semibold">Continue with Apple</Text>
@@ -206,9 +301,7 @@ export default function LoginScreen() {
 
       <View className="mt-4 h-16 justify-center items-center">
         {loading && (
-          <>
-            <ActivityIndicator size="small" color="#3B82F6" />
-          </>
+          <ActivityIndicator size="small" color="#3B82F6" />
         )}
       </View>
     </SafeAreaView>
