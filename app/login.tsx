@@ -3,12 +3,14 @@ const isExpoGo = process.env.EXPO_PUBLIC_IS_EXPO_GO === 'true';
 import { supabase } from '../utils/supabase';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, View, Text, TouchableOpacity, Image, ActivityIndicator, TextInput, Alert } from 'react-native';
+import Modal from 'react-native-modal';
 import { validateToken } from '../api/validateToken';
 import { useAuth, useGroups } from '../context/AppContext';
 import { groupApi } from 'api/groups';
 import logo from '../assets/images/logo.png';
 import GoogleLogo from '../assets/images/google.png';
 import AppleLogo from '../assets/images/apple.png';
+import { v4 as uuidv4 } from 'uuid';
 
 export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
@@ -41,10 +43,11 @@ const initializeGoogleSignin = async () => {
 export default function LoginScreen() {
   const router = useRouter();
   const [initializing, setInitializing] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
-  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
   const { setGoogleId } = useAuth();
   const { setUserGroups } = useGroups();
 
@@ -91,26 +94,43 @@ export default function LoginScreen() {
       console.log('Auth state changed:', event, session?.user?.email);
 
       if (event === 'SIGNED_IN' && session) {
-        const userGroups = await groupApi.getUserGroups();
-        console.log('usergroups length:', userGroups.length);
-        setUserGroups(userGroups);
+        const user = session.user;
         
-        await supabase.from('users').upsert(
-          {
-            google_id: session.user.id,
-            email: session.user.email,
-            full_name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0],
-            avatar_url: session.user.user_metadata?.avatar_url,
-          },
-          {
-            onConflict: 'google_id',
-          },
-        );
-        
-        if (userGroups.length > 0) {
-          router.replace('/(tabs)');
-        } else {
-          router.replace('/create_group');
+        try {
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('google_id, email')
+            .eq('email', user.email)
+            .single();
+
+          if (existingUser) {
+            console.log('Existing user found:', existingUser.email);
+            setGoogleId(existingUser.google_id);
+          } else {
+            const newUuid = uuidv4();
+            console.log('Creating new user with UUID:', newUuid);
+            
+            await supabase.from('users').insert({
+              google_id: newUuid,
+              email: user.email,
+              full_name: user.user_metadata?.full_name || user.email?.split('@')[0],
+              avatar_url: user.user_metadata?.avatar_url,
+            });
+            
+            setGoogleId(newUuid);
+          }
+
+          const userGroups = await groupApi.getUserGroups();
+          console.log('usergroups length:', userGroups.length);
+          setUserGroups(userGroups);
+          
+          if (userGroups.length > 0) {
+            router.replace('/(tabs)');
+          } else {
+            router.replace('/create_group');
+          }
+        } catch (error) {
+          console.error('User upsert error:', error);
         }
       } else if (event === 'SIGNED_OUT') {
         setInitializing(false);
@@ -121,8 +141,8 @@ export default function LoginScreen() {
       subscription?.unsubscribe();
     };
   }, [router]);
-
-  const sendMagicLink = async () => {
+  
+  const sendOTP = async () => {
     if (!email) {
       Alert.alert('Error', 'Please enter your email address');
       return;
@@ -138,7 +158,7 @@ export default function LoginScreen() {
       const { error } = await supabase.auth.signInWithOtp({
         email: email,
         options: {
-          emailRedirectTo: 'exp://192.168.68.118:8081/--/auth/callback',
+          shouldCreateUser: true, 
         },
       });
 
@@ -146,20 +166,64 @@ export default function LoginScreen() {
         throw error;
       }
 
-      setMagicLinkSent(true);
+      setOtpSent(true);
       Alert.alert(
-        'Link Sent', 
-        `We've sent a magic link to ${email}. Please check your email and click the link to sign in.`
+        'Code Sent', 
+        `We've sent a 6-digit code to ${email}. Please check your email and enter the code below.`
       );
-    } catch (error) {
-      console.error('Magic link send error:', error);
+    } catch (error: any) {
+      console.error('OTP send error:', error);
+      Alert.alert('Error', error.message || 'Failed to send verification code');
     } finally {
       setSending(false);
     }
   };
 
-  const resetMagicLink = () => {
-    setMagicLinkSent(false);
+  const verifyOTP = async () => {
+    if (!otp) {
+      Alert.alert('Error', 'Please enter the verification code');
+      return;
+    }
+
+    if (otp.length !== 6) {
+      Alert.alert('Error', 'Verification code must be 6 digits');
+      return;
+    }
+
+    setSending(true);
+    try {
+      const { data: { session }, error } = await supabase.auth.verifyOtp({
+        email: email,
+        token: otp,
+        type: 'email',
+      });
+
+      console.log('OTP verification result:', { 
+        user: session?.user?.email, 
+        session: !!session, 
+        error 
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (session) {
+        console.log('✅ OTP verification successful');
+        setOtpSent(false);
+        setOtp('');
+      }
+    } catch (error) {
+      console.error('OTP verify error:', error);
+      Alert.alert('Error', 'Invalid verification code');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const resetOTP = () => {
+    setOtpSent(false);
+    setOtp('');
     setEmail('');
   };
 
@@ -224,60 +288,36 @@ export default function LoginScreen() {
         log in
       </Text>
 
-      {!magicLinkSent ? (
-        <>
-          <TextInput 
-            className='rounded-full bg-white w-[90%] py-3 px-4 mb-4 text-default border border-slate-200' 
-            placeholderTextColor={'grey'} 
-            placeholder='Email'
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            editable={!sending}
-          />
-          <TouchableOpacity 
-            className={`flex-row items-center px-6 py-3 rounded-full bg-primary w-[90%] justify-center border border-slate-200 ${
-              sending ? 'opacity-50' : ''
-            }`}
-            onPress={sendMagicLink}
-            disabled={sending}
-          >
-            {sending ? (
-              <ActivityIndicator size="small" color="white" />
-            ) : (
-              <Text className='text-base text-white font-semibold'>
-                Send login link
-              </Text>
-            )}
-          </TouchableOpacity>
-        </>
-      ) : (
-        <>
-          <View className="bg-blue-50 p-4 rounded-xl w-[90%] mb-4">
-            <Text className="text-blue-800 text-center font-semibold mb-2">
-              Link Sent!
-            </Text>
-            <Text className="text-blue-600 text-center text-sm">
-              We've sent one time login link to {email}. Check your email and click the link to sign in.
-            </Text>
-          </View>
-          <TouchableOpacity 
-            className="px-6 py-2"
-            onPress={resetMagicLink}
-          >
-            <Text className="text-slate-500 text-sm">
-              Use different email
-            </Text>
-          </TouchableOpacity>
-        </>
-      )}
+      <TextInput 
+        className='rounded-full bg-white w-[90%] py-4 px-5 mb-4 text-default border border-slate-200' 
+        placeholderTextColor={'grey'} 
+        placeholder='Email'
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        editable={!sending}
+      />
+      
+      <TouchableOpacity 
+        className={`flex-row items-center px-6 py-3 rounded-full bg-primary w-[90%] justify-center border border-slate-200 ${
+          sending ? 'opacity-50' : ''
+        }`}
+        onPress={sendOTP}
+        disabled={sending}
+      >
+        {sending ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <Text className='text-base text-white font-semibold'>
+            Send verification code
+          </Text>
+        )}
+      </TouchableOpacity>
 
       <View className='flex-row justify-center items-center gap-2 my-5 mx-5'>
         <View className='flex-1 h-px bg-slate-300'/>
-        <Text className="text-slate-500 font-semibold px-2">
-          or
-        </Text>
+        <Text className="text-slate-500 font-semibold px-2">or</Text>
         <View className='flex-1 h-px bg-slate-300'/>
       </View>
 
@@ -304,6 +344,82 @@ export default function LoginScreen() {
           <ActivityIndicator size="small" color="#3B82F6" />
         )}
       </View>
+
+      <Modal
+        isVisible={otpSent}
+        onBackdropPress={resetOTP} // Sulje modal kun taustaa klikataan
+        onBackButtonPress={resetOTP}
+        animationIn="slideInUp"
+        animationOut="slideOutDown"
+        backdropOpacity={0.8}
+        style={{ margin: 0 }}
+        hideModalContentWhileAnimating={true}
+        avoidKeyboard={true}
+      >
+        <View className="flex-1 bg-white">
+          <SafeAreaView className="flex-1">
+            {/* Header */}
+            <View className="flex-row items-center justify-between px-6 py-4">
+              <TouchableOpacity 
+                onPress={resetOTP}
+                className="p-2"
+              >
+                <Text className="text-slate-500 text-base">Cancel</Text>
+              </TouchableOpacity>
+              <Text className="text-lg font-semibold text-default">Enter Code</Text>
+              <View className="w-16" />
+            </View>
+
+            {/* Content */}
+            <View className="flex-1 justify-center items-center px-6">
+              <Text className="text-slate-600 text-center mb-8 text-base">
+                Enter the 6-digit code sent to {email}
+              </Text>
+
+              {/* OTP Input */}
+              <TextInput 
+                className='rounded-xl bg-slate-50 w-full py-6 px-4 mb-8 text-default border border-slate-200 text-center text-2xl tracking-[8px] font-semibold' 
+                placeholderTextColor={'#94a3b8'} 
+                placeholder='000000'
+                value={otp}
+                onChangeText={setOtp}
+                keyboardType="numeric"
+                maxLength={6}
+                editable={!sending}
+                autoFocus={true}
+                selectionColor="#3B82F6"
+              />
+
+              {/* Verify Button */}
+              <TouchableOpacity 
+                className={`flex-row items-center px-6 py-4 rounded-xl bg-primary w-full justify-center mb-6 ${
+                  sending || otp.length !== 6 ? 'opacity-50' : ''
+                }`}
+                onPress={verifyOTP}
+                disabled={sending || otp.length !== 6}
+              >
+                {sending ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className='text-lg text-white font-semibold'>
+                    Verify
+                  </Text>
+                )}
+              </TouchableOpacity>
+
+              {/* Resend */}
+              <TouchableOpacity 
+                onPress={sendOTP}
+                disabled={sending}
+              >
+                <Text className="text-slate-500 text-base">
+                  Resend code
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
