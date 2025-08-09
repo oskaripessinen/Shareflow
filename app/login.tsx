@@ -171,9 +171,8 @@ export default function LoginScreen() {
         'Code Sent', 
         `We've sent a 6-digit code to ${email}. Please check your email and enter the code below.`
       );
-    } catch (error: any) {
+    } catch (error) {
       console.error('OTP send error:', error);
-      Alert.alert('Error', error.message || 'Failed to send verification code');
     } finally {
       setSending(false);
     }
@@ -209,7 +208,7 @@ export default function LoginScreen() {
       }
 
       if (session) {
-        console.log('✅ OTP verification successful');
+        console.log('OTP verification successful');
         setOtpSent(false);
         setOtp('');
       }
@@ -347,18 +346,16 @@ export default function LoginScreen() {
 
       <Modal
         isVisible={otpSent}
-        onBackdropPress={resetOTP} // Sulje modal kun taustaa klikataan
+        onBackdropPress={resetOTP}
         onBackButtonPress={resetOTP}
-        animationIn="slideInUp"
-        animationOut="slideOutDown"
-        backdropOpacity={0.8}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
         style={{ margin: 0 }}
         hideModalContentWhileAnimating={true}
         avoidKeyboard={true}
       >
         <View className="flex-1 bg-white">
           <SafeAreaView className="flex-1">
-            {/* Header */}
             <View className="flex-row items-center justify-between px-6 py-4">
               <TouchableOpacity 
                 onPress={resetOTP}
@@ -370,13 +367,11 @@ export default function LoginScreen() {
               <View className="w-16" />
             </View>
 
-            {/* Content */}
             <View className="flex-1 justify-center items-center px-6">
               <Text className="text-slate-600 text-center mb-8 text-base">
                 Enter the 6-digit code sent to {email}
               </Text>
 
-              {/* OTP Input */}
               <TextInput 
                 className='rounded-xl bg-slate-50 w-full py-6 px-4 mb-8 text-default border border-slate-200 text-center text-2xl tracking-[8px] font-semibold' 
                 placeholderTextColor={'#94a3b8'} 
@@ -390,7 +385,6 @@ export default function LoginScreen() {
                 selectionColor="#3B82F6"
               />
 
-              {/* Verify Button */}
               <TouchableOpacity 
                 className={`flex-row items-center px-6 py-4 rounded-xl bg-primary w-full justify-center mb-6 ${
                   sending || otp.length !== 6 ? 'opacity-50' : ''
@@ -407,7 +401,6 @@ export default function LoginScreen() {
                 )}
               </TouchableOpacity>
 
-              {/* Resend */}
               <TouchableOpacity 
                 onPress={sendOTP}
                 disabled={sending}

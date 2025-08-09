@@ -1,4 +1,4 @@
-import { View, TextInput, Pressable, ActivityIndicator, Text, Animated } from "react-native"
+import { View, TextInput, Pressable, ActivityIndicator, Text, Animated, Platform } from "react-native"
 import { ArrowLeft, Search, Plus, Calendar, DollarSign, Euro, X } from "lucide-react-native";
 import { useState, useEffect } from "react";
 import { investmentsApi, StockResult } from "api/investments";
@@ -189,7 +189,8 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                 statusBarTranslucent={true}
                 swipeDirection={'down'}
                 onSwipeComplete={handleCloseInvestmentModal}
-                style={{ justifyContent: 'flex-end', alignItems: 'center', margin: 0 }}
+                style={{ justifyContent: 'flex-end',width: '100%', alignItems: 'center', margin: 0 }}
+                avoidKeyboard={true}
             >
                 <View className="bg-white rounded-t-2xl border border-slate-200 p-5 w-full justify-center">
                     <View className="w-20 mx-4 h-1 rounded-2xl mb-2 bg-slate-300 self-center"/>
@@ -206,43 +207,47 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                     <View className="gap-4">
                         <View>
                             <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Quantity</Text>
+                            <View className="flex-row items-center border border-slate-300 rounded-xl px-3 py-0">
                             <TextInput 
-                                className="border border-gray-300 rounded-xl px-3 py-1.5 text-default text-sm"
+                                className="flex-1 text-default py-2 text-[13px] tracking-[0px]"
+                                
                                 placeholder="Enter quantity"
                                 placeholderTextColor={'#9CA3AF'}
                                 keyboardType="numeric"
                                 value={quantity}
                                 onChangeText={setQuantity}
-                                
+                                textAlignVertical="center"
                             />
+                            </View>
                         </View>
 
                         <View>
                             <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Purchase Date</Text>
-                            <Pressable 
-                                onPress={() => setShowDatePicker(true)}
-                                className="border border-gray-300 rounded-xl px-3 py-3 flex-row items-center justify-between"
-                            >
-                                <Text className={`text-sm ${selectedDate ? 'text-default' : 'text-gray-400'}`}>
-                                    {formatDate(selectedDate)}
-                                </Text>
-                                <Calendar size={16} color="#9CA3AF"/>
-                            </Pressable>
+                                <Pressable 
+                                    onPress={() => setShowDatePicker(true)}
+                                    className="border border-gray-300 rounded-xl px-3 py-2 flex-row items-center justify-between"
+                                >
+                                    <Text className={`text-sm ${selectedDate ? 'text-default' : 'text-gray-400'}`}>
+                                        {formatDate(selectedDate)}
+                                    </Text>
+                                    <Calendar size={16} color="#9CA3AF"/>
+                                </Pressable>    
                         </View>
 
                         <View>
                             <Text className="text-sm font-medium text-gray-600 mb-2 ml-0.5">Purchase price</Text>
-                            <View className={`flex-row items-center border border-slate-300 rounded-xl px-3 py-0 ${!loadingStockPrice && selectedDate !== null ? 'opacity-100' : 'opacity-40'}`}>
+                            <View className={`flex-row items-center border border-slate-300 rounded-xl px-3 py-2 ${!loadingStockPrice && selectedDate !== null ? 'opacity-100' : 'opacity-40'}`}>
                                 {stockCurrency == 'USD' && <DollarSign size={16} color="#000000CC"/> }
                                 {stockCurrency == 'EUR' && <Euro size={16} color="#000000CC"/> }
                                 <TextInput 
-                                    className="flex-1 text-default py-1.5 text-sm"
+                                    className="flex-1 text-default text-[13px] ml-2" 
                                     placeholder="Enter price"
                                     placeholderTextColor={'#9CA3AF'}
                                     keyboardType="numeric"
                                     editable={!loadingStockPrice && selectedDate !== null}
                                     value={stockPrice}
                                     onChangeText={setStockPrice}
+                                    textAlignVertical="center" 
                                 />
                                 {loadingStockPrice && (
                                     <ActivityIndicator size="small" color={'#3B82F6'} className="ml-2"/>
@@ -267,18 +272,76 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                             </Pressable>
                         </View>
                     </View>
-
-                    {showDatePicker && (
-                        <DateTimePicker
-                            value={selectedDate || new Date()}
-                            mode="date"
-                            display="default"
-                            onChange={handleDateChange}
-                            maximumDate={new Date()}
-                        />
-                    )}
                 </View>
+                {showDatePicker && Platform.OS === 'android' && (
+                    <DateTimePicker
+                        value={selectedDate || new Date()}
+                        mode="date"
+                        display='default'
+                        onChange={handleDateChange}
+                        maximumDate={new Date()}
+                        textColor="#000000"
+                        
+                    />
+                )}
+                {showDatePicker && Platform.OS === 'ios' && (
+                    <Modal
+                        isVisible={showDatePicker}
+                        onBackdropPress={() => setShowDatePicker(false)}
+                        onSwipeComplete={() => setShowDatePicker(false)}
+                        swipeDirection={'down'}
+                        style={{ justifyContent: 'flex-end', alignItems: 'center', width: '100%', flex: 1, margin: 0 }}
+                        backdropOpacity={0.5}
+                        animationIn="slideInUp"
+                        animationOut="slideOutDown"
+                    >
+                        <View className="bg-white rounded-t-2xl m-0 w-['100%']"> 
+                            <View className="w-12 h-1 bg-gray-300 rounded-full self-center mt-3 mb-2" />
+                            
+                            <View className="flex-row justify-end px-4 pt-2 pb-2">
+                                <Pressable 
+                                    onPress={async () => {
+                                        setShowDatePicker(false);
+                                        
+                                        if (selectedDate && selectedStock) {
+                                            setLoadingStockPrice(true);
+                                            try {
+                                                const stockPriceData = await investmentsApi.getStockPrice(selectedStock.symbol, selectedDate);
+                                                console.log("data", stockPriceData.price.toFixed(2));
+                                                setStockPrice(stockPriceData.price.toFixed(2).toString());
+                                                setStockCurrency(stockPriceData.currency);
+                                            } catch (error) {
+                                                console.error('Error fetching stock price:', error);
+                                                setStockPrice("");
+                                            }
+                                            setLoadingStockPrice(false);
+                                        }
+                                    }}
+                                    className="p-2"
+                                >
+                                    <Text className="text-primary text-base font-semibold">Accept</Text>
+                                </Pressable>
+                            </View>
+
+                            <DateTimePicker
+                                value={selectedDate || new Date()}
+                                mode="date"
+                                display="spinner"
+                                onChange={(event, date) => {
+                                    if (date) {
+                                        setSelectedDate(date);
+                                    }
+                                }}
+                                maximumDate={new Date()}
+                                themeVariant="light"
+                                style={{maxWidth: '95%', marginBottom: 20}}
+                            />
+                        </View>
+                    </Modal>)}
+                
             </Modal>
+
+            
         </View>
     )
 }
