@@ -14,7 +14,7 @@ const AddInvestment: React.FC<AddInvestmentProps> = ({ onClose }) => {
 
   const handleCloseSearchModal = () => {
     setShowSearchModal(false);
-    onClose()
+    
     
     
   }

@@ -87,6 +87,14 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
         setLoadingStockPrice(false);
     };
 
+    const handleSetDate = (event: DateTimePickerEvent, date?: Date) =>  {
+        if (date) {
+            setSelectedDate(date)
+            
+        }
+        console.log("date", selectedDate);
+    }
+
     const formatDate = (date: Date | null) => {
         if (!date) return "Select date";
         return date.toLocaleDateString('en-US', {
@@ -135,11 +143,12 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                     <TextInput 
                         placeholderTextColor={'black'} 
                         placeholder="search" 
-                        className="flex-1 text-default py-1 text-base ml-2"
+                        className="flex-1 text-default py-1 ml-2"
                         textAlignVertical="center"
                         value={searchText}
                         onChangeText={setSearchText}
                         autoFocus={true}
+                        verticalAlign="middle"
                     />
                     {searchText !== "" && (
                     <Pressable className="p-1" onPress={() => setSearchText("")}>
@@ -250,7 +259,9 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                                     textAlignVertical="center" 
                                 />
                                 {loadingStockPrice && (
-                                    <ActivityIndicator size="small" color={'#3B82F6'} className="ml-2"/>
+                                    <View className="absolute right-3 top-0 bottom-0 justify-center">
+                                        <ActivityIndicator size='small' color={'#3B82F6'}/>
+                                    </View>
                                 )}
                             </View>
                         </View>
@@ -290,17 +301,21 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                         onBackdropPress={() => setShowDatePicker(false)}
                         onSwipeComplete={() => setShowDatePicker(false)}
                         swipeDirection={'down'}
-                        style={{ justifyContent: 'flex-end', alignItems: 'center', width: '100%', flex: 1, margin: 0 }}
+                        style={{ justifyContent: 'center', alignItems: 'center', width: '100%', flex: 1, margin: 0 }}
                         backdropOpacity={0.5}
-                        animationIn="slideInUp"
-                        animationOut="slideOutDown"
+                        animationIn="fadeIn"
+                        animationOut="fadeOut"
                     >
-                        <View className="bg-white rounded-t-2xl m-0 w-['100%']"> 
-                            <View className="w-12 h-1 bg-gray-300 rounded-full self-center mt-3 mb-2" />
+                        <View className="bg-white rounded-2xl m-0"> 
                             
-                            <View className="flex-row justify-end px-4 pt-2 pb-2">
+                            
+                            <View className="flex-row justify-between px-4 pt-2">
+                                <Pressable onPress={() => setShowDatePicker(false)} className="justify-center items-center py-2">
+                                    <X size={22}/>
+                                </Pressable>
                                 <Pressable 
                                     onPress={async () => {
+                                        
                                         setShowDatePicker(false);
                                         
                                         if (selectedDate && selectedStock) {
@@ -327,11 +342,7 @@ const SearchModal: React.FC<SearchModalProps> = ({onClose}) => {
                                 value={selectedDate || new Date()}
                                 mode="date"
                                 display="spinner"
-                                onChange={(event, date) => {
-                                    if (date) {
-                                        setSelectedDate(date);
-                                    }
-                                }}
+                                onChange={handleSetDate}
                                 maximumDate={new Date()}
                                 themeVariant="light"
                                 style={{maxWidth: '95%', marginBottom: 20}}
