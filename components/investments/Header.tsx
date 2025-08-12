@@ -28,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({chartActive, setShowAddInvestmentModal, 
                 </Pressable>
             </View>
 
-            <Pressable onPress={(() => setShowAddInvestmentModal(true))} className="flex-row items-center bg-primary pr-4 pl-2.5 py-2 rounded-xl active:bg-primaryDark shadow gap-1">
+            <Pressable onPress={(() => setShowAddInvestmentModal(true))} className="flex-row items-center bg-primary pr-4 pl-2.5 py-2 rounded-xl active:bg-primaryDark gap-1">
                 <Plus size={18} strokeWidth={2.2} color={'#fff'}/>
                 <Text className="text-white font-sans text-base">
                     Investment

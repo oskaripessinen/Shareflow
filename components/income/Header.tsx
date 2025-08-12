@@ -30,20 +30,14 @@ const Header: React.FC<HeaderProps> = ({
                  onPress={() => {
                    setShowTimeWindowPicker(true);
                  }}
-                 style={{
-                   minWidth: 120,
-                   height: '100%',
-                   paddingHorizontal: 20,
-                   justifyContent: 'center',
-                 }}
-                 className="flex-row items-center my-0 py-0 rounded-l-xl pl-3 pr-1 border-r border-slate-200 text-center active:bg-slate-100"
+                 className="flex-row items-center rounded-l-lg px-3 py-3 border-r border-slate-200 text-center active:bg-slate-100"
                >
                  <Clock size={16} color="#64748b" strokeWidth={2.5} />
                  <Text className="font-medium font-semibold text-slate-700 text-base pl-2 pr-2" numberOfLines={1}>
                    {timeWindowOptions.find((opt) => opt.value === selectedTimeWindow)?.label}
                  </Text>
                </Pressable>
-               <View className="p-3 pl-3">
+               <View className="py-3 px-1">
                  <Text className="font-semibold text-default px-2 text-center min-w-[100px] text-base" numberOfLines={1}>
                      {(totalIncome || 0)} €
                  </Text>
@@ -52,10 +46,9 @@ const Header: React.FC<HeaderProps> = ({
            </View>
            <Pressable
              onPress={() => setShowAddIncomeForm(true)}
-             className="flex-row items-center bg-primary pr-4 pl-2.5 py-2 rounded-xl active:bg-primaryDark shadow gap-1"
+             className="flex-row items-center bg-primary p-3 rounded-xl active:bg-primaryDark"
            >
              <Plus strokeWidth={2.2} size={18} color="#fff" />
-             <Text className='text-white font-sans text-base'>Income</Text>
            </Pressable>
          </View>
        </View>
