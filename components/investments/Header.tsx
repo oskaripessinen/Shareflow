@@ -12,17 +12,17 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({chartActive, setShowAddInvestmentModal, setChartActive}) => {
 
     return (
-        <View className="justify-between flex-row">
-            <View className="flex-row flex-1 rounded-xl">
+        <View className="justify-between flex-row ">
+            <View className="flex-row bg-white rounded-xl">
                 <Pressable 
                     onPress={() => setChartActive(false)} 
-                    className={`px-6 m-0 py-2.5 justify-center rounded-l-lg items-center border border-slate-300 active:bg-slate-100 ${!chartActive ? "bg-slate-100" : "bg-surface"}`}
+                    className={`px-6 m-0 py-2.5 justify-center rounded-l-[10px] items-center border border-slate-300 active:bg-slate-100 ${!chartActive ? "bg-slate-100" : "bg-surface"}`}
                 >
                     <Text className="font-semibold text-default text-sm">Dist</Text>
                 </Pressable>
                 <Pressable 
                     onPress={() => setChartActive(true)} 
-                    className={`px-6 m-0 py-2.5 rounded-r-lg border-y border-r border-slate-300 justify-center items-center active:bg-slate-100 ${chartActive ? "bg-slate-100" : "bg-surface"}`}
+                    className={`px-6 m-0 py-2.5 rounded-r-xl border-y border-r border-slate-300 justify-center items-center active:bg-slate-100 ${chartActive ? "bg-slate-100" : "bg-surface"}`}
                 >
                     <Text className="font-semibold text-default text-sm">Chart</Text>
                 </Pressable>

@@ -7,21 +7,21 @@ import {
   SafeAreaView,
   ActivityIndicator,
   ScrollView,
-  Modal,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import { Group } from 'types/groups';
 import { ChevronDown, UserPlus, X, Check, ChevronLeft } from 'lucide-react-native';
 import { groupApi } from 'api/groups';
+import { useRouter } from 'expo-router';
+import { useGroups } from 'context/AppContext';
 
-interface CreateGroupScreenProps {
-  groups: Group[];
-  onClose: () => void;
-  currentGroup: Group | null;
-};
 
-const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenProps) => {
+
+const InviteModal = () => {
+  const router = useRouter();
   const [inviteEmail, setInviteEmail] = useState('');
   const [invitees, setInvitees] = useState<string[]>([]);
+  const { currentGroup, userGroups } = useGroups();
   const [loading, setLoading] = useState(false);
   const [isEmailInputFocused, setIsEmailInputFocused] = useState(false);
   
@@ -74,25 +74,15 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
       console.error('Failed to invite members:', error);
     } finally {
       setLoading(false);
-      onClose();
+      router.back();
     }
   };
 
   const GroupDropdown = () => (
-    <Modal
-      visible={showGroupDropdown}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={() => setShowGroupDropdown(false)}
-      statusBarTranslucent={true}
-    >
-      <TouchableOpacity 
-        className="flex-1 bg-black/50"
-        activeOpacity={1}
-        onPress={() => setShowGroupDropdown(false)}
-      >
-        <View className="flex-1 justify-end">
-          <View className="bg-white rounded-xl shadow-lg w-full">
+    
+
+        <View className="flex-1 m-0 justify-end">
+          <View className="bg-white rounded-xl w-full pb-6">
 
             <View className="flex-row items-center justify-between p-4 border-b border-gray-200">
               <Text className="text-lg font-semibold text-slate-800">Select Group</Text>
@@ -104,7 +94,7 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
               </TouchableOpacity>
             </View>
             <ScrollView className="max-h-60" showsVerticalScrollIndicator={false}>
-              {groups.map((group) => (
+              {userGroups.map((group) => (
                 <TouchableOpacity
                   key={group.id}
                   onPress={() => handleSelectGroup(group)}
@@ -129,7 +119,7 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
               ))}
             </ScrollView>
 
-            {groups.length === 0 && (
+            {userGroups.length === 0 && (
               <View className="p-8 items-center">
                 <Text className="text-slate-500 text-center">
                   No groups available
@@ -138,21 +128,18 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
             )}
           </View>
         </View>
-      </TouchableOpacity>
-    </Modal>
   );
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
-      <View className="px-4 mt-16 pb-2 bg-background">
-        <TouchableOpacity onPress={onClose} className="p-1">
+      <View className="px-4 pb-2 bg-background">
+        <TouchableOpacity onPress={() => router.back()} className="p-1">
           <ChevronLeft size={28} color="#475569" />
         </TouchableOpacity>
       </View>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
-          paddingTop: 200,
           paddingBottom: 20,
         }}
         keyboardShouldPersistTaps="handled"
@@ -269,9 +256,18 @@ const CreateGroupScreen = ({groups, onClose, currentGroup}: CreateGroupScreenPro
           </TouchableOpacity>
         </View>
       </View>
-      <GroupDropdown />
+      <Modal
+        isVisible={showGroupDropdown}
+        animationIn='fadeIn'
+        animationOut='fadeOut'
+        onBackdropPress={() => setShowGroupDropdown(false)}
+        statusBarTranslucent={true}
+        style={{margin: 0}}
+      >
+        <GroupDropdown />
+      </Modal>
     </SafeAreaView>
   );
 }
 
-export default CreateGroupScreen;
+export default InviteModal;

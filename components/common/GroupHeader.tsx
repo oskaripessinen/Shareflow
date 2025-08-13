@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Pressable, SafeAreaView, Platform, TouchableOpacity, Image } from 'react-native';
+import { View, Text, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import Modal from 'react-native-modal';
 import {  ChevronDown, EllipsisVertical } from 'lucide-react-native';
 import SelectGroup from './SelectGroup';
 import OptionsModal from './OptionsModal';
-import InviteModal from './InviteModal';
 import { useGroups, useAuthStore } from '@/../context/AppContext';
 import { Group } from '@/../types/groups';
 import { router } from 'expo-router';
@@ -17,7 +16,6 @@ const GroupHeader = () => {
   const { googleId } = useAuthStore();
   const [isGroupSelectorModalVisible, setIsGroupSelectorModalVisible] = useState(false);
   const [isOptionsModalVisible, setOptionsModal] = useState(false);
-  const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
   const [invites, setInvites] = useState<GroupInvitation[]>([]);
 
   const fetchInvites = async () => {
@@ -62,18 +60,12 @@ const GroupHeader = () => {
     setIsGroupSelectorModalVisible(true);
   };
 
-  const handleOpenInviteModal = () => {
-    if (!currentGroup) {
-      return;
-    }
-    setIsInviteModalVisible(true);
-  };
 
   return (
     <>
       <SafeAreaView
         className="bg-slate-50 shadow-sm z-20 border-b border-slate-200 w-full" 
-        style={{ paddingTop: Platform.OS === 'android' ? 40 : 0 }}
+        style={{ paddingTop: 40 }}
       >
         <View className="flex-row items-center justify-between px-2 pt-2 pb-1">
           <View className="flex-row items-center">
@@ -121,6 +113,7 @@ const GroupHeader = () => {
         </View>
       </SafeAreaView>
 
+
       <Modal
         isVisible={isGroupSelectorModalVisible}
         animationIn="fadeIn"
@@ -140,35 +133,26 @@ const GroupHeader = () => {
             invites={invites}
             setInvites={setInvites}
             setCurrentGroup={setCurrentGroup}
-            handleOpenInviteModal={handleOpenInviteModal}
           />
       </Modal>
+
+      
 
       <Modal
         isVisible={isOptionsModalVisible}
         animationIn="fadeIn"
         animationOut="fadeOut"
         onSwipeComplete={() => setOptionsModal(false)}
+        onBackdropPress={() => setOptionsModal(false)}
         swipeDirection={'down'}
         backdropOpacity={0.5}
         statusBarTranslucent={true}
         style={{ justifyContent: 'flex-end', margin: 0 }}
       >
-        <Pressable className="flex-1 justify-end" onPress={() => setOptionsModal(false)}>
-          <OptionsModal onClose={() => setOptionsModal(false)} handleOpenInviteModal={handleOpenInviteModal} />
-        </Pressable>
+          <OptionsModal onClose={() => setOptionsModal(false)} />
       </Modal>
 
-      <Modal
-        isVisible={isInviteModalVisible}
-        animationIn="fadeIn"
-        animationOut="fadeOut"
-        swipeDirection={'down'}
-        statusBarTranslucent={true}
-        style={{ justifyContent: 'flex-end', margin: 0 }}
-      >
-        <InviteModal groups={userGroups} onClose={() => setIsInviteModalVisible(false)} currentGroup={currentGroup} />
-      </Modal>
+      
     </>
   );
 };
