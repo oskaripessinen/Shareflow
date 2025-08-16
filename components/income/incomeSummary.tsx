@@ -41,7 +41,7 @@ const IncomeSummary = ({
           </Text>
           <View className='flex-row items-center justify-center gap-2'>
             {previousMonthIncome > 0 && (
-              <View>
+              <View className='flex-column flex-1'>
                 <View className="flex-row items-center mb-1">
                   <Calendar size={16} color="#64748b" />
                   <Text className="text-xs text-slate-600 ml-1">
@@ -56,7 +56,7 @@ const IncomeSummary = ({
               </View>
             )}
             {latestIncome && (
-              <Pressable onPress={handleIncomePress} className="flex-1 justify-center p-3 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
+              <Pressable onPress={handleIncomePress} className="flex-1 justify-center items-center p-3 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
                 <View className="flex-row items-center gap-1">
                   <Text className="text-xs text-slate-600 ml-1">
                     Latest Income

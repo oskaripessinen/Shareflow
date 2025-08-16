@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   ActivityIndicator,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { Group } from 'types/groups';
@@ -132,6 +134,11 @@ const InviteModal = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
+      <KeyboardAvoidingView
+              className='flex-1'
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0} 
+            >
       <View className="px-4 pb-2 bg-background">
         <TouchableOpacity onPress={() => router.back()} className="p-1">
           <ChevronLeft size={28} color="#475569" />
@@ -140,8 +147,10 @@ const InviteModal = () => {
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
-          paddingBottom: 20,
-        }}
+            flexGrow: 1,
+            justifyContent: 'center',
+            
+          }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={true}
       >
@@ -160,7 +169,7 @@ const InviteModal = () => {
 
           <View className="mb-6 w-full max-w-md">
             <TouchableOpacity 
-              className={`flex-row items-center justify-between p-4 rounded-xl border ${
+              className={`flex-row items-center justify-between px-4 py-3 rounded-xl border ${
                 selectedGroup 
                   ? 'border-blue-300 bg-blue-50' 
                   : 'border-slate-300 bg-slate-100'
@@ -179,7 +188,7 @@ const InviteModal = () => {
           <View className="mb-6 w-full max-w-md">
             <View className="relative">
               <TextInput
-                className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 bg-surface placeholder:text-slate-500"
+                className="border border-slate-300 rounded-xl px-4 py-3  text-gray-900 bg-surface placeholder:text-slate-500"
                 placeholder="Invite with email"
                 value={inviteEmail}
                 onChangeText={setInviteEmail}
@@ -266,6 +275,7 @@ const InviteModal = () => {
       >
         <GroupDropdown />
       </Modal>
+    </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

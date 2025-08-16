@@ -368,7 +368,7 @@ const SelectGroup: React.FC<SelectGroupProps> = ({ currentGroupId, onSelectGroup
             e.stopPropagation();
           }
         }}
-        className="bg-white rounded-t-2xl pt-3 shadow-xl w-full justify-end"
+        className="bg-white rounded-t-2xl pt-3 pb-5 shadow-xl w-full justify-end"
       >
         <View className="flex-row items-center justify-between px-5 pt-1 bg-white">
           <Text className="text-xl font-semibold text-slate-800">Select Group</Text>

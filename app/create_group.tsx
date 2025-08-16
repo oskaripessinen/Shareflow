@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   ActivityIndicator,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import { useAuth, useGroups } from '../context/AppContext';
 import { useRouter } from 'expo-router';
@@ -83,13 +85,19 @@ export default function CreateGroupScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <View className="px-3 pt-12 pb-2 bg-background">
+      <KeyboardAvoidingView
+        className='flex-1'
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}  // säädä tarvittaessa (headerin korkeus)
+      >
+      <View className="px-3 pb-2 bg-background">
         <TouchableOpacity onPress={() => router.back()} className="p-1">
           <ChevronLeft size={28} color="#475569" />
         </TouchableOpacity>
       </View>
       
-      <View className="flex-1 justify-center px-5">
+      
+        <View className="flex-1 px-5">
         <ScrollView
           contentContainerStyle={{
             flexGrow: 1,
@@ -114,18 +122,19 @@ export default function CreateGroupScreen() {
 
             <View className="mb-6 w-full">
               <TextInput
-                className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-slate-500"
+                className="border border-slate-300 rounded-xl px-4 py-3 text-gray-900 placeholder:text-slate-500"
                 placeholder="Group Name"
                 value={groupName}
                 onChangeText={setGroupName}
                 autoCapitalize="sentences"
+                verticalAlign='middle'
               />
             </View>
 
             <View className="mb-6 w-full">
               <View className="relative">
                 <TextInput
-                  className="border border-slate-300 rounded-xl px-4 py-3 text-base text-gray-900 placeholder:text-slate-500"
+                  className="border border-slate-300 rounded-xl px-4 py-3 text-gray-900 placeholder:text-slate-500"
                   placeholder="Invite with email (optional)"
                   value={inviteEmail}
                   onChangeText={setInviteEmail}
@@ -198,6 +207,7 @@ export default function CreateGroupScreen() {
           </TouchableOpacity>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

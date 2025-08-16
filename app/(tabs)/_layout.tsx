@@ -57,7 +57,7 @@ export default function TabLayout() {
         })}
       </PagerView>
 
-      <View className="bg-white border-t border-slate-200 px-2 py-2">
+      <View className="bg-white border-t border-slate-200 px-2 pt-2 pb-3">
         <View className="flex-row justify-around">
           {tabs.map((tab, index) => {
             const Icon = tab.icon;
