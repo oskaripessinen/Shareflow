@@ -41,7 +41,7 @@ const IncomeSummary = ({
           </Text>
           <View className='flex-row items-center justify-center gap-2'>
             {previousMonthIncome > 0 && (
-              <View className='flex-column flex-1'>
+              <View className='flex-column'>
                 <View className="flex-row items-center mb-1">
                   <Calendar size={16} color="#64748b" />
                   <Text className="text-xs text-slate-600 ml-1">
@@ -56,10 +56,10 @@ const IncomeSummary = ({
               </View>
             )}
             {latestIncome && (
-              <Pressable onPress={handleIncomePress} className="flex-1 justify-center items-center p-3 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
+              <Pressable onPress={handleIncomePress} className="flex-1 justify-center items-center p-3 px-8 bg-slate-200/30 rounded-xl flex-column gap-2 active:bg-slate-200/60">
                 <View className="flex-row items-center gap-1">
-                  <Text className="text-xs text-slate-600 ml-1">
-                    Latest Income
+                  <Text numberOfLines={1} className="text-xs text-slate-600">
+                    Latest
                   </Text>
                   <Text className="text-xs text-slate-400 ml-1">
                   {new Date(latestIncome.created_at).toLocaleDateString('en-GB', {
@@ -69,7 +69,7 @@ const IncomeSummary = ({
                 </Text>
                 </View>
                 <View className='flex-row gap-2 align-center items-center'>
-                  <Text className="text-sm font-semibold text-default" numberOfLines={1}>
+                  <Text className="text-xs font-semibold text-default" numberOfLines={1}>
                     {latestIncome.title} 
                   </Text>
                   <View className='py-1 px-2 mt-1 justify-center items-center bg-accent/20 rounded-xl'>

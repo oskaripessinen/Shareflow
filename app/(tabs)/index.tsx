@@ -222,7 +222,7 @@ const DashboardScreen = ({ navigateToTab }: DashboardScreenProps) => {
             <View className='m-4'>
               <IncomeSummary 
                 totalIncome={totalIncomes}
-                previousMonthIncome={previousMonthTotal}
+                previousMonthIncome={previousMonthTotalIncome}
                 percentChange={percentChangeIncome}
                 latestIncome={latestIncome}
                 handleIncomePress={handleIncomePress}
