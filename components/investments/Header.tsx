@@ -18,13 +18,13 @@ const Header: React.FC<HeaderProps> = ({chartActive, setShowAddInvestmentModal, 
                     onPress={() => setChartActive(false)} 
                     className={`px-6 m-0 py-2.5 justify-center rounded-l-[10px] items-center border border-slate-300 active:bg-slate-100 ${!chartActive ? "bg-slate-100" : "bg-surface"}`}
                 >
-                    <PieChart size={18}/>
+                    <PieChart strokeWidth={2.2} color={!chartActive ? '#3B82F6' : 'grey'} size={18}/>
                 </Pressable>
                 <Pressable 
                     onPress={() => setChartActive(true)} 
                     className={`px-6 m-0 py-2.5 rounded-r-xl border-y border-r border-slate-300 justify-center items-center active:bg-slate-100 ${chartActive ? "bg-slate-100" : "bg-surface"}`}
                 >
-                    <ChartLine size={20}/>
+                    <ChartLine strokeWidth={2.2} color={chartActive ? '#3B82F6' : 'grey'} size={20}/>
                 </Pressable>
             </View>
 

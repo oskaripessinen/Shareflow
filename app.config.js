@@ -35,7 +35,6 @@ export default ({ config }) => {
       icon: "./assets/images/icon.png",
       scheme: "shareflow",
       userInterfaceStyle: "automatic",
-      newArchEnabled: false,
       backgroundColor: "#FFFFFF",
       plugins: isExpoGo ? basePlugins : [...basePlugins, ...nativePlugins],
       ios: {
