@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { X, ArrowLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { Camera as VisionCameraType, CameraDevice } from 'react-native-vision-camera';
 
 const isExpoGo = process.env.EXPO_PUBLIC_IS_EXPO_GO === 'true';
 
@@ -22,37 +23,30 @@ interface CameraViewProps {
 
 const { width, height } = Dimensions.get('window');
 
-type CameraType = {
-  takeSnapshot: (options: any) => Promise<{ path: string }>;
-} | null;
 
-type CameraModuleType = {
-  Camera: any;
-  useCameraDevices: () => any[];
-  useCameraPermission: () => {
-    hasPermission: boolean | null;
-    requestPermission: () => Promise<boolean>;
-  };
+type VisionCameraModule = {
+  Camera: {
+    requestCameraPermission: () => Promise<string>;
+    getAvailableCameraDevices: () => Promise<CameraDevice[]>;
+  } & typeof VisionCameraType;
 };
 
-let CameraModule: CameraModuleType | null = null;
+let CameraModule: VisionCameraModule | null = null;
 
 const initializeCamera = async (): Promise<boolean> => {
   if (isExpoGo) {
     console.warn('Camera not available in Expo Go');
     return false;
   }
-  
   if (!CameraModule) {
     try {
-      CameraModule = await import('react-native-vision-camera');
+      CameraModule = (await import('react-native-vision-camera')) as unknown as VisionCameraModule;
       console.log('Camera module loaded successfully');
     } catch (error) {
       console.error('Failed to import Camera module:', error);
       return false;
     }
   }
-  
   return true;
 };
 
@@ -64,39 +58,26 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
   const [isActive, setIsActive] = useState(true);
   const [cameraInitialized, setCameraInitialized] = useState(false);
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [devices, setDevices] = useState<any[]>([]);
-
-  const cameraRef = useRef<CameraType>(null);
+  const [devices, setDevices] = useState<CameraDevice[]>([]);
+  const cameraRef = useRef<VisionCameraType | null>(null);
 
   useEffect(() => {
     const initApp = async () => {
-      if (isExpoGo) {
-        return;
-      }
+      if (isExpoGo) return;
 
       const success = await initializeCamera();
       if (success && CameraModule) {
         setCameraInitialized(true);
-        
-        const { useCameraPermission, useCameraDevices } = CameraModule;
-        const permission = useCameraPermission();
-        const cameraDevices = useCameraDevices();
-        
-        setHasPermission(permission.hasPermission);
-        setDevices(cameraDevices);
-        
-        if (permission.hasPermission === null) {
-          const granted = await permission.requestPermission();
-          setHasPermission(granted);
-        }
+
+        const status = await CameraModule!.Camera.requestCameraPermission();
+        setHasPermission(status === 'authorized');
+        const available = await CameraModule.Camera.getAvailableCameraDevices();
+        setDevices(available);
       }
     };
 
     initApp();
-
-    return () => {
-      setIsActive(false);
-    };
+    return () => setIsActive(false);
   }, []);
 
   const convertToBase64 = async (photoPath: string): Promise<string> => {
@@ -127,7 +108,7 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
       setIsCapturing(true);
       setIsLoading(true);
 
-      const photo = await cameraRef.current.takeSnapshot({
+      const photo = await cameraRef.current?.takeSnapshot({
         quality: 0.8,
       });
 
@@ -147,10 +128,8 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
 
   const requestCameraPermission = async () => {
     if (CameraModule) {
-      const { useCameraPermission } = CameraModule;
-      const permission = useCameraPermission();
-      const granted = await permission.requestPermission();
-      setHasPermission(granted);
+      const status = await CameraModule!.Camera.requestCameraPermission();
+      setHasPermission(status === 'authorized');
     }
   };
 
@@ -217,7 +196,7 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
     );
   }
 
-  const device = devices.find((d) => d.position === 'back');
+  const device: CameraDevice | undefined = devices.find((d) => d.position === 'back');
 
   if (!device) {
     return (
@@ -235,7 +214,6 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
 
   if (CameraModule) {
     const { Camera } = CameraModule;
-
     return (
       <View style={styles.container}>
         <Camera
@@ -249,10 +227,6 @@ export default function CameraView({ onClose, onPhotoTaken }: CameraViewProps) {
           onInitialized={() => {
             console.log('Camera is ready');
             setIsCameraReady(true);
-          }}
-          onError={(error: any) => {
-            console.error('Camera error:', error);
-            Alert.alert('Camera Error', 'Failed to initialize camera');
           }}
         />
 

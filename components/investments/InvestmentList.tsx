@@ -15,7 +15,6 @@ export default function InvestmentList({ investments }: InvestmentListProps) {
     const currentValue = item.quantity * currentPrice;
     const purchaseValue = item.quantity * item.purchase_price;
     const profit = currentValue - purchaseValue;
-    const profitPercent = ((profit / purchaseValue) * 100).toFixed(2);
     const isProfitable = profit >= 0;
 
     return (

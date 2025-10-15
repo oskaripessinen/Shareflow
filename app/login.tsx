@@ -15,12 +15,13 @@ import { v4 as uuidv4 } from 'uuid';
 export const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 export const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
 
-let GoogleSignin: any = null;
+type GoogleSigninStatic = typeof import('@react-native-google-signin/google-signin').GoogleSignin;
+let GoogleSignin: GoogleSigninStatic | null = null;
 
-const initializeGoogleSignin = async () => {
+const initializeGoogleSignin = async (): Promise<GoogleSigninStatic | null> => {
   if (isExpoGo) {
     console.warn('Google Sign-In not available in Expo Go');
-    return false;
+    return null;
   }
   
   if (!GoogleSignin) {
@@ -37,7 +38,7 @@ const initializeGoogleSignin = async () => {
     console.log('GoogleSignin configured with webClientId:', WEB_CLIENT_ID);
   }
   
-  return true;
+  return GoogleSignin;
 };
 
 export default function LoginScreen() {
@@ -234,15 +235,17 @@ export default function LoginScreen() {
 
     setLoading(true);
     try {
-      const isInitialized = await initializeGoogleSignin();
-      if (!isInitialized) {
+      const gs = await initializeGoogleSignin();
+      if (!gs) {
         console.error('Google Sign-In not available');
         return;
       }
-
-      await GoogleSignin.hasPlayServices();
-      await GoogleSignin.signIn();
-      const { idToken } = await GoogleSignin.getTokens();
+      await gs.hasPlayServices();
+      await gs.signIn();
+      const { idToken } = await gs.getTokens();
+      if (!idToken) {
+        throw new Error('No idToken from Google Sign-In');
+      }
 
       await validateToken(idToken);
       const {

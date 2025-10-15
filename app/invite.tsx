@@ -188,12 +188,11 @@ const InviteModal = () => {
           <View className="mb-6 w-full max-w-md">
             <View className="relative">
               <TextInput
-                className="border border-slate-300 rounded-xl px-4 py-3  text-gray-900 bg-surface placeholder:text-slate-500"
+                className="border border-slate-300 rounded-xl px-4 py-3 text-xm text-gray-900  bg-surface placeholder:text-slate-500 tracking-normal font-normal"
                 placeholder="Invite with email"
                 value={inviteEmail}
                 onChangeText={setInviteEmail}
                 keyboardType="email-address"
-                autoCapitalize="none"
                 onSubmitEditing={handleAddInvitee}
                 onFocus={() => setIsEmailInputFocused(true)}
                 onBlur={() => setIsEmailInputFocused(false)}

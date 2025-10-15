@@ -9,7 +9,7 @@ export const getCurrentYear = (): number => {
 };
 
 // Format date to display format
-export const formatDate = (dateString: string): string => {
+export const formatDate = (dateString: Date): string => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
     day: '2-digit',
